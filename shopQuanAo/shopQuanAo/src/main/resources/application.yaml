@@ -1,0 +1,15 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /nhom19
+spring:
+  datasource:
+    url: jdbc:sqlserver://localhost;databaseName=webquanao;encrypt=false;trustServerCertificate=true
+    username: sa
+    password: 123
+jpa:
+  hibernate:
+    ddl-auto: update
+  show-sql: true
+jwt:
+  signerKey: "g/Y81rnu6xcnhyvHBgPjWuqmR0H@oVbHqyp/Pc23s4gtJgu$2jK7FBsW+T#P/Y0Z6XYvbGLY0S3jD5s8Znmsdg=="
