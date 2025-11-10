@@ -1,9 +1,6 @@
 package com.Nhom19.shopQuanAo.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,6 +12,7 @@ import java.math.BigDecimal;
 public class SPQuanAo {
     @Id
     @Column(name = "MaSP")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int MaSP;
 
     @Column(name = "Mal")
