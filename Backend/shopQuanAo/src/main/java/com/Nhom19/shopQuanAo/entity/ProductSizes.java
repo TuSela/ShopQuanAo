@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class KichCo {
+public class ProductSizes {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int MaKC;

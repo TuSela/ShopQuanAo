@@ -1,4 +1,5 @@
 package com.Nhom19.shopQuanAo.entity;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -9,10 +10,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class HinhAnhSanPham {
+public class ProductTypes {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int MaHA;
-    private int MaBienThe;
-    private String URLHinhAnh;
+    private int MaLoai;
+    private String TenLoai;
+    private String TinhTrang;
 }

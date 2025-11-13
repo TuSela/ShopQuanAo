@@ -1,5 +1,6 @@
 package com.Nhom19.shopQuanAo.entity;
 
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -10,10 +11,12 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-
-public class MauSac {
+public class Brands {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int MaMS;
-    private String TenMS;
+    private int MaHang;
+    private String TenHang;
+    private String Email;
+    private  String Sdt;
+    private  String Diachi;
 }

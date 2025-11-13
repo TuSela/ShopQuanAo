@@ -1,7 +1,7 @@
 package com.Nhom19.shopQuanAo.repository;
 
-import com.Nhom19.shopQuanAo.entity.HangQuanAo;
+import com.Nhom19.shopQuanAo.entity.Brands;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface HangQuanAoRepo extends JpaRepository<HangQuanAo, Integer> {
+public interface HangQuanAoRepo extends JpaRepository<Brands, Integer> {
 }
