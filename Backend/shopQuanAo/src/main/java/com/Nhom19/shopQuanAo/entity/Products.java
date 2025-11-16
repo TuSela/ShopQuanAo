@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.Set;
+
 @Entity
 @Getter
 @Setter
@@ -12,11 +14,22 @@ public class Products {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int MaSp;
-    private int MaLoai;
-    private int MaHang;
-    private String TenSp;
-    private int SoLuong;
-    private BigDecimal Gia;
-    private String ChiTiet;
-    private float DanhGia;
+    @ManyToOne
+    @JoinColumn(name = "ma_loai")
+    private ProductTypes types;
+    @ManyToOne
+    @JoinColumn(name = "ma_hang")
+    private Brands brands;
+    private String tenSp;
+    private int soLuong;
+    private BigDecimal gia;
+    private String chiTiet;
+    private float danhGia;
+
+    @OneToMany(mappedBy = "products", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ProductVariants> ProductVariants;
+
+    @OneToMany(mappedBy = "products", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ProductComments> ProductComments;
+
 }

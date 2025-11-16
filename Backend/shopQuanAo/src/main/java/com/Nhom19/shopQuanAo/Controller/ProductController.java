@@ -4,9 +4,7 @@ import com.Nhom19.shopQuanAo.DTO.Response.ApiResponse;
 import com.Nhom19.shopQuanAo.entity.Products;
 import com.Nhom19.shopQuanAo.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,4 +21,6 @@ public class ProductController {
         apiResponse.setResult(productService.getProducts());
         return apiResponse;
     }
+//    @PostMapping
+//    public ApiResponse<List<Products>> addProduct(@RequestBody Pro product){}
 }

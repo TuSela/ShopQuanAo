@@ -1,4 +1,6 @@
 package com.Nhom19.shopQuanAo.entity;
+
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,21 +10,19 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-public class ProductComments {
+public class Feedbacks {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int MaBl;
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "ma_tk")
     private Users users;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ma_sp")
-    private Products products;
+    @Column(name = "ngay_tao")
+    private LocalDateTime createdAt;
 
-    private LocalDateTime NgayTao;
-    private float danhGia;
+    private String tieuDe;
+
     private String noiDung;
-    private String trangThai;
+
 }

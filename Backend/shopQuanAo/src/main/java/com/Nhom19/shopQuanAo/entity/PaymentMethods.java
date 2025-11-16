@@ -11,14 +11,15 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-public class Brands {
+public class PaymentMethods {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int maHang;
-    private String tenHang;
-    private String email;
-    private  String sdt;
-    private  String diaChi;
-    @OneToMany(mappedBy = "brands")
-    private Set<Products> products = new HashSet<>();
+    @Column(name = "ma_pt")
+    private Long MaPt;
+
+    @Column(name = "ten_pt")
+    private String tenPt;
+
+    @OneToMany(mappedBy = "paymentMethods")
+    private Set<Orders> orders = new HashSet<>();
 }

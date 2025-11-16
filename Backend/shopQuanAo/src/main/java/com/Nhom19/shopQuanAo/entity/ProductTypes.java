@@ -1,11 +1,11 @@
 package com.Nhom19.shopQuanAo.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -13,7 +13,9 @@ import lombok.Setter;
 public class ProductTypes {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int MaLoai;
-    private String TenLoai;
-    private String TinhTrang;
+    private int maLoai;
+    private String tenLoai;
+    private String tinhTrang;
+    @OneToMany(mappedBy = "types")
+    private Set<Products> products = new HashSet<>();
 }
