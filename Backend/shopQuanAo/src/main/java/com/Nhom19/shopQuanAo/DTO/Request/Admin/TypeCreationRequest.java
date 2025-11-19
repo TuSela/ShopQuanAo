@@ -1,4 +1,4 @@
-package com.Nhom19.shopQuanAo.DTO.Request;
+package com.Nhom19.shopQuanAo.DTO.Request.Admin;
 
 import lombok.Getter;
 import lombok.Setter;

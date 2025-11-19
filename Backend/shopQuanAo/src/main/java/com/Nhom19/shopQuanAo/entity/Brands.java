@@ -19,6 +19,6 @@ public class Brands {
     private String email;
     private  String sdt;
     private  String diaChi;
-    @OneToMany(mappedBy = "brands")
-    private Set<Products> products = new HashSet<>();
+//    @OneToMany(mappedBy = "brands")
+//    private Set<Products> products = new HashSet<>();
 }

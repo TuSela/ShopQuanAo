@@ -158,7 +158,7 @@ const handleDeleteUser = async (id) => {
   if (!confirm("Bạn có chắc muốn xoá?")) return;
   try {
     const res = await deleteUser(id);
-    if (res.result === "success") {
+    if (res.result) {
       alert("Xoá thành công!");
       fetchUsers();
     } else {

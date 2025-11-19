@@ -1,6 +1,5 @@
-package com.Nhom19.shopQuanAo.DTO.Request;
+package com.Nhom19.shopQuanAo.DTO.Request.Customer;
 
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 @Getter

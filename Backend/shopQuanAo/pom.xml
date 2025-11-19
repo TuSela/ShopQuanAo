@@ -46,7 +46,7 @@
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
-        <!-- MapStruct -->
+        <!-- MapStruct API -->
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
@@ -74,14 +74,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Binding để MapStruct + Lombok hoạt động trơn -->
-<!--        <dependency>-->
-<!--            <groupId>org.projectlombok</groupId>-->
-<!--            <artifactId>lombok-mapstruct-binding</artifactId>-->
-<!--            <version>${lombok-mapstruct-binding.version}</version>-->
-<!--            <scope>provided</scope>-->
-<!--        </dependency>-->
-
         <!-- Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -101,7 +93,7 @@
                     <!-- Dùng release để tương thích JDK 21 -->
                     <release>${java.version}</release>
 
-                    <!-- Đăng ký annotation processors (MapStruct + Lombok) -->
+                    <!-- Đăng ký annotation processors: LOMBOK trước, sau đó binding, rồi MAPSTRUCT -->
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.mapstruct</groupId>
@@ -113,15 +105,20 @@
                             <artifactId>lombok</artifactId>
                             <version>${lombok.version}</version>
                         </path>
-<!--                        <path>-->
-<!--                            <groupId>org.projectlombok</groupId>-->
-<!--                            <artifactId>lombok-mapstruct-binding</artifactId>-->
-<!--                            <version>${lombok-mapstruct-binding.version}</version>-->
-<!--                        </path>-->
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok-mapstruct-binding</artifactId>
+                            <version>${lombok-mapstruct-binding.version}</version>
+                        </path>
                     </annotationProcessorPaths>
 
                     <!-- Optional: bật fork nếu IDE/javac cần -->
                     <fork>true</fork>
+
+                    <!-- Khuyến nghị: giữ thông tin tham số nếu cần (tùy project) -->
+                    <compilerArgs>
+                        <arg>-parameters</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
 

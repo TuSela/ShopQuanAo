@@ -1,6 +1,5 @@
-package com.Nhom19.shopQuanAo.DTO.Response;
+package com.Nhom19.shopQuanAo.DTO.Response.Customer;
 
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 @Getter

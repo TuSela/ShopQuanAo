@@ -1,6 +1,6 @@
 package com.Nhom19.shopQuanAo.service;
 
-import com.Nhom19.shopQuanAo.DTO.Request.BrandCreationRequest;
+import com.Nhom19.shopQuanAo.DTO.Request.Admin.BrandCreationRequest;
 import com.Nhom19.shopQuanAo.entity.Brands;
 import com.Nhom19.shopQuanAo.mapper.BrandMapper;
 import com.Nhom19.shopQuanAo.repository.BrandRository;

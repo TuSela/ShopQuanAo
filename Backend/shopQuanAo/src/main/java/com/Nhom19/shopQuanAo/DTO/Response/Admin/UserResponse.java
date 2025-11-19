@@ -1,16 +1,6 @@
-package com.Nhom19.shopQuanAo.entity;
+package com.Nhom19.shopQuanAo.DTO.Response.Admin;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-
-@Entity
-public class Users {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class UserResponse {
     private Integer maTk;
     private String username;
     private String password;
@@ -19,10 +9,10 @@ public class Users {
     private String sdt;
     private String diachi;
 
-    public Users() {
+    public UserResponse() {
     }
 
-    public Users(Integer maTk, String username, String password, String hoten, String email, String sdt, String diachi) {
+    public UserResponse(Integer maTk, String username, String password, String hoten, String email, String sdt, String diachi) {
         this.maTk = maTk;
         this.username = username;
         this.password = password;
@@ -87,7 +77,6 @@ public class Users {
     public void setDiachi(String diachi) {
         this.diachi = diachi;
     }
-
 //    @OneToMany(mappedBy = "users")
 //    private Set<Orders> orders = new HashSet<>();
 

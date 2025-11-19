@@ -1,8 +1,7 @@
 package com.Nhom19.shopQuanAo.service;
 
-import ch.qos.logback.classic.Logger;
-import com.Nhom19.shopQuanAo.DTO.Request.AuthenticaitonRequest;
-import com.Nhom19.shopQuanAo.DTO.Response.AuthenticationResponse;
+import com.Nhom19.shopQuanAo.DTO.Request.Customer.AuthenticaitonRequest;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.AuthenticationResponse;
 import com.Nhom19.shopQuanAo.entity.Users;
 import com.Nhom19.shopQuanAo.enums.Role;
 import com.Nhom19.shopQuanAo.exception.AppException;
@@ -14,12 +13,10 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
-import java.util.StringJoiner;
 
 @Service
 public class AuthenticationService {

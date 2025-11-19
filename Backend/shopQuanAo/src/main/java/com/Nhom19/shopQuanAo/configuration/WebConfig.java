@@ -13,7 +13,7 @@ public class WebConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:5179") // port Vue dev server
+                        .allowedOrigins("http://localhost:5173") // port Vue dev server
                         .allowedMethods("GET", "POST", "PUT", "DELETE");
             }
         };

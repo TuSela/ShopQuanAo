@@ -1,11 +1,9 @@
 package com.Nhom19.shopQuanAo.Controller;
 
-import com.Nhom19.shopQuanAo.DTO.Request.CapNhatUserRequest;
-import com.Nhom19.shopQuanAo.DTO.Request.TaoUsersRequest;
+import com.Nhom19.shopQuanAo.DTO.Request.Customer.TaoUsersRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.ApiResponse;
-import com.Nhom19.shopQuanAo.DTO.Response.TaoUsersResponse;
-import com.Nhom19.shopQuanAo.DTO.Response.UserResponse;
-import com.Nhom19.shopQuanAo.entity.Users;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.TaoUsersResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Admin.UserResponse;
 import com.Nhom19.shopQuanAo.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +20,7 @@ public class UserController {
     @PostMapping()
     public ApiResponse<TaoUsersResponse> creatUsers(@RequestBody @Valid TaoUsersRequest Request){
         ApiResponse<TaoUsersResponse> apiResponse = new ApiResponse<>();
-        Users taiKhoanKhachHang = userService.createUsers(Request);
+        UserResponse taiKhoanKhachHang = userService.createUsers(Request);
         TaoUsersResponse taoUsersResponse = new TaoUsersResponse();
         if (taiKhoanKhachHang != null) {
             taoUsersResponse.setSuccess(true);
@@ -33,33 +31,37 @@ public class UserController {
          return apiResponse;
     }
     @GetMapping
-    public ApiResponse<List<Users>> getUsers(){
-            ApiResponse<List<Users>> apiResponse = new ApiResponse<>();
+    public ApiResponse<List<UserResponse>> getUsers(){
+            ApiResponse<List<UserResponse>> apiResponse = new ApiResponse<>();
             apiResponse.setResult(userService.getUsers());
             return apiResponse;
     }
 
 
     @GetMapping("/{userId}")
-    public ApiResponse<Users> getUser(@PathVariable Integer userId)
+    public ApiResponse<UserResponse> getUser(@PathVariable Integer userId)
     {
-        ApiResponse<Users> apiResponse = new ApiResponse<>();
+        ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
         apiResponse.setResult(userService.getUserById(userId));
         return  apiResponse;
     }
 
-    @PutMapping("/{userId}")
-    public ApiResponse<Users> upDateUser(@PathVariable Integer userId, @RequestBody @Valid CapNhatUserRequest request){
-        ApiResponse<Users> apiResponse = new ApiResponse<>();
-        apiResponse.setResult(userService.userUpdate(userId, request));
-        return apiResponse;
-    }
+//    @PutMapping("/{userId}")
+//    public ApiResponse<UserResponse> upDateUser(@PathVariable Integer userId, @RequestBody @Valid CapNhatUserRequest request){
+//        ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
+//        apiResponse.setResult(userService.userUpdate(userId, request));
+//        return apiResponse;
+//    }
     @DeleteMapping("/{userId}")
     public ApiResponse deleteUser(@PathVariable Integer userId)
     {
         ApiResponse apiResponse = new ApiResponse();
-        userService.deleteUserById(userId);
-        apiResponse.setResult("success");
+        var resuts = userService.deleteUserById(userId);
+        if (resuts) {
+            apiResponse.setResult(true);
+        } else {
+            apiResponse.setResult(false);
+        }
         return apiResponse;
     }
 }

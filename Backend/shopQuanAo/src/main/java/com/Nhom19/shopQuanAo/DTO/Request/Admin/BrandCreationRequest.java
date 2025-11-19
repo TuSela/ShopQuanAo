@@ -1,12 +1,8 @@
-package com.Nhom19.shopQuanAo.DTO.Request;
+package com.Nhom19.shopQuanAo.DTO.Request.Admin;
 
-import com.Nhom19.shopQuanAo.entity.Products;
-import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.HashSet;
-import java.util.Set;
 @Getter
 @Setter
 public class BrandCreationRequest {

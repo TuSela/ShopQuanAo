@@ -14,12 +14,14 @@ public class Products {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int MaSp;
+
     @ManyToOne
     @JoinColumn(name = "ma_loai")
     private ProductTypes types;
     @ManyToOne
     @JoinColumn(name = "ma_hang")
     private Brands brands;
+
     private String tenSp;
     private int soLuong;
     private BigDecimal gia;

@@ -1,6 +1,6 @@
 package com.Nhom19.shopQuanAo.Controller;
 
-import com.Nhom19.shopQuanAo.DTO.Request.BrandCreationRequest;
+import com.Nhom19.shopQuanAo.DTO.Request.Admin.BrandCreationRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.ApiResponse;
 import com.Nhom19.shopQuanAo.entity.Brands;
 import com.Nhom19.shopQuanAo.service.BrandService;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("brands")
+@RequestMapping("product/type")
 public class TypeController {
     @Autowired
     private BrandService brandService;

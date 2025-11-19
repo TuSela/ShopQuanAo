@@ -1,10 +1,9 @@
 package com.Nhom19.shopQuanAo.Controller;
 
-import com.Nhom19.shopQuanAo.DTO.Request.AuthenticaitonRequest;
+import com.Nhom19.shopQuanAo.DTO.Request.Customer.AuthenticaitonRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.ApiResponse;
-import com.Nhom19.shopQuanAo.DTO.Response.AuthenticationResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.AuthenticationResponse;
 import com.Nhom19.shopQuanAo.service.AuthenticationService;
-import com.Nhom19.shopQuanAo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
