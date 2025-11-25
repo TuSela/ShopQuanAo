@@ -18,10 +18,7 @@ public class ProductResponse {
         private BrandResponse brands;
 
         private String tenSp;
-        private int soLuong;
         private BigDecimal gia;
-        private String chiTiet;
-        private float danhGia;
 
         private Set<ProductVariants> mabienthe;
 //        private Set<ProductComments> ProductComments;
