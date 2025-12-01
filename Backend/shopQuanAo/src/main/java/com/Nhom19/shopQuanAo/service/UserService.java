@@ -8,6 +8,7 @@ import com.Nhom19.shopQuanAo.exception.ErrorCode;
 import com.Nhom19.shopQuanAo.mapper.UserMapper;
 import com.Nhom19.shopQuanAo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -66,4 +67,11 @@ public class UserService {
 //            userRepository.save(user);
 //            return userMapper.toUserResponse(user);
 //    }
+    public Users getMyInfo()
+    {
+        var context = SecurityContextHolder.getContext();
+        String sdt = context.getAuthentication().getName();
+        return userRepository.findBySdt(sdt);
+
+    }
 }
