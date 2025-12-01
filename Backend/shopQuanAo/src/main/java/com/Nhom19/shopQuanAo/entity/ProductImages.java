@@ -15,4 +15,6 @@ public class ProductImages {
 
     @Column(name = "url_hinh_anh")
     private String urlImage;
+
+    private Boolean DaiDien;
 }

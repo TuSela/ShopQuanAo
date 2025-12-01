@@ -26,14 +26,12 @@ public class UserService {
         }
 
         // kiểm tra tồn tại
-        if (userRepository.existsByUsername(request.getUsername())) {
+        if (userRepository.existsBySdt(request.getSdt())) {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
         Users users = userMapper.toUsers(request);
         UserResponse userResponse = userMapper.toUserResponse(users);
 
-        // Log debug trước khi save nếu cần:
-        System.out.println("Saving user: " + users.getUsername() + ", diaChi=" + users.getDiachi());
         userRepository.save(users);
         return userResponse;
     }

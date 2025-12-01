@@ -1,7 +1,5 @@
 package com.Nhom19.shopQuanAo.DTO.Response.Customer.Home;
 
-import com.Nhom19.shopQuanAo.entity.Brands;
-import com.Nhom19.shopQuanAo.entity.ProductTypes;
 import com.Nhom19.shopQuanAo.entity.ProductVariants;
 import lombok.Getter;
 import lombok.Setter;

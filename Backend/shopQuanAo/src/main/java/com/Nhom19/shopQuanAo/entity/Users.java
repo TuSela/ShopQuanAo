@@ -12,24 +12,20 @@ public class Users {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer maTk;
-    private String username;
     private String password;
     private String hoten;
     private String email;
     private String sdt;
-    private String diachi;
-
     public Users() {
     }
 
     public Users(Integer maTk, String username, String password, String hoten, String email, String sdt, String diachi) {
         this.maTk = maTk;
-        this.username = username;
         this.password = password;
         this.hoten = hoten;
         this.email = email;
         this.sdt = sdt;
-        this.diachi = diachi;
+
     }
 
     public Integer getMaTk() {
@@ -38,14 +34,6 @@ public class Users {
 
     public void setMaTk(Integer maTk) {
         this.maTk = maTk;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getPassword() {
@@ -80,13 +68,7 @@ public class Users {
         this.sdt = sdt;
     }
 
-    public String getDiachi() {
-        return diachi;
-    }
 
-    public void setDiachi(String diachi) {
-        this.diachi = diachi;
-    }
 
 //    @OneToMany(mappedBy = "users")
 //    private Set<Orders> orders = new HashSet<>();

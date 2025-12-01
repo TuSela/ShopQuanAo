@@ -26,7 +26,8 @@ public class AuthenticationService {
     private UserRepository userRepository;
     public AuthenticationResponse authenticate (AuthenticaitonRequest request)
     {
-        var user = userRepository.findByUsername(request.getUsername());
+        System.out.println("sdt: "+ request.getSdt());
+        var user = userRepository.findBySdt(request.getSdt());
         if (user == null)
         {
             throw new AppException(ErrorCode.USER_NOT_EXISTED);
@@ -45,7 +46,7 @@ public class AuthenticationService {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .subject(user.getUsername())
+                .subject(user.getSdt())
                 .issuer("shopquanao.com")
                 .issueTime(new Date())
                 .expirationTime(new Date(Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()))

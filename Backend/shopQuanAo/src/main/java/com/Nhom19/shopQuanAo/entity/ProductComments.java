@@ -22,7 +22,8 @@ public class ProductComments {
     private Products products;
 
     private LocalDateTime NgayTao;
-    private float danhGia;
+
+    private float DiemDanhGia;
     private String noiDung;
     private String trangThai;
 }

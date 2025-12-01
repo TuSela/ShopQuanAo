@@ -1,6 +1,5 @@
 package com.Nhom19.shopQuanAo.DTO.Request.Admin;
 
-import com.Nhom19.shopQuanAo.entity.Brands;
 import com.Nhom19.shopQuanAo.entity.ProductComments;
 import com.Nhom19.shopQuanAo.entity.ProductTypes;
 import com.Nhom19.shopQuanAo.entity.ProductVariants;
@@ -17,7 +16,6 @@ public class ProductRequest {
 
         private ProductTypes types;
 
-        private Brands brands;
 
         private String tenSp;
         private int soLuong;
