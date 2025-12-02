@@ -13,7 +13,6 @@ import java.math.BigDecimal;
 public class OrdersItems {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id") // nếu DB dùng composite PK (ma_ddh + ma_bien_the) bạn có thể chuyển sang @EmbeddedId
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)

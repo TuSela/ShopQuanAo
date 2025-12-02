@@ -15,15 +15,7 @@ public class ProductTypes {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int maLoai;
     private String tenLoai;
-    private String doiTuong;
-//    private String tinhTrang;
-
-    @Column(name = "url_hinh_anh")
-    private String urlImage;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "dm_con")
-    private DmCon dmCon;
+    private String tinhTrang;
 
 //    @OneToMany(mappedBy = "types")
 //    private Set<Products> products = new HashSet<>();

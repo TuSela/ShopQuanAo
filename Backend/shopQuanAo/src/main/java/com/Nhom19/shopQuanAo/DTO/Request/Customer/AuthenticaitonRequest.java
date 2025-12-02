@@ -5,15 +5,15 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AuthenticaitonRequest {
-    private String username;
+    private String sdt;
     private String password;
 
-    public String getUsername() {
-        return username;
+    public String getSdt() {
+        return sdt;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setSdt(String sdt) {
+        this.sdt = sdt;
     }
 
     public String getPassword() {

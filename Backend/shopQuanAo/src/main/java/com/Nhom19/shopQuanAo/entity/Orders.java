@@ -35,6 +35,10 @@ import java.util.Set;
         @Column(name = "tt_don_hang")
         private String orderStatus;
 
+        private int MaDiaChi;
+
+        private float TongTien;
+
         @OneToMany(mappedBy = "orders", cascade = CascadeType.ALL, orphanRemoval = true)
         private Set<OrdersItems> items = new HashSet<>();
     }

@@ -30,6 +30,8 @@ public class ProductVariants {
 
     private int soluong;
 
+    private boolean TrangThai;
+
     @OneToMany(mappedBy = "variants", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ProductImages> images = new HashSet<>();
 

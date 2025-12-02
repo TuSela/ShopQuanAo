@@ -18,9 +18,6 @@ public class Products {
     @ManyToOne
     @JoinColumn(name = "ma_loai")
     private ProductTypes types;
-    @ManyToOne
-    @JoinColumn(name = "ma_hang")
-    private Brands brands;
 
     private String tenSp;
     private int soLuong;
