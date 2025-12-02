@@ -61,7 +61,7 @@ public class UserService {
 
     }
 
-    public UserResponse userUpdate(Integer userID, CapNhatUserRequest request)
+    public Boolean userUpdate( Integer userID,CapNhatUserRequest request)
     {
             Users user = userRepository.findById(userID).get();
             user.setSdt(request.getSdt());
@@ -69,14 +69,19 @@ public class UserService {
             user.setHoten(request.getHoTen());
             userRepository.save(user);
 
-            return userMapper.toUserResponse(user);
+            return true;
     }
-    public UserResponse updateMyPass(Integer userID, UpdatePassRequest request)
+    public Boolean updateMyPass(Integer userID, UpdatePassRequest request)
     {
         Users user = userRepository.findById(userID).get();
-        user.setPassword(request.getPassword());
+        if(userRepository.existsByPassword(request.getOldPass())) {
+        user.setPassword(request.getNewPassword());
         userRepository.save(user);
-        return userMapper.toUserResponse(user);
+        return true;
+        }
+        else  {
+            throw new AppException(ErrorCode.USER_EXISTED);
+        }
     }
     public UserResponse getMyInfo()
     {

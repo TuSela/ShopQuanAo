@@ -58,8 +58,8 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
-    public ApiResponse<UserResponse> upDateUser(@PathVariable Integer userId, @RequestBody @Valid CapNhatUserRequest request){
-        ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
+    public ApiResponse<Boolean> upDateUser(@PathVariable Integer userId, @RequestBody @Valid CapNhatUserRequest request){
+        ApiResponse<Boolean> apiResponse = new ApiResponse<>();
         apiResponse.setResult(userService.userUpdate(userId, request));
         return apiResponse;
     }
@@ -114,13 +114,13 @@ public class UserController {
     @Autowired
     JwtUtils jwtUtils;
     @PutMapping
-    public ApiResponse<UserResponse> UpdateMyInfor(@RequestBody CapNhatUserRequest request, @RequestHeader("Authorization") String authHeader)
+    public ApiResponse<Boolean> UpdateMyInfor(@RequestBody CapNhatUserRequest request, @RequestHeader("Authorization") String authHeader)
     {
         String token = authHeader.substring(7);
         JWTClaimsSet claims = jwtUtils.parseToken(token);
         try {
             Integer Id = claims.getIntegerClaim("id");
-            ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
+            ApiResponse<Boolean> apiResponse = new ApiResponse<>();
 
             apiResponse.setResult(userService.userUpdate(Id,request));
             return apiResponse;
@@ -129,12 +129,12 @@ public class UserController {
         }
     }
     @PutMapping("/change-password")
-    public ApiResponse<UserResponse> UpdateMyPassword(@RequestBody UpdatePassRequest request, @RequestHeader("Authorization") String authHeader){
+    public ApiResponse<Boolean> UpdateMyPassword(@RequestBody UpdatePassRequest request, @RequestHeader("Authorization") String authHeader){
         String token = authHeader.substring(7);
         JWTClaimsSet claims = jwtUtils.parseToken(token);
         try {
             Integer Id = claims.getIntegerClaim("id");
-            ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
+            ApiResponse<Boolean> apiResponse = new ApiResponse<>();
 
             apiResponse.setResult(userService.updateMyPass(Id,request));
             return apiResponse;
