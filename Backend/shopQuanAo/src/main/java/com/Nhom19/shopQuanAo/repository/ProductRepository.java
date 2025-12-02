@@ -48,7 +48,7 @@ public interface ProductRepository extends JpaRepository<Products, Integer> {
 //    GROUP BY p.MaSp, p.tenSp, p.gia, pv.MaBienThe
 //    ORDER BY SUM(oi.quantity) DESC
 //    """)
-//List<ProductBestSellerResponse> getTopBestSeller(Pageable pageable);
+//public List<ProductBestSellerResponse> getTopBestSeller(Pageable pageable);
 
 }
 

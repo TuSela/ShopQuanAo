@@ -83,9 +83,9 @@ public class UserController {
         return apiResponse;
     }
     @GetMapping("/address")
-    public ApiResponse<addresses> getAddresses()
+    public ApiResponse<List<addresses>> getAddresses()
     {
-        ApiResponse<addresses> apiResponse = new ApiResponse<>();
+        ApiResponse<List<addresses>> apiResponse = new ApiResponse<>();
         apiResponse.setResult(addressSevice.getmyaddress());
         return apiResponse;
     }

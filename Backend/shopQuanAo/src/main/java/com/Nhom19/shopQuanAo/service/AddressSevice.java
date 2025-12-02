@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class AddressSevice {
     @Autowired
@@ -19,13 +22,13 @@ public class AddressSevice {
 
     @Autowired
     UserRepository userRepository;
-    public addresses getmyaddress (){
+    public List<addresses> getmyaddress (){
         var context = SecurityContextHolder.getContext();
         String sdt = context.getAuthentication().getName();
         Users users = userRepository.findBySdt(sdt);
         int maTk = users.getMaTk();
         System.out.println("maTk:"+maTk);
-        addresses addr = addressRepository.findByMaTk(maTk);
+        List<addresses> addr = addressRepository.findByMaTk(maTk);
         return addr;
     }
     public Boolean CreateAddress (AddressRequest request){

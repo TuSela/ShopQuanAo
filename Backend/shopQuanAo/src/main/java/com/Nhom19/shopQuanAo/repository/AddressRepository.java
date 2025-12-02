@@ -5,7 +5,9 @@ import com.Nhom19.shopQuanAo.entity.addresses;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface AddressRepository extends JpaRepository<addresses, Integer> {
-    public addresses findByMaTk(int maTk);
+    public List<addresses> findByMaTk(int maTk);
 }
