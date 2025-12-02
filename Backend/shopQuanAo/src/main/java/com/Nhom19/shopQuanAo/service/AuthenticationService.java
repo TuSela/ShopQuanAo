@@ -9,11 +9,13 @@ import com.Nhom19.shopQuanAo.exception.ErrorCode;
 import com.Nhom19.shopQuanAo.repository.UserRepository;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -50,6 +52,8 @@ public class AuthenticationService {
                 .issuer("shopquanao.com")
                 .issueTime(new Date())
                 .expirationTime(new Date(Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()))
+                .claim("id",user.getMaTk())
+                .claim("hoten",user.getHoten())
                 .claim("scope", Role.USER.toString())
                 .build();
         Payload payload =new Payload(jwtClaimsSet.toJSONObject());
@@ -65,6 +69,8 @@ public class AuthenticationService {
             throw new AppException(ErrorCode.UNUATHENTICATION);
         }
     }
+
+
 //    private String buildScope(Users user) {
 //        StringJoiner stringJoiner =new StringJoiner(" ");
 //        if(!CollectionUtils.isEmpty(user.getRoles())) {

@@ -10,11 +10,7 @@ import java.util.Set;
 @Setter
 public class ProductResponse {
         private int MaSp;
-
         private ProductTypeResponse types;
-
-        private BrandResponse brands;
-
         private String tenSp;
         private int soLuong;
         private BigDecimal gia;

@@ -1,6 +1,8 @@
 package com.Nhom19.shopQuanAo.service;
 
+import com.Nhom19.shopQuanAo.DTO.Request.Admin.CapNhatUserRequest;
 import com.Nhom19.shopQuanAo.DTO.Request.Customer.TaoUsersRequest;
+import com.Nhom19.shopQuanAo.DTO.Request.Customer.UpdatePassRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.Admin.UserResponse;
 import com.Nhom19.shopQuanAo.entity.Users;
 import com.Nhom19.shopQuanAo.exception.AppException;
@@ -42,7 +44,6 @@ public class UserService {
                 .map(userMapper::toUserResponse)
                 .collect(Collectors.toList());
     }
-
     public UserResponse getUserById(Integer id)
     {
        return userMapper.toUserResponse(userRepository.findById(id).get());
@@ -60,18 +61,30 @@ public class UserService {
 
     }
 
-//    public UserResponse userUpdate(Integer userID, CapNhatUserRequest request)
-//    {
-//            Users user = userRepository.findById(userID).get();
-//            user = userMapper.toUsers2(user,request);
-//            userRepository.save(user);
-//            return userMapper.toUserResponse(user);
-//    }
-    public Users getMyInfo()
+    public UserResponse userUpdate(Integer userID, CapNhatUserRequest request)
+    {
+            Users user = userRepository.findById(userID).get();
+            user.setSdt(request.getSdt());
+            user.setEmail(request.getEmail());
+            user.setHoten(request.getHoTen());
+            userRepository.save(user);
+
+            return userMapper.toUserResponse(user);
+    }
+    public UserResponse updateMyPass(Integer userID, UpdatePassRequest request)
+    {
+        Users user = userRepository.findById(userID).get();
+        user.setPassword(request.getPassword());
+        userRepository.save(user);
+        return userMapper.toUserResponse(user);
+    }
+    public UserResponse getMyInfo()
     {
         var context = SecurityContextHolder.getContext();
         String sdt = context.getAuthentication().getName();
-        return userRepository.findBySdt(sdt);
+        Users users = userRepository.findBySdt(sdt);
+        return userMapper.toUserResponse(users);
 
     }
+
 }
