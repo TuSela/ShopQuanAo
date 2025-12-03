@@ -9,5 +9,5 @@
 //
 //@Repository
 //public interface OrderRepsitory extends CrudRepository<Orders,Integer> {
-//    public List<Orders> findByMaTk(int maTk);
+//    public List<Orders> findByMaSp(int maTk);
 //}

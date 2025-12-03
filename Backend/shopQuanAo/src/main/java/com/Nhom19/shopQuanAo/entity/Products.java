@@ -15,18 +15,18 @@ public class Products {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int maSp;
 
-//    @ManyToOne
-//    @JoinColumn(name = "ma_loai")
-//    private ProductTypes types;
-    private int maLoai;
+    @ManyToOne
+    @JoinColumn(name = "ma_loai")
+    private ProductTypes types;
+
     private String tenSp;
     private int soLuong;
     private BigDecimal gia;
     private String chiTiet;
     private float danhGia;
 
-//    @OneToMany(mappedBy = "products", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private Set<ProductVariants> productVariants;
+    @OneToMany(mappedBy = "products", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ProductVariants> productVariants;
 //
 //    @OneToMany(mappedBy = "products", cascade = CascadeType.ALL, orphanRemoval = true)
 //    private Set<ProductComments> ProductComments;

@@ -16,5 +16,4 @@ public class ProductSizes {
     private String tenKc;
 //    @OneToMany(mappedBy = "sizes", cascade = CascadeType.ALL, orphanRemoval = true)
 //    private Set<ProductVariants> variants = new HashSet<>();
-
 }
