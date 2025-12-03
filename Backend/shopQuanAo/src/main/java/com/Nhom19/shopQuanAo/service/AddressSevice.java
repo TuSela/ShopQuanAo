@@ -53,6 +53,7 @@ public class AddressSevice {
         addr.setHoten(request.getHoten());
         addr.setEmail(request.getEmail());
         addr.setDiaChi(request.getDiaChi());
+        addr.setTinhThanhPho(request.getTinhThanhPho());
         addr.setQuanHuyen(request.getQuanHuyen());
         addr.setPhuongXa(request.getPhuongXa());
 

@@ -17,7 +17,6 @@ public class addresses {
     private int maDiaChi;
 
     private int maTk;
-
     private String hoten;
     private String sdt;
     private String email;
