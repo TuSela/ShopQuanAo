@@ -22,5 +22,5 @@ private ProductService sanPhamService;
         apiResponse.setResult(sanPhamService.getTopBestSeller());
         return apiResponse;
     }
-    
+
 }
