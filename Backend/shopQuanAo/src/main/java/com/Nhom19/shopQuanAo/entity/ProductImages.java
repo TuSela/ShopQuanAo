@@ -9,12 +9,13 @@ import lombok.Setter;
 public class ProductImages {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int MaHa;
-    @ManyToOne
-    private ProductVariants variants;
+    private int maHa;
+//    @ManyToOne
+//    private ProductVariants variants;
+    private int maBienThe;
 
     @Column(name = "url_hinh_anh")
     private String urlImage;
 
-    private Boolean DaiDien;
+    private Boolean daiDien;
 }

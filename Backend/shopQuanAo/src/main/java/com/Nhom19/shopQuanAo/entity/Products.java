@@ -13,22 +13,22 @@ import java.util.Set;
 public class Products {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int MaSp;
+    private int maSp;
 
-    @ManyToOne
-    @JoinColumn(name = "ma_loai")
-    private ProductTypes types;
-
+//    @ManyToOne
+//    @JoinColumn(name = "ma_loai")
+//    private ProductTypes types;
+    private int maLoai;
     private String tenSp;
     private int soLuong;
     private BigDecimal gia;
     private String chiTiet;
     private float danhGia;
 
-    @OneToMany(mappedBy = "products", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<ProductVariants> ProductVariants;
-
-    @OneToMany(mappedBy = "products", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<ProductComments> ProductComments;
+//    @OneToMany(mappedBy = "products", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private Set<ProductVariants> productVariants;
+//
+//    @OneToMany(mappedBy = "products", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private Set<ProductComments> ProductComments;
 
 }

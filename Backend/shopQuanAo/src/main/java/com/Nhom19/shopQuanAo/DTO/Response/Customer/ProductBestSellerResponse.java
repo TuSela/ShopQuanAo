@@ -12,9 +12,8 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductBestSellerResponse {
-    private String maSp;
+    private int maSp;
     private String tenSp;
     private BigDecimal gia;
     private String urlImage;
-    private Long totalQuantity;
 }

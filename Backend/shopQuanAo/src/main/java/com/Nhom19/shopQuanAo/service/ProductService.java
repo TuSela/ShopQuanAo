@@ -23,8 +23,7 @@ public class ProductService {
        return   productRepository.findAll().stream().map(productMapper::toDTO).collect(Collectors.toList());
     }
 
-//    public List<ProductBestSellerResponse>getTopBestSeller(){
-//        Pageable top10 = PageRequest.of(0,10);
-//        return productRepository.getTopBestSeller(top10);
-//    }
+    public List<ProductBestSellerResponse>getTopBestSeller(){
+        return productRepository.getTopBestSeller();
+    }
 }

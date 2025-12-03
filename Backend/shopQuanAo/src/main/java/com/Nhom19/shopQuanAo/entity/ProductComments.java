@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public class ProductComments {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int MaBl;
+    private int maBl;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ma_tk")
@@ -21,9 +21,9 @@ public class ProductComments {
     @JoinColumn(name = "ma_sp")
     private Products products;
 
-    private LocalDateTime NgayTao;
+    private LocalDateTime ngayTao;
 
-    private float DiemDanhGia;
+    private float diemDanhGia;
     private String noiDung;
     private String trangThai;
 }

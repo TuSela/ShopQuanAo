@@ -15,12 +15,12 @@ import java.time.LocalDateTime;
 @Entity
 public class cart {
     @Id
-    private int MaGh;
+    private int maGh;
     @ManyToOne
     @JoinColumn(name = "maTk")
     private Users maTk;
 
-    private LocalDateTime NgayTao;
-    private LocalDateTime NgaySua;
-    private float TongTien;
+    private LocalDateTime ngayTao;
+    private LocalDateTime ngaySua;
+    private float tongTien;
 }

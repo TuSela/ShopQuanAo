@@ -11,7 +11,7 @@ import lombok.Setter;
 public class Admins {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int MaTk;
+    private int maTk;
     private String username;
     private String password;
     @Column(name = "ma_quanly")

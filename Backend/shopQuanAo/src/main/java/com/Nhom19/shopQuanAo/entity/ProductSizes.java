@@ -12,9 +12,9 @@ import java.util.Set;
 public class ProductSizes {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int MaKc;
+    private int maKc;
     private String tenKc;
-    @OneToMany(mappedBy = "sizes", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<ProductVariants> variants = new HashSet<>();
+//    @OneToMany(mappedBy = "sizes", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private Set<ProductVariants> variants = new HashSet<>();
 
 }

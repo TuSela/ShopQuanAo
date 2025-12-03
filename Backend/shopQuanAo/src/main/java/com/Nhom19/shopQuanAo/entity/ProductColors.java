@@ -13,8 +13,8 @@ import java.util.Set;
 public class ProductColors {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int MaMs;
+    private int maMs;
     private String tenMs;
-    @OneToMany(mappedBy = "colors")
-    private Set<ProductVariants> variants = new HashSet<>();
+//    @OneToMany(mappedBy = "colors")
+//    private Set<ProductVariants> variants = new HashSet<>();
 }

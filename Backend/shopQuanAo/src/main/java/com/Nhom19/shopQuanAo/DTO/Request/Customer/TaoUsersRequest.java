@@ -9,6 +9,8 @@ public class TaoUsersRequest {
     private String email;
     private String sdt;
     private String hoten;
+    private String gioiTinh;
+    private String ngaySinh;
 
     public TaoUsersRequest() {
     }

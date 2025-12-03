@@ -14,15 +14,15 @@ import lombok.Setter;
 public class addresses {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int MaDiaChi;
+    private int maDiaChi;
 
     private int maTk;
 
-    private String Hoten;
-    private String Sdt;
-    private String Email;
-    private String TinhThanhPho;
-    private String PhuongXa;
-    private String QuanHuyen;
-    private String DiaChi;
+    private String hoten;
+    private String sdt;
+    private String email;
+    private String tinhThanhPho;
+    private String phuongXa;
+    private String quanHuyen;
+    private String diaChi;
 }

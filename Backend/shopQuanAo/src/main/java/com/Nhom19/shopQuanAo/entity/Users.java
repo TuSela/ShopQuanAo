@@ -16,6 +16,8 @@ public class Users {
     private String hoten;
     private String email;
     private String sdt;
+    private String ngaySinh;
+    private String gioiTinh;
     public Users() {
     }
 
@@ -26,6 +28,22 @@ public class Users {
         this.email = email;
         this.sdt = sdt;
 
+    }
+
+    public String getGioiTinh() {
+        return gioiTinh;
+    }
+
+    public void setGioiTinh(String gioiTinh) {
+        this.gioiTinh = gioiTinh;
+    }
+
+    public String getNgaySinh() {
+        return ngaySinh;
+    }
+
+    public void setNgaySinh(String ngaySinh) {
+        this.ngaySinh = ngaySinh;
     }
 
     public Integer getMaTk() {

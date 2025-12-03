@@ -16,11 +16,11 @@ public class CartItems {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @ManyToOne
-    @JoinColumn(name = "MaGh")
-    private cart MaGh;
+    @JoinColumn(name = "maGh")
+    private cart maGh;
     @ManyToOne
     @JoinColumn(name = "MaBienThe")
     private ProductVariants variants;
-    private int Soluong;
-    private float TongTien;
+    private int soluong;
+    private float tongTien;
 }

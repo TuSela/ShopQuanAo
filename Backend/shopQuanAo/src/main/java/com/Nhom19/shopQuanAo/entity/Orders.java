@@ -14,7 +14,7 @@ import java.util.Set;
     @Setter
     public class Orders {
         @Id
-        private int MaDdh;
+        private int maDdh;
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "ma_pt")
         private PaymentMethods paymentMethods;
@@ -35,10 +35,10 @@ import java.util.Set;
         @Column(name = "tt_don_hang")
         private String orderStatus;
 
-        private int MaDiaChi;
+        private int maDiaChi;
 
-        private float TongTien;
+        private float tongTien;
 
         @OneToMany(mappedBy = "orders", cascade = CascadeType.ALL, orphanRemoval = true)
-        private Set<OrdersItems> items = new HashSet<>();
+        private Set<OrderItems> items = new HashSet<>();
     }

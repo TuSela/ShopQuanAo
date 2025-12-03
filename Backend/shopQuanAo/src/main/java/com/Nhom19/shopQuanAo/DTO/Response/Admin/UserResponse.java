@@ -10,7 +10,10 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserResponse {
+    private Integer maTk;
     private String hoten;
     private String email;
     private String sdt;
+    private String gioiTinh;
+    private String ngaySinh;
 }

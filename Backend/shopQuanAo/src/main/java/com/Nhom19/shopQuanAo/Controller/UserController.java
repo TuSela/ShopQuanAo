@@ -48,7 +48,6 @@ public class UserController {
             return apiResponse;
     }
 
-
     @GetMapping("/{userId}")
     public ApiResponse<UserResponse> getUser(@PathVariable Integer userId)
     {
@@ -56,7 +55,6 @@ public class UserController {
         apiResponse.setResult(userService.getUserById(userId));
         return  apiResponse;
     }
-
     @PutMapping("/{userId}")
     public ApiResponse<Boolean> upDateUser(@PathVariable Integer userId, @RequestBody @Valid CapNhatUserRequest request){
         ApiResponse<Boolean> apiResponse = new ApiResponse<>();
@@ -113,7 +111,7 @@ public class UserController {
     }
     @Autowired
     JwtUtils jwtUtils;
-    @PutMapping
+    @PutMapping("/myinfor")
     public ApiResponse<Boolean> UpdateMyInfor(@RequestBody CapNhatUserRequest request, @RequestHeader("Authorization") String authHeader)
     {
         String token = authHeader.substring(7);
@@ -142,5 +140,4 @@ public class UserController {
             throw new RuntimeException(e);
         }
     }
-
 }

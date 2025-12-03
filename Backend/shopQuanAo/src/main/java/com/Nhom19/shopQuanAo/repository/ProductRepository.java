@@ -13,22 +13,7 @@ import java.util.List;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Products, Integer> {
-//    Products getBytinhTrang(String tinhTrang);
-//@Query(value =
-//        "SELECT p.ma_sp AS maSp, p.ten_sp AS tenSp, SUM(oi.so_luong_dat) AS tongSoLuongBan " +
-//                "FROM order_items oi " +
-//                "JOIN orders o ON oi.ma_ddh = o.ma_ddh " +
-//                "JOIN product_variants pv ON oi.ma_bien_the = pv.ma_bien_the " +
-//                "JOIN products p ON pv.ma_sp = p.ma_sp " +
-//                "WHERE o.ngay_thanh_toan BETWEEN :start AND :end " +
-//                "GROUP BY p.ma_sp, p.ten_sp " +
-//                "ORDER BY tongSoLuongBan DESC " +
-//                "LIMIT 1",
-//        nativeQuery = true)
-//ProductBestSellerResponse findBestSellerByDate(
-//        @Param("start") Date start,
-//        @Param("end") Date end
-//);
+
 //@Query("""
 //    SELECT new com.Nhom19.shopQuanAo.DTO.Response.ProductBestSellerResponse(
 //        p.MaSp,
@@ -49,6 +34,43 @@ public interface ProductRepository extends JpaRepository<Products, Integer> {
 //    ORDER BY SUM(oi.quantity) DESC
 //    """)
 //public List<ProductBestSellerResponse> getTopBestSeller(Pageable pageable);
+//@Query(value = """
+//SELECT TOP (10)
+//    p.ma_sp AS maSp,
+//    p.ten_sp AS tenSp,
+//    p.gia AS gia,
+//    (
+//        SELECT TOP 1 pi.url_hinh_anh
+//        FROM product_images pi
+//        WHERE pi.ma_bien_the = pv.ma_bien_the
+//          AND pi.dai_dien = 1
+//    ) AS urlImage
+//FROM products p
+//JOIN product_variants pv ON pv.ma_sp = p.ma_sp
+//JOIN order_items oi ON oi.ma_bien_the = pv.ma_bien_the
+//GROUP BY p.ma_sp, p.ten_sp, p.gia
+//ORDER BY SUM(oi.so_luong_dat) DESC
+//    """,
+//        nativeQuery = true)
+//List<ProductBestSellerResponse> getTopBestSeller();
+@Query(value = """
+SELECT TOP (10)
+    p.ma_sp AS maSp,
+    p.ten_sp AS tenSp,
+    p.gia AS gia,
+    pi.url_hinh_anh AS urlImage
+FROM products p
+JOIN product_variants pv ON pv.ma_sp = p.ma_sp
+JOIN order_items oi ON oi.ma_bien_the = pv.ma_bien_the
+OUTER APPLY (
+    SELECT TOP 1 url_hinh_anh
+    FROM product_images
+    WHERE ma_bien_the = pv.ma_bien_the AND dai_dien = 1
+) pi
+GROUP BY p.ma_sp, p.ten_sp, p.gia, pi.url_hinh_anh
+ORDER BY SUM(oi.so_luong_dat) DESC
+""", nativeQuery = true)
+List<ProductBestSellerResponse> getTopBestSeller();
 
 }
 

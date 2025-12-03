@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class Feedbacks {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int MaPh;
+    private int maPh;
     @ManyToOne
     @JoinColumn(name = "ma_tk")
     private Users users;
