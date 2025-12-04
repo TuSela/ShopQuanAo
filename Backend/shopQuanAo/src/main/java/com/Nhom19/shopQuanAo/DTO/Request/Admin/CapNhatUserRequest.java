@@ -1,38 +1,20 @@
 package com.Nhom19.shopQuanAo.DTO.Request.Admin;
 
-import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class CapNhatUserRequest {
-    private String hoTen;
+    private String hoten;
     private String email;
     private String sdt;
+    private String gioiTinh;
+    private String ngaySinh;
 
-    public CapNhatUserRequest() {
-    }
-
-
-    public String getHoTen() {
-        return hoTen;
-    }
-
-    public void setHoTen(String hoTen) {
-        this.hoTen = hoTen;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getSdt() {
-        return sdt;
-    }
-
-    public void setSdt(String sdt) {
-        this.sdt = sdt;
-    }
 
 }

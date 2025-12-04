@@ -8,6 +8,7 @@ public enum ErrorCode {
     UNUATHENTICATION(1006,"UNUATHENTICATION"),
     USERNAME_INVALID(1003,"username is invalid"),
     PASSWORD_INVALID(1005,"password is invalid"),
+    PASSWORD_CONFIRM_NOT_MATCH(1008,"password confirm is not match"),
     UNAUTHORIZED(9999, "Unauthorized"),
     USER_EXISTED(1002,"user already exists"),
     INVALID_REQUEST(1007,"invalid request"),

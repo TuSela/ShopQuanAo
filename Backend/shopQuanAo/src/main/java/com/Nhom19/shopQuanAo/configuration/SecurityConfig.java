@@ -17,7 +17,7 @@ import javax.crypto.spec.SecretKeySpec;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    private final String[] PUBLIC_ENDPOINTS = {"/auth/login","users","users/{userId}","products","brands","products/type","home","products/{maSp}"
+    private final String[] PUBLIC_ENDPOINTS = {"/auth/login","users","users/{userId}","products","products/type","home","products/{maSp}","home/{maSp}"
     };
     @Value("${jwt.signerKey}")
     private String jwtSignerKey;
@@ -31,10 +31,7 @@ public class SecurityConfig {
 //                      requestMatchers(HttpMethod.GET,"/users").hasAuthority("SCOPE_ADMIN")
               .anyRequest().authenticated());
         httpSecurity.oauth2ResourceServer(ouath2-> ouath2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())));
-
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
-
-
         return httpSecurity.build();
     }
     @Bean

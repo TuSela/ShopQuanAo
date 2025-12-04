@@ -66,22 +66,24 @@ public class UserService {
             Users user = userRepository.findById(userID).get();
             user.setSdt(request.getSdt());
             user.setEmail(request.getEmail());
-            user.setHoten(request.getHoTen());
+            user.setHoten(request.getHoten());
             userRepository.save(user);
 
             return true;
     }
 
-    public Boolean updateMyPass(Integer userID, UpdatePassRequest request)
-    {
+    public Boolean updateMyPass(Integer userID, UpdatePassRequest request) {
         Users user = userRepository.findById(userID).get();
-        if(userRepository.existsByPassword(request.getOldPass())) {
-        user.setPassword(request.getNewPassword());
-        userRepository.save(user);
-        return true;
-        }
-        else  {
-            throw new AppException(ErrorCode.USER_EXISTED);
+        if (request.getNewPass1().equals(request.getNewPass2())) {
+            if (user.getPassword().equals(request.getOldPass())) {
+                user.setPassword(request.getNewPass1());
+                userRepository.save(user);
+                return true;
+            } else {
+                throw new AppException(ErrorCode.PASSWORD_INVALID);
+            }
+        }else {
+            throw new AppException(ErrorCode.PASSWORD_CONFIRM_NOT_MATCH);
         }
     }
     public UserResponse getMyInfo()

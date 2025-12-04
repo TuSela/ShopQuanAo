@@ -12,6 +12,22 @@ public class TaoUsersRequest {
     private String gioiTinh;
     private String ngaySinh;
 
+    public String getGioiTinh() {
+        return gioiTinh;
+    }
+
+    public void setGioiTinh(String gioiTinh) {
+        this.gioiTinh = gioiTinh;
+    }
+
+    public String getNgaySinh() {
+        return ngaySinh;
+    }
+
+    public void setNgaySinh(String ngaySinh) {
+        this.ngaySinh = ngaySinh;
+    }
+
     public TaoUsersRequest() {
     }
 
