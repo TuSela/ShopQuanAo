@@ -17,7 +17,9 @@ import jakarta.validation.Valid;
 import org.hibernate.sql.Update;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
 
@@ -57,9 +59,9 @@ public class UserController {
         return  apiResponse;
     }
     @PutMapping("/{userId}")
-    public ApiResponse<Boolean> upDateUser(@PathVariable Integer userId, @RequestBody @Valid CapNhatUserRequest request){
+    public ApiResponse<Boolean> upDateUser(@PathVariable Integer userId, @RequestBody @Valid CapNhatUserRequest request, @RequestParam(value = "avatar", required = false) MultipartFile avatar) throws IOException {
         ApiResponse<Boolean> apiResponse = new ApiResponse<>();
-        apiResponse.setResult(userService.userUpdate(userId, request));
+        apiResponse.setResult(userService.userUpdate(userId,request, avatar));
         return apiResponse;
     }
     @DeleteMapping("/{userId}")

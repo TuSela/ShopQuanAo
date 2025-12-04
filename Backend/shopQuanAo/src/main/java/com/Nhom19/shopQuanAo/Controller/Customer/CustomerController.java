@@ -13,7 +13,9 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
 
@@ -66,7 +68,7 @@ public class CustomerController {
     JwtUtils jwtUtils;
 
     @PutMapping()
-    public ApiResponse<Boolean> UpdateMyInfor(@RequestBody CapNhatUserRequest request, @RequestHeader("Authorization") String authHeader)
+    public ApiResponse<Boolean> UpdateMyInfor(@RequestBody CapNhatUserRequest request, @RequestHeader("Authorization") String authHeader,@RequestParam(value = "avatar", required = false) MultipartFile avatar)
     {
         String token = authHeader.substring(7);
         JWTClaimsSet claims = jwtUtils.parseToken(token);
@@ -74,9 +76,11 @@ public class CustomerController {
             Integer Id = claims.getIntegerClaim("id");
             ApiResponse<Boolean> apiResponse = new ApiResponse<>();
 
-            apiResponse.setResult(userService.userUpdate(Id,request));
+            apiResponse.setResult(userService.userUpdate(Id,request,avatar));
             return apiResponse;
         } catch (ParseException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

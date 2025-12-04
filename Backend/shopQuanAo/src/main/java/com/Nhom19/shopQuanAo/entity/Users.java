@@ -6,7 +6,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 public class Users {
     @Id
@@ -16,78 +22,9 @@ public class Users {
     private String hoten;
     private String email;
     private String sdt;
-    private String ngaySinh;
+    private LocalDate ngaySinh;
     private String gioiTinh;
-    public Users() {
-    }
-
-    public Users(Integer maTk, String username, String password, String hoten, String email, String sdt, String diachi) {
-        this.maTk = maTk;
-        this.password = password;
-        this.hoten = hoten;
-        this.email = email;
-        this.sdt = sdt;
-
-    }
-
-    public String getGioiTinh() {
-        return gioiTinh;
-    }
-
-    public void setGioiTinh(String gioiTinh) {
-        this.gioiTinh = gioiTinh;
-    }
-
-    public String getNgaySinh() {
-        return ngaySinh;
-    }
-
-    public void setNgaySinh(String ngaySinh) {
-        this.ngaySinh = ngaySinh;
-    }
-
-    public Integer getMaTk() {
-        return maTk;
-    }
-
-    public void setMaTk(Integer maTk) {
-        this.maTk = maTk;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getHoten() {
-        return hoten;
-    }
-
-    public void setHoten(String hoten) {
-        this.hoten = hoten;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getSdt() {
-        return sdt;
-    }
-
-    public void setSdt(String sdt) {
-        this.sdt = sdt;
-    }
-
-
-
+    private String avatar;
 
 //    @OneToMany(mappedBy = "users")
 //    private Set<Orders> orders = new HashSet<>();
