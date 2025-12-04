@@ -29,12 +29,14 @@ public class AuthenticationService {
     public AuthenticationResponse authenticate (AuthenticaitonRequest request)
     {
         System.out.println("sdt: "+ request.getSdt());
-        var user = userRepository.findBySdt(request.getSdt());
+        Users user = userRepository.findBySdt(request.getSdt());
         if (user == null)
         {
             throw new AppException(ErrorCode.USER_NOT_EXISTED);
         }
-        boolean authentication = userRepository.existsByPassword(request.getPassword());
+
+        boolean authentication = request.getPassword().equals(user.getPassword());
+
         if (!authentication)
         {
             throw new AppException(ErrorCode.UNUATHENTICATION);
