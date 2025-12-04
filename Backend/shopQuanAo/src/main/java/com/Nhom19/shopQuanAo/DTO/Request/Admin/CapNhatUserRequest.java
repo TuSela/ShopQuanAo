@@ -17,6 +17,7 @@ public class CapNhatUserRequest {
     private String email;
     private String sdt;
     private String gioiTinh;
+
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate ngaySinh;
 }

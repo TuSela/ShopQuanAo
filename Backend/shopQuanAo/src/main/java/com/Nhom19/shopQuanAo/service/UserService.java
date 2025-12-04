@@ -64,7 +64,7 @@ public class UserService {
 
     }
 
-    public Boolean userUpdate( Integer userID,CapNhatUserRequest request, MultipartFile avatar) throws IOException {
+    public Boolean userUpdate( Integer userID,CapNhatUserRequest request)  {
         Users user = userRepository.findById(userID).get();
             user.setSdt(request.getSdt());
             user.setEmail(request.getEmail());
@@ -72,37 +72,6 @@ public class UserService {
             user.setGioiTinh(request.getGioiTinh());
             user.setNgaySinh(request.getNgaySinh());
 
-        // nếu client không upload ảnh → giữ ảnh cũ
-        if (avatar != null && !avatar.isEmpty()) {
-
-            // 1. Kiểm tra loại ảnh
-            if (!avatar.getContentType().startsWith("image/")) {
-                throw new RuntimeException("File không phải ảnh");
-            }
-
-            // 2. Tạo tên file mới (tránh trùng)
-            String fileName = System.currentTimeMillis() + "_" + avatar.getOriginalFilename();
-
-            // 3. Đường dẫn lưu trong server
-            String uploadDir = "src/assets/avatar/";
-
-            // Tạo thư mục nếu chưa tồn tại
-            File dir = new File(uploadDir);
-            if (!dir.exists()) dir.mkdirs();
-
-            // 4. Lưu ảnh mới
-            String filePath = uploadDir + fileName;
-            avatar.transferTo(new File(filePath));
-
-            // 5. Xóa ảnh cũ nếu có
-            if (user.getAvatar() != null) {
-                File old = new File(user.getAvatar());
-                if (old.exists()) old.delete();
-            }
-
-            // 6. Lưu đường dẫn mới vào DB
-            user.setAvatar(filePath);
-        }
             userRepository.save(user);
 
             return true;
@@ -131,5 +100,35 @@ public class UserService {
         Users users = userRepository.findBySdt(sdt);
         return userMapper.toUserResponse(users);
 
+    }
+    public String uploadAvatar(Integer userID,MultipartFile avatar) throws IOException {
+        Users user = userRepository.findById(userID).get();
+        // nếu client không upload ảnh → giữ ảnh cũ
+        if (avatar != null && !avatar.isEmpty()) {
+
+            // 1. Kiểm tra loại ảnh
+            if (!avatar.getContentType().startsWith("image/")) {
+                throw new RuntimeException("File không phải ảnh");
+            }
+
+            // 2. Tạo tên file mới (tránh trùng)
+            String fileName = System.currentTimeMillis() + "_" + avatar.getOriginalFilename();
+
+            // 3. Đường dẫn lưu trong server
+            String uploadDir = "/src/assets/";
+
+            String filePath = uploadDir + fileName;
+
+            // 5. Xóa ảnh cũ nếu có
+            if (user.getAvatar() != null) {
+                File old = new File(user.getAvatar());
+                if (old.exists()) old.delete();
+            }
+
+            // 6. Lưu đường dẫn mới vào DB
+            user.setAvatar(filePath);
+        }
+        userRepository.save(user);
+        return user.getAvatar();
     }
 }

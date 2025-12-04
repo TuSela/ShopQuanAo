@@ -59,9 +59,9 @@ public class UserController {
         return  apiResponse;
     }
     @PutMapping("/{userId}")
-    public ApiResponse<Boolean> upDateUser(@PathVariable Integer userId, @RequestBody @Valid CapNhatUserRequest request, @RequestParam(value = "avatar", required = false) MultipartFile avatar) throws IOException {
+    public ApiResponse<Boolean> upDateUser(@PathVariable Integer userId, @RequestBody @Valid CapNhatUserRequest request) {
         ApiResponse<Boolean> apiResponse = new ApiResponse<>();
-        apiResponse.setResult(userService.userUpdate(userId,request, avatar));
+        apiResponse.setResult(userService.userUpdate(userId,request));
         return apiResponse;
     }
     @DeleteMapping("/{userId}")
