@@ -16,4 +16,5 @@ public class UserResponse {
     private String sdt;
     private String gioiTinh;
     private String ngaySinh;
+    private String avatar;
 }
