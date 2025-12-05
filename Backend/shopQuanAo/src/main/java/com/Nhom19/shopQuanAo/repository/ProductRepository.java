@@ -90,6 +90,5 @@ List<ProductBestSellerResponse> getTopBestSeller();
             nativeQuery = true
     )
     List<SPNamResponse> findTopSellingByDoiTuongNative(@Param("doiTuong") String dt, @Param("limit") int limit);
-
 }
 

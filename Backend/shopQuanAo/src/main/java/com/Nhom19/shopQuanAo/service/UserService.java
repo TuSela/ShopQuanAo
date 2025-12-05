@@ -114,8 +114,10 @@ public class UserService {
 
             // 2. Tạo tên file mới (tránh trùng)
             String fileName = System.currentTimeMillis() + "_" + avatar.getOriginalFilename();
+             //3.1
+            String uploadDirInServer = "http://localhost:8081/avatar/";
 
-            // 3. Đường dẫn lưu trong server
+            // 3.2 Đường dẫn lưu trong server
             String uploadDir = "D:/shopbanquanao/src/assets/avatar/";
 
             // Tạo thư mục nếu chưa tồn tại
@@ -126,6 +128,9 @@ public class UserService {
             String filePath = uploadDir + fileName;
             avatar.transferTo(new File(filePath));
 
+            //4.1. Lưu đường dẫn vào database
+            String filePath2 = uploadDirInServer + fileName;
+
             // 5. Xóa ảnh cũ nếu có
             if (user.getAvatar() != null) {
                 File old = new File(user.getAvatar());
@@ -133,7 +138,7 @@ public class UserService {
             }
 
             // 6. Lưu đường dẫn mới vào DB
-            user.setAvatar(filePath);
+            user.setAvatar(filePath2);
         }
         userRepository.save(user);
         return user.getAvatar();
