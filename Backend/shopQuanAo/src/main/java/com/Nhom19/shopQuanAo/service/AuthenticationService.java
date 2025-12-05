@@ -57,6 +57,7 @@ public class AuthenticationService {
                 .claim("id",user.getMaTk())
                 .claim("hoten",user.getHoten())
                 .claim("scope", Role.USER.toString())
+                .claim("avatar",user.getAvatar())
                 .build();
         Payload payload =new Payload(jwtClaimsSet.toJSONObject());
 

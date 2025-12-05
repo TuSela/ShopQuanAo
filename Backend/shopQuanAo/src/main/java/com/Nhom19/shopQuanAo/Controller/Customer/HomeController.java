@@ -1,6 +1,7 @@
 package com.Nhom19.shopQuanAo.Controller.Customer;
 
 import com.Nhom19.shopQuanAo.DTO.Response.ApiResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.SPNamResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductBestSellerResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductDetailResponse;
 import com.Nhom19.shopQuanAo.service.ProductService;
@@ -26,6 +27,12 @@ private ProductService sanPhamService;
     public ApiResponse<ProductDetailResponse> getProductDetail(@PathVariable("maSp") int maSp){
         ApiResponse<ProductDetailResponse> apiResponse =new ApiResponse();
         apiResponse.setResult(sanPhamService.getProductDetail(maSp));
+        return apiResponse;
+    }
+    @GetMapping("/Nam")
+    public ApiResponse<List<SPNamResponse>> getSPNam(){
+        ApiResponse<List<SPNamResponse>> apiResponse =new ApiResponse();
+        apiResponse.setResult(sanPhamService.getSpNam());
         return apiResponse;
     }
     

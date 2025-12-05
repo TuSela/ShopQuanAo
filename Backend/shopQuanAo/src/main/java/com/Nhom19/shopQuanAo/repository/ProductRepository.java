@@ -1,5 +1,6 @@
 package com.Nhom19.shopQuanAo.repository;
 
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.SPNamResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductBestSellerResponse;
 import com.Nhom19.shopQuanAo.entity.Products;
 import org.springframework.data.domain.Pageable;
@@ -71,6 +72,24 @@ GROUP BY p.ma_sp, p.ten_sp, p.gia, pi.url_hinh_anh
 ORDER BY SUM(oi.so_luong_dat) DESC
 """, nativeQuery = true)
 List<ProductBestSellerResponse> getTopBestSeller();
+
+    @Query(
+            value = """
+        SELECT p.ma_sp AS maSp, p.ten_sp AS tenSp, p.gia AS gia, MAX(pi.url_hinh_anh) AS urlImage
+        FROM products p
+        JOIN product_types pt ON p.ma_loai = pt.ma_loai
+        JOIN product_variants pv ON pv.ma_sp = p.ma_sp
+        JOIN order_items oi ON oi.ma_bien_the = pv.ma_bien_the
+        LEFT JOIN product_images pi ON pi.ma_bien_the = pv.ma_bien_the AND pi.dai_dien = 1
+        WHERE pt.doi_tuong = :doiTuong
+        GROUP BY p.ma_sp, p.ten_sp, p.gia
+        ORDER BY SUM(oi.so_luong_dat) DESC
+        OFFSET 0 ROWS
+        FETCH NEXT :limit ROWS ONLY
+        """,
+            nativeQuery = true
+    )
+    List<SPNamResponse> findTopSellingByDoiTuongNative(@Param("doiTuong") String dt, @Param("limit") int limit);
 
 }
 

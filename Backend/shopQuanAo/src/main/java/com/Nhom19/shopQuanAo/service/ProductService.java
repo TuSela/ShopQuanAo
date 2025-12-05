@@ -2,6 +2,7 @@ package com.Nhom19.shopQuanAo.service;
 
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.ProductResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.ProductVariantResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.SPNamResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductBestSellerResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductDetailResponse;
 import com.Nhom19.shopQuanAo.entity.ProductImages;
@@ -66,4 +67,8 @@ public class ProductService {
 
         return productDetailResponse;
     }
+    public List<SPNamResponse>getSpNam(){
+        return productRepository.findTopSellingByDoiTuongNative("Nam",10);
+    }
+
 }

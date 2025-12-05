@@ -10,6 +10,7 @@ import com.Nhom19.shopQuanAo.exception.ErrorCode;
 import com.Nhom19.shopQuanAo.mapper.UserMapper;
 import com.Nhom19.shopQuanAo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -93,13 +94,13 @@ public class UserService {
             throw new AppException(ErrorCode.PASSWORD_CONFIRM_NOT_MATCH);
         }
     }
+    @PreAuthorize("hasAuthority('SCOPE_USER')")
     public UserResponse getMyInfo()
     {
         var context = SecurityContextHolder.getContext();
         String sdt = context.getAuthentication().getName();
         Users users = userRepository.findBySdt(sdt);
         return userMapper.toUserResponse(users);
-
     }
     public String uploadAvatar(Integer userID,MultipartFile avatar) throws IOException {
         Users user = userRepository.findById(userID).get();
@@ -115,9 +116,15 @@ public class UserService {
             String fileName = System.currentTimeMillis() + "_" + avatar.getOriginalFilename();
 
             // 3. Đường dẫn lưu trong server
-            String uploadDir = "/src/assets/";
+            String uploadDir = "D:/shopbanquanao/src/assets/avatar/";
 
+            // Tạo thư mục nếu chưa tồn tại
+            File dir = new File(uploadDir);
+            if (!dir.exists()) dir.mkdirs();
+
+            // 4. Lưu ảnh mới
             String filePath = uploadDir + fileName;
+            avatar.transferTo(new File(filePath));
 
             // 5. Xóa ảnh cũ nếu có
             if (user.getAvatar() != null) {
@@ -131,4 +138,5 @@ public class UserService {
         userRepository.save(user);
         return user.getAvatar();
     }
+
 }
