@@ -1,35 +1,24 @@
 package com.Nhom19.shopQuanAo.DTO.Response.Customer;
-
-import lombok.AllArgsConstructor;
+import com.Nhom19.shopQuanAo.DTO.Response.Admin.UserResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.ProductVariantResponse;
+import com.Nhom19.shopQuanAo.entity.ProductVariants;
+import com.Nhom19.shopQuanAo.entity.Products;
+import com.Nhom19.shopQuanAo.entity.Users;
+import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
+
 public class ProductCommentResponse {
     private int maBl;
-    private int maTk;
+    private UserResponse users;
+    private ProductVariants productVariants;
     private LocalDateTime ngayTao;
-    private Integer diemDanhGia;
+    private Float diemDanhGia;
     private String noiDung;
-    private String hoten; // from users
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ProductCommentResponse)) return false;
-        ProductCommentResponse that = (ProductCommentResponse) o;
-        return maBl == that.maBl;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(maBl);
-    }
 }

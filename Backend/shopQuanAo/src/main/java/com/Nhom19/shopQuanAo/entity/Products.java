@@ -20,15 +20,16 @@ public class Products {
     private ProductTypes types;
 
     private String tenSp;
-    private int soLuong;
+    private Integer soLuong;
+
     private BigDecimal gia;
     private String chiTiet;
-    private float danhGia;
+    private Float danhGia;
 
     @OneToMany(mappedBy = "products", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ProductVariants> productVariants;
 //
-//    @OneToMany(mappedBy = "products", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private Set<ProductComments> ProductComments;
+    @OneToMany(mappedBy = "products", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ProductComments> ProductComments;
 
 }

@@ -16,6 +16,7 @@ public class WebConfig {
                 registry.addMapping("/**")
                         .allowedOrigins("http://localhost:5173") // port Vue dev server
                         .allowedMethods("GET", "POST", "PUT", "DELETE");
+
             }
         };
     }
