@@ -62,9 +62,7 @@ public class UserService {
         else  {
             return false;
         }
-
     }
-
     public Boolean userUpdate( Integer userID,CapNhatUserRequest request)  {
         Users user = userRepository.findById(userID).get();
             user.setSdt(request.getSdt());

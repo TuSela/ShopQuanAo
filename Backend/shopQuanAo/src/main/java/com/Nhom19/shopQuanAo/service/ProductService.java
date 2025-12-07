@@ -70,5 +70,8 @@ public class ProductService {
     public List<SPNamResponse>getSpNam(){
         return productRepository.findTopSellingByDoiTuongNative("Nam",10);
     }
+    public List<ProductBestSellerResponse> getProduct10(){
+        return productRepository.findAnyTenProductsNative();
+    }
 
 }

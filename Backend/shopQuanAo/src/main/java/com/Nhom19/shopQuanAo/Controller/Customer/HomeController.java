@@ -17,12 +17,12 @@ import java.util.List;
 public class HomeController {
 @Autowired
 private ProductService sanPhamService;
-    @GetMapping()
-    public ApiResponse<List<ProductBestSellerResponse>> showHomePage(){
-        ApiResponse<List<ProductBestSellerResponse>> apiResponse =new ApiResponse<>();
-        apiResponse.setResult(sanPhamService.getTopBestSeller());
-        return apiResponse;
-    }
+//    @GetMapping()
+//    public ApiResponse<List<ProductBestSellerResponse>> showHomePage(){
+//        ApiResponse<List<ProductBestSellerResponse>> apiResponse =new ApiResponse<>();
+//        apiResponse.setResult(sanPhamService.getTopBestSeller());
+//        return apiResponse;
+//    }
     @GetMapping("/{maSp}")
     public ApiResponse<ProductDetailResponse> getProductDetail(@PathVariable("maSp") int maSp){
         ApiResponse<ProductDetailResponse> apiResponse =new ApiResponse();
@@ -35,5 +35,11 @@ private ProductService sanPhamService;
         apiResponse.setResult(sanPhamService.getSpNam());
         return apiResponse;
     }
-    
+//    @GetMapping()
+//    public ApiResponse<List<ProductBestSellerResponse>> getProducts10(){
+//        ApiResponse<List<ProductBestSellerResponse>> apiResponse = new ApiResponse();
+//        List<ProductBestSellerResponse> productBestSellerResponseList =sanPhamService.getProduct10();
+//        apiResponse.setResult(productBestSellerResponseList);
+//        return apiResponse;
+//    }
 }

@@ -90,5 +90,19 @@ List<ProductBestSellerResponse> getTopBestSeller();
             nativeQuery = true
     )
     List<SPNamResponse> findTopSellingByDoiTuongNative(@Param("doiTuong") String dt, @Param("limit") int limit);
+
+        @Query(value = """
+        SELECT p.ma_sp AS maSp, p.ten_sp AS tenSp, p.gia AS gia, 
+               MAX(pi.url_hinh_anh) AS urlImage
+        FROM products p
+        LEFT JOIN product_variants pv ON pv.ma_sp = p.ma_sp
+        LEFT JOIN product_images pi ON pi.ma_bien_the = pv.ma_bien_the AND pi.dai_dien = 1
+        GROUP BY p.ma_sp, p.ten_sp, p.gia
+        ORDER BY p.ma_sp
+        OFFSET 0 ROWS
+        FETCH NEXT 10 ROWS ONLY
+        """, nativeQuery = true)
+        List<ProductBestSellerResponse> findAnyTenProductsNative();
+
 }
 

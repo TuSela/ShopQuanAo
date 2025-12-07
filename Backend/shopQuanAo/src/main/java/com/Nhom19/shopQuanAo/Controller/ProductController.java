@@ -2,12 +2,14 @@ package com.Nhom19.shopQuanAo.Controller;
 
 import com.Nhom19.shopQuanAo.DTO.Response.ApiResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.ProductResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductBestSellerResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductDetailResponse;
 import com.Nhom19.shopQuanAo.entity.Products;
 import com.Nhom19.shopQuanAo.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RequestMapping("/products")
@@ -15,18 +17,25 @@ import java.util.List;
 public class ProductController {
     @Autowired
     private ProductService productService;
-    @GetMapping()
-    public ApiResponse<List<ProductResponse>> showHomePage(){
-        Products Product =new Products();
-
-        ApiResponse<List<ProductResponse>> apiResponse =new ApiResponse();
-        apiResponse.setResult(productService.getProducts());
-        return apiResponse;
-    }
+//    @GetMapping()
+//    public ApiResponse<List<ProductResponse>> showHomePage(){
+//        Products Product =new Products();
+//
+//        ApiResponse<List<ProductResponse>> apiResponse =new ApiResponse();
+//        apiResponse.setResult(productService.getProducts());
+//        return apiResponse;
+//    }
     @GetMapping("/{maSp}")
     public ApiResponse<ProductDetailResponse> getProductDetail(@PathVariable("maSp") int maSp){
         ApiResponse<ProductDetailResponse> apiResponse =new ApiResponse();
         apiResponse.setResult(productService.getProductDetail(maSp));
+        return apiResponse;
+    }
+    @GetMapping()
+    public ApiResponse<List<ProductBestSellerResponse>> getProducts10(){
+        ApiResponse<List<ProductBestSellerResponse>> apiResponse = new ApiResponse();
+        List<ProductBestSellerResponse> productBestSellerResponseList =productService.getProduct10();
+        apiResponse.setResult(productBestSellerResponseList);
         return apiResponse;
     }
 //    @PostMapping
