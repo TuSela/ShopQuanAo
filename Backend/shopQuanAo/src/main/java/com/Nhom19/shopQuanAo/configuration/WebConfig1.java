@@ -9,7 +9,10 @@ public class WebConfig1 implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/avatar/**")
-                .addResourceLocations("file:///D:/shopbanquanao/src/assets/avatar/");
+        registry.addResourceHandler("avatar/**","image/**")
+                .addResourceLocations("file:///D:/shopbanquanao/src/assets/avatar/")
+                .addResourceLocations("file:///D:/shopbanquanao/src/assets/image/")
+                .addResourceLocations("file:///D:/shopbanquanao/src/assets/icon/");
+
     }
 }

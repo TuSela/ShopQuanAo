@@ -28,7 +28,7 @@ public class SecurityConfig {
                         requestMatchers(HttpMethod.GET,PUBLIC_ENDPOINTS).permitAll().
                         requestMatchers(HttpMethod.DELETE,PUBLIC_ENDPOINTS).permitAll().
                         requestMatchers(HttpMethod.PUT,PUBLIC_ENDPOINTS).permitAll()
-                .requestMatchers("/avatar/**").permitAll()
+                .requestMatchers("/avatar/**").permitAll().requestMatchers("/image/**").permitAll()
 //                      requestMatchers(HttpMethod.GET,"/users").hasAuthority("SCOPE_ADMIN")
               .anyRequest().authenticated());
         httpSecurity.oauth2ResourceServer(ouath2-> ouath2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())));
