@@ -1,8 +1,5 @@
 <script setup>
-import Mainfooter from '@/components/footer/Mainfooter.vue';
-import Mainheader from '@/components/header/Mainheader.vue';
-import Navmenu from '@/components/header/Navmenu.vue';
-import CategorySlider from '@/components/home/Category Slider.vue';
+import CategorySlider from '@/components/home/CategorySlider.vue';
 import Homeview from '@/components/home/Homeview.vue';
 import Homebanner from '@/components/home/Homebanner.vue';
 import ProductList from '@/components/product/ProductList.vue';
@@ -25,10 +22,10 @@ const categories=[
 
 </script>
 <template>
-    <Mainheader></Mainheader>
- <Navmenu></Navmenu>
 <Homebanner :images ="imgList"></Homebanner>
 <CategorySlider :categories="categories" title="HOT NHẤT TẠI ĐÂY!"></CategorySlider>
+
+<ProductList></ProductList>
 <div class="space-y-12">
  <Homeview image="/src/assets/image/b1nam.png"
     to="/product/1"/>
@@ -39,5 +36,4 @@ const categories=[
 <Homeview image="/src/assets/image/b4nam.png"
     to="/product/1"/>
     </div>
-<Mainfooter></Mainfooter>
 </template>

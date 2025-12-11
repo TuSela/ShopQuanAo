@@ -13,7 +13,7 @@
         <div>
           <label class="font-medium">SĐT *</label>
           <input
-            v-model="loginData.phone"
+            v-model="loginData.sdt"
             type="text"
             placeholder="Vui lòng nhập SĐT"
             class="w-full border rounded-lg px-3 py-2 mt-1 "
@@ -166,21 +166,66 @@
 </template>
 
 <script setup>
+  import { useAuthStore } from "@/stores/auth";
+const auth = useAuthStore();
 import { ref } from "vue";
+import axios from "axios";
+import { useRouter } from "vue-router";
+
+/* --- ROUTER --- */
+const router = useRouter();
 
 /* --- LOGIN --- */
 const loginData = ref({
-  phone: "",
+  sdt: "",
   password: "",
   remember: false,
 });
 const showLoginPassword = ref(false);
 
-const login = () => {
-  console.log("Login:", loginData.value);
+const login = async () => {
+  try {
+    // Kiểm tra nhập liệu
+    if (!loginData.value.sdt || !loginData.value.password) {
+      alert("Vui lòng nhập đầy đủ SĐT và mật khẩu!");
+      return;
+    }
+
+    // Gọi API
+    const res = await axios.post("api/auth/login", {
+      sdt: loginData.value.sdt, // backend nhận 'sdt'
+      password: loginData.value.password
+    });
+
+    // Kiểm tra kết quả
+    if (res.data.result.success) {
+      // Lưu token
+      auth.setToken(res.data.result.token);
+
+
+      // Lưu đăng nhập lâu hơn nếu chọn checkbox
+      if (loginData.value.remember) {
+        localStorage.setItem("remember", "true");
+      }
+
+      alert("Đăng nhập thành công!");
+      router.push("/");
+    } else {
+      alert("SĐT hoặc mật khẩu không đúng!");
+    }
+
+  } catch (err) {
+    console.error(err);
+    if (err.response && err.response.status === 401) {
+      alert("SĐT hoặc mật khẩu không đúng!");
+    } else {
+      alert("Có lỗi xảy ra, vui lòng thử lại!");
+    }
+  }
 };
 
-/* --- REGISTER --- */
+
+/* --- REGISTER (giữ nguyên) --- */
 const registerData = ref({
   lastName: "",
   firstName: "",
@@ -196,3 +241,4 @@ const register = () => {
   console.log("Register:", registerData.value);
 };
 </script>
+
