@@ -1,26 +1,16 @@
 package com.Nhom19.shopQuanAo.Controller;
 
 import com.Nhom19.shopQuanAo.DTO.Request.Admin.CapNhatUserRequest;
-import com.Nhom19.shopQuanAo.DTO.Request.Customer.AddressRequest;
 import com.Nhom19.shopQuanAo.DTO.Request.Customer.TaoUsersRequest;
-import com.Nhom19.shopQuanAo.DTO.Request.Customer.UpdatePassRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.ApiResponse;
-import com.Nhom19.shopQuanAo.DTO.Response.Customer.TaoUsersResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.TaoUsersResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Admin.UserResponse;
-import com.Nhom19.shopQuanAo.entity.Users;
-import com.Nhom19.shopQuanAo.entity.addresses;
 import com.Nhom19.shopQuanAo.service.AddressSevice;
-import com.Nhom19.shopQuanAo.service.JwtUtils;
 import com.Nhom19.shopQuanAo.service.UserService;
-import com.nimbusds.jwt.JWTClaimsSet;
 import jakarta.validation.Valid;
-import org.hibernate.sql.Update;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.text.ParseException;
 import java.util.List;
 
 @RestController

@@ -1,4 +1,4 @@
-package com.Nhom19.shopQuanAo.DTO.Response.Customer.Home;
+package com.Nhom19.shopQuanAo.DTO.Response;
 
 import com.Nhom19.shopQuanAo.entity.ProductColors;
 import com.Nhom19.shopQuanAo.entity.ProductSizes;
@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Objects;
 @Getter
 @Setter
 @AllArgsConstructor

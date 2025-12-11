@@ -1,25 +1,19 @@
 package com.Nhom19.shopQuanAo.service;
 
 import com.Nhom19.shopQuanAo.DTO.Response.Admin.UserResponse;
-import com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.ProductResponse;
-import com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.ProductVariantResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.*;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.SPNamResponse;
-import com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductBestSellerResponse;
-import com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductCommentResponse;
-import com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductDetailResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.ProductDetailResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.ProductResponse;
 import com.Nhom19.shopQuanAo.entity.*;
 import com.Nhom19.shopQuanAo.mapper.ProductMapper;
 import com.Nhom19.shopQuanAo.mapper.UserMapper;
-import com.Nhom19.shopQuanAo.repository.ProductCommentRepo;
-import com.Nhom19.shopQuanAo.repository.ProductImagesRepo;
-import com.Nhom19.shopQuanAo.repository.ProductRepository;
-import com.Nhom19.shopQuanAo.repository.ProductVariantRepo;
+import com.Nhom19.shopQuanAo.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.stream;
@@ -38,6 +32,8 @@ public class ProductService {
     private ProductCommentRepo productCommentRepo;
     @Autowired
     UserMapper userMapper;
+    @Autowired
+    ProductColorRepo productColorRepo;
     public List<ProductResponse> getProducts(){
        return   productRepository.findAll().stream().map(productMapper::toDTO).collect(Collectors.toList());
     }
@@ -48,11 +44,31 @@ public class ProductService {
 //    public List<ProductBestSellerResponse> getAllProducts(){
 //        return productRepository.getSanPhamTheoMau();
 //    }
+    public List<SPNamResponse>getSpNam(){
+        return productRepository.findTopSellingByDoiTuongNative("Nam",10);
+    }
+    public List<ProductBestSellerResponse> getProduct10(){
+        return productRepository.findAnyTenProductsNative();
+    }
+
+
+
+
+
+
     public ProductDetailResponse getProductDetail(int id) {
         Products products = productRepository.getById(id);
         Set<ProductVariants> productVariant = productVariantsRepo.findByProducts(products);
+        Set<ProductImages> listAnhSP = productImagesRepo.findByProducts(products);
 
         ProductDetailResponse productDetailResponse = productMapper.toDTO2(products);
+
+        List<String> images = listAnhSP.stream()
+                .map(ProductImages::getUrlImage)
+                .toList();
+
+        productDetailResponse.setListAnhSP(images);
+
 
         // Lấy danh sách comment
         Set<ProductComments> productComments = productCommentRepo.getByMaBl(id);
@@ -78,40 +94,48 @@ public class ProductService {
                         })
                         .collect(Collectors.toSet())
         );
-
         // Map variant
-        productDetailResponse.setProductVariants(
+        productDetailResponse.setVariants(
                 productVariant.stream()
                         .map(variant -> {
-                            ProductVariantResponse res = new ProductVariantResponse();
-                            ProductImages img = productImagesRepo.findByVariants(variant).orElse(null);
+                            ProductColors productColors = variant.getColors();
+                            System.out.println("maMS: "+ productColors.getMaMs());
+                            ColorResponse colorDetail= getColorDetail(products.getMaSp(),productColors.getMaMs());
 
-                            res.setMaBienThe(variant.getMaBienThe());
-                            res.setSoluong(variant.getSoluong());
-                            res.setTrangThai(variant.isTrangThai());
-                            res.setMaKc(variant.getSizes());
-                            res.setMaMs(variant.getColors());
-
-                            if(img != null){
-                                res.setUrlImage(img.getUrlImage());
-                                res.setDaiDien(img.getDaiDien());
-                            } else {
-                                res.setUrlImage("Chưa có ảnh sp");
-                            }
-
-                            return res;
+                            return colorDetail;
                         })
                         .collect(Collectors.toSet())
         );
 
         return productDetailResponse;
     }
+    public ColorResponse getColorDetail(Integer maSp, Integer maMs) {
+        ColorResponse res = new ColorResponse();
+        ProductColors color = productColorRepo.findById(maMs)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy màu"));
 
-    public List<SPNamResponse>getSpNam(){
-        return productRepository.findTopSellingByDoiTuongNative("Nam",10);
-    }
-    public List<ProductBestSellerResponse> getProduct10(){
-        return productRepository.findAnyTenProductsNative();
-    }
+        res.setMaMs(color.getMaMs());
+        res.setTenMs(color.getTenMs());
 
+        // Lấy 1 ảnh đầu tiên
+        List<ProductImages> images = productImagesRepo.getImagesByProductAndColor(maSp, maMs);
+        if (!images.isEmpty()) {
+            res.setUrlImages(images.get(0).getUrlImage());
+        }
+
+        // Lấy size theo màu
+        List<ProductVariants> variants = productVariantsRepo.getSizesByProductAndColor(maSp, maMs);
+
+        List<ColorSizeResponse> sizeList = variants.stream().map(v -> {
+            ColorSizeResponse s = new ColorSizeResponse();
+            s.setMaKc(v.getSizes().getMaKc());
+            s.setTenKc(v.getSizes().getTenKc());
+            s.setSoluong(v.getSoluong());
+            return s;
+        }).toList();
+
+        res.setSizes(sizeList);
+
+        return res;
+    }
 }

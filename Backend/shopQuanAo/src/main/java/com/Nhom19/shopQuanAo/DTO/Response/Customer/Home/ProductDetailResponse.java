@@ -1,11 +1,13 @@
-package com.Nhom19.shopQuanAo.DTO.Response.Customer;
+package com.Nhom19.shopQuanAo.DTO.Response.Customer.Home;
 
-import com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.ProductVariantResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.ColorResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductCommentResponse;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -15,9 +17,11 @@ public class ProductDetailResponse {
     private String tenSp;
     private int soLuong;
     private BigDecimal gia;
-    private String chiTiet;
     private float danhGia;
     private Integer soLuongDanhGia;
-    private Set<ProductVariantResponse>  productVariants = new HashSet<>();
+    private Set<ColorResponse> Variants;
+    private List<String> listAnhSP;
+    private String chiTiet;
     private Set<ProductCommentResponse> productComments = new HashSet<>();
+
 }

@@ -1,9 +1,5 @@
-package com.Nhom19.shopQuanAo.DTO.Response.Customer.Home;
+package com.Nhom19.shopQuanAo.DTO.Response;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
 
