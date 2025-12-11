@@ -16,7 +16,9 @@ public class ProductTypes {
     private int maLoai;
     private String tenLoai;
     private String tinhTrang;
-
+    private String chiTietLoai;
+    private String doiTuong;
+    private String anhLoai;
     @OneToMany(mappedBy = "types")
     private Set<Products> products = new HashSet<>();
 

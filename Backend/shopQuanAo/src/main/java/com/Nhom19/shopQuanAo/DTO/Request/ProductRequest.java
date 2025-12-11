@@ -1,4 +1,4 @@
-package com.Nhom19.shopQuanAo.DTO.Request.Admin;
+package com.Nhom19.shopQuanAo.DTO.Request;
 
 import com.Nhom19.shopQuanAo.entity.ProductComments;
 import com.Nhom19.shopQuanAo.entity.ProductTypes;

@@ -1,7 +1,7 @@
 package com.Nhom19.shopQuanAo.service;
 
 import com.Nhom19.shopQuanAo.DTO.Request.Customer.AuthenticaitonRequest;
-import com.Nhom19.shopQuanAo.DTO.Response.Customer.AuthenticationResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.AuthenticationResponse;
 import com.Nhom19.shopQuanAo.entity.Users;
 import com.Nhom19.shopQuanAo.enums.Role;
 import com.Nhom19.shopQuanAo.exception.AppException;
@@ -9,13 +9,11 @@ import com.Nhom19.shopQuanAo.exception.ErrorCode;
 import com.Nhom19.shopQuanAo.repository.UserRepository;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
-import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
