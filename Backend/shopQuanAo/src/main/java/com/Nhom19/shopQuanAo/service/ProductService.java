@@ -81,7 +81,7 @@ public class ProductService {
                 productComments.stream()
                         .map(pc -> {
                             Users users = pc.getUsers();
-                            UserResponse userResponse = userMapper.toUserResponse(users);
+                            UserCommentResponse userResponse = userMapper.toUserCommentResponse(users);
 
                             ProductCommentResponse res = new ProductCommentResponse();
                             res.setMaBl(pc.getMaBl());

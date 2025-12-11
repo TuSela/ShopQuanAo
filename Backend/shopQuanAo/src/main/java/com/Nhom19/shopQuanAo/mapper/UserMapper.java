@@ -2,6 +2,7 @@ package com.Nhom19.shopQuanAo.mapper;
 
 import com.Nhom19.shopQuanAo.DTO.Request.Customer.TaoUsersRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.Admin.UserResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.UserCommentResponse;
 import com.Nhom19.shopQuanAo.entity.Users;
 import org.mapstruct.Mapper;
 
@@ -9,5 +10,6 @@ import org.mapstruct.Mapper;
 public interface UserMapper {
     Users toUsers(TaoUsersRequest users);
     UserResponse toUserResponse(Users users);
+    UserCommentResponse toUserCommentResponse(Users users);
 //    Users toUsers2(Users users,CapNhatUserRequest request);
 }

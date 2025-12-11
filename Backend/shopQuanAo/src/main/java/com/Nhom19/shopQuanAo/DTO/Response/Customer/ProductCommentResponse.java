@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 
 public class ProductCommentResponse {
     private int maBl;
-    private UserResponse users;
+    private UserCommentResponse users;
     private ProductVariants productVariants;
     private LocalDateTime ngayTao;
     private Float diemDanhGia;
