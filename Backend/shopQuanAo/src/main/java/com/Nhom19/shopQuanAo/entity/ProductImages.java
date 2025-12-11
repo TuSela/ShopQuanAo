@@ -10,13 +10,21 @@ public class ProductImages {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int maHa;
-    @ManyToOne
-    @JoinColumn(name = "ma_bien_the")
-    private ProductVariants variants;
+//    @ManyToOne
+//    @JoinColumn(name = "ma_bien_the")
+//    private ProductVariants variants;
 //    private int maBienThe;
 
     @Column(name = "url_hinh_anh")
     private String urlImage;
 
     private Boolean daiDien;
+    @ManyToOne
+    @JoinColumn(name = "ma_sp")
+    private Products products;
+
+    @ManyToOne
+    @JoinColumn(name = "ma_ms")
+    private ProductColors productColor;
+
 }

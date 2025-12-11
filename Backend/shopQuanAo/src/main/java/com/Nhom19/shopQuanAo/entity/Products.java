@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -13,7 +14,7 @@ import java.util.Set;
 public class Products {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int maSp;
+    private Integer maSp;
 
     @ManyToOne
     @JoinColumn(name = "ma_loai")
@@ -31,5 +32,8 @@ public class Products {
 //
     @OneToMany(mappedBy = "products", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ProductComments> ProductComments;
+
+    @OneToMany(mappedBy = "products", fetch = FetchType.LAZY)
+    private List<ProductImages> images;
 
 }

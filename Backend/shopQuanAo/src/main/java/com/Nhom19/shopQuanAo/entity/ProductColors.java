@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -17,4 +18,6 @@ public class ProductColors {
     private String tenMs;
 //    @OneToMany(mappedBy = "colors")
 //    private Set<ProductVariants> variants = new HashSet<>();
+    @OneToMany(mappedBy = "productColor")
+    private List<ProductImages> productImages;
 }

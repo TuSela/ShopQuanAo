@@ -43,8 +43,11 @@ public class ProductService {
     }
 
     public List<ProductBestSellerResponse>getTopBestSeller(){
-        return productRepository.getTopBestSeller();
+        return productRepository.getProductsForHome();
     }
+//    public List<ProductBestSellerResponse> getAllProducts(){
+//        return productRepository.getSanPhamTheoMau();
+//    }
     public ProductDetailResponse getProductDetail(int id) {
         Products products = productRepository.getById(id);
         Set<ProductVariants> productVariant = productVariantsRepo.findByProducts(products);

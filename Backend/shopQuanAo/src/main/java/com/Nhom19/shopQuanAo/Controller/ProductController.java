@@ -34,7 +34,7 @@ public class ProductController {
     @GetMapping()
     public ApiResponse<List<ProductBestSellerResponse>> getProducts10(){
         ApiResponse<List<ProductBestSellerResponse>> apiResponse = new ApiResponse();
-        List<ProductBestSellerResponse> productBestSellerResponseList =productService.getProduct10();
+        List<ProductBestSellerResponse> productBestSellerResponseList =productService.getTopBestSeller();
         apiResponse.setResult(productBestSellerResponseList);
         return apiResponse;
     }

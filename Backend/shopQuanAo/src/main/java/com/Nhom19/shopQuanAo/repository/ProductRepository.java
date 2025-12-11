@@ -103,6 +103,32 @@ List<ProductBestSellerResponse> getTopBestSeller();
         FETCH NEXT 10 ROWS ONLY
         """, nativeQuery = true)
         List<ProductBestSellerResponse> findAnyTenProductsNative();
+//    @Query("""
+//    SELECT new com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.SPResponse(
+//        p.maSp,
+//        p.tenSp,
+//        p.gia,
+//        i.urlHinhAnh
+//    )
+//    FROM Products p
+//    LEFT JOIN ProductImages i
+//        ON p.maSp = i.product.maSp
+//        AND i.daiDien = true
+//    """)
+//    List<ProductBestSellerResponse> getSanPhamTheoMau();
+
+    @Query("""
+    SELECT new com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductBestSellerResponse(
+        p.maSp,
+        p.tenSp,
+        p.gia,
+        img.urlImage
+    )
+    FROM Products p
+    LEFT JOIN p.images img
+    WHERE img.daiDien = true OR img IS NULL
+    """)
+    List<ProductBestSellerResponse> getProductsForHome();
 
 }
 
