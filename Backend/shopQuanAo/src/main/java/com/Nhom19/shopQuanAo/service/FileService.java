@@ -12,7 +12,7 @@ import java.nio.file.Paths;
 @Service
 public class FileService {
     public String uploadFileImg(MultipartFile file) throws IOException {
-
+        
         // Validate
         if (!file.getContentType().startsWith("image/")) {
             throw new IllegalArgumentException("File không phải dạng ảnh");

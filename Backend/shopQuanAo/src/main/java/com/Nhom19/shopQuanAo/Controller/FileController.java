@@ -17,7 +17,6 @@ import java.util.Map;
 public class FileController {
     @Autowired
     private FileService fileService;
-
     @PostMapping("/images")
     public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file) {
 

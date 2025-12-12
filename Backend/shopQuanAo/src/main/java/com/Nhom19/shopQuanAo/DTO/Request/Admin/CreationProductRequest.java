@@ -14,7 +14,6 @@ public class CreationProductRequest {
     private Integer maLoai;
     private BigDecimal gia;
     private String chiTiet;
-    private Integer soLuong;
     private List<ColorRequest> colors;
     private String daiDien;
 }

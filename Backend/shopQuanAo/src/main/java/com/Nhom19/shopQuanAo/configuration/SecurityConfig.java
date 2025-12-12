@@ -11,8 +11,12 @@ import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.crypto.spec.SecretKeySpec;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -27,17 +31,34 @@ public class SecurityConfig {
     private String jwtSignerKey;
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.authorizeHttpRequests(request ->
+        httpSecurity.cors(cors -> cors.configurationSource(corsConfigurationSource())) // BẮT BUỘC
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(request ->
                 request.requestMatchers(HttpMethod.POST,PUBLIC_ENDPOINTS).permitAll().
                         requestMatchers(HttpMethod.GET,PUBLIC_ENDPOINTS).permitAll().
                         requestMatchers(HttpMethod.DELETE,PUBLIC_ENDPOINTS).permitAll().
-                        requestMatchers(HttpMethod.PUT,PUBLIC_ENDPOINTS).permitAll()
+                        requestMatchers(HttpMethod.PUT,PUBLIC_ENDPOINTS).permitAll().
+                        requestMatchers(PUBLIC_ENDPOINTS).permitAll()
                 .requestMatchers(PUBLIC_Img).permitAll()
-//                      requestMatchers(HttpMethod.GET,"/users").hasAuthority("SCOPE_ADMIN")
               .anyRequest().authenticated());
         httpSecurity.oauth2ResourceServer(ouath2-> ouath2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())));
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
         return httpSecurity.build();
+    }
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+
+        config.setAllowCredentials(true);
+        config.setAllowedOrigins(List.of("http://localhost:5175", "http://localhost:5174"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setExposedHeaders(List.of("Authorization", "Content-Type"));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+
+        return source;
     }
     @Bean
     JwtDecoder jwtDecoder() {

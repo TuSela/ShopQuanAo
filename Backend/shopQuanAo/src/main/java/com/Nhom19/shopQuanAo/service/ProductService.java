@@ -159,18 +159,23 @@ public class ProductService {
         ProductTypes productTypes = productTypeRepo.findById(request.getMaLoai()).orElseThrow(() -> new RuntimeException("Không tìm thấy màu"));
         products.setTypes(productTypes);
         productRepository.save(products);
+        ProductImages productImages = new ProductImages();
+        productImages.setProducts(products);
+        productImages.setUrlImage(request.getDaiDien());
+        productImages.setDaiDien(true);
+        productImagesRepo.save(productImages);
         List<ColorRequest> colors = request.getColors();
 
         colors.forEach(color -> {
             ProductColors colorsX = productColorRepo.findById(color.getMaMs()).orElseThrow(() -> new RuntimeException("Không tìm thấy màu"));
             List<String> urlImages = color.getUrlImages();
             urlImages.forEach(url -> {
-                ProductImages productImages = new ProductImages();
-                productImages.setUrlImage(url);
-                productImages.setProducts(products);
-                productImages.setProductColor(colorsX);
-                productImages.setDaiDien(false);
-                productImagesRepo.save(productImages);
+                ProductImages productImages2 = new ProductImages();
+                productImages2.setUrlImage(url);
+                productImages2.setProducts(products);
+                productImages2.setProductColor(colorsX);
+                productImages2.setDaiDien(false);
+                productImagesRepo.save(productImages2);
             });
 
             List<SizeRequest> size = color.getSizes();

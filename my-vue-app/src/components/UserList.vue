@@ -115,9 +115,8 @@
           @input="syncEditor"
         >
           <!-- initial html -->
-          <p>
-            <H2><b>MÔ TẢ SẢN PHẨM</b></H2>ĐẶC ĐIỂM SẢN PHẨM<br /><br /><br /><br /><br /><br />
-          </p>
+          <h2><b>MÔ TẢ SẢN PHẨM</b></h2>
+          <p>ĐẶC ĐIỂM SẢN PHẨM<br /><br /><br /><br /><br /><br /></p>
         </div>
       </section>
 
@@ -160,9 +159,7 @@
 
           <!-- LIST ẢNH MÀU -->
           <div class="flex gap-2 mb-2">
-            <div
-              v-for="(img, i) in color.urlImages"
-              :key="i"            >
+            <div v-for="(img, i) in color.urlImages" :key="i">
               <img :src="img" class="w-full h-full object-cover" />
             </div>
           </div>
@@ -220,11 +217,7 @@
 
       <section>
         <h2 class="font-semibold">Ảnh đại diện / Gallery sản phẩm</h2>
-        <input
-          type="file"
-          accept="image/*"
-          @change="onMainImagesChange"
-        />
+        <input type="file" accept="image/*" @change="onMainImagesChange" />
         <div class="mt-2 flex gap-2 flex-wrap">
           <div
             v-for="(img, i) in mainImagesPreview"
@@ -360,8 +353,8 @@ const form = reactive({
   maLoai: "",
   gia: 0,
   chiTiet: "",
-  colors: [],// [{ maMs, urlImages[], sizes: [] }]
-  daiDien:"" 
+  colors: [], // [{ maMs, urlImages[], sizes: [] }]
+  daiDien: "",
 });
 
 const mainImagesPreview = ref([]);
@@ -456,7 +449,7 @@ async function onMainImagesChange(e) {
   const url = await uploadImage(lastFile);
 
   if (url) {
-    form.daiDien = url
+    form.daiDien = url;
     mainImagesPreview.value = [url]; // RESET về đúng 1 ảnh
   }
 }
@@ -550,11 +543,7 @@ const showPreview = ref(false);
 const previewData = ref("");
 
 function preview() {
-  previewData.value = JSON.stringify(
-    { ...form,},
-    null,
-    2
-  );
+  previewData.value = JSON.stringify({ ...form }, null, 2);
   showPreview.value = true;
 }
 
