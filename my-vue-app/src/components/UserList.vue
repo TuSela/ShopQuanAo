@@ -115,8 +115,7 @@
           @input="syncEditor"
         >
           <!-- initial html -->
-          <h2><b>MÔ TẢ SẢN PHẨM</b></h2>
-          <p>ĐẶC ĐIỂM SẢN PHẨM<br /><br /><br /><br /><br /><br /></p>
+          <h2>ĐẶC ĐIỂM SẢN PHẨM<br /><br /><br /><br /><br /><br /></h2>
         </div>
       </section>
 
