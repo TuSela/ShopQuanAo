@@ -37,8 +37,10 @@ public class ProductController {
         apiResponse.setResult(productBestSellerResponseList);
         return apiResponse;
     }
-//    @PostMapping
-//    public ApiResponse<List<ProductResponse>> addProduct(@RequestBody CreationProductRequest request){
-//
-//    }
+    @PostMapping
+    public ApiResponse<Boolean> addProduct(@RequestBody CreationProductRequest request){
+        ApiResponse<Boolean> apiResponse = new ApiResponse();
+        apiResponse.setResult(productService.createProduct(request));
+        return apiResponse;
+    }
 }

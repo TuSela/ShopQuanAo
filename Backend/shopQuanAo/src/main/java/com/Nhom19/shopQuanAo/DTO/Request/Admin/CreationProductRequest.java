@@ -10,11 +10,11 @@ import java.util.List;
 
 @Data
 public class CreationProductRequest {
-    private Integer maSp;
-    private Integer maLoai;
     private String tenSp;
-    private Integer soLuong;
+    private Integer maLoai;
     private BigDecimal gia;
     private String chiTiet;
+    private Integer soLuong;
     private List<ColorRequest> colors;
+    private String daiDien;
 }

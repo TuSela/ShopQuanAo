@@ -1,9 +1,11 @@
 package com.Nhom19.shopQuanAo.DTO.Request;
 
-import java.util.List;
+import lombok.Data;
 
+import java.util.List;
+@Data
 public class ColorRequest {
     private Integer maMs;
-    private List<ImageRequest> images;
+    private List<String> urlImages;
     private List<SizeRequest> sizes;
 }

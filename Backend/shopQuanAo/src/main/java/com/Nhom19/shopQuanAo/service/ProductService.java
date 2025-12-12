@@ -1,5 +1,9 @@
 package com.Nhom19.shopQuanAo.service;
 
+import com.Nhom19.shopQuanAo.DTO.Request.Admin.CreationProductRequest;
+import com.Nhom19.shopQuanAo.DTO.Request.ColorRequest;
+import com.Nhom19.shopQuanAo.DTO.Request.ProductRequest;
+import com.Nhom19.shopQuanAo.DTO.Request.SizeRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.Admin.UserResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.*;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.SPNamResponse;
@@ -11,7 +15,10 @@ import com.Nhom19.shopQuanAo.mapper.UserMapper;
 import com.Nhom19.shopQuanAo.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -34,6 +41,12 @@ public class ProductService {
     UserMapper userMapper;
     @Autowired
     ProductColorRepo productColorRepo;
+    @Autowired
+    ProductSizeRepo productSizeRepo;
+    @Autowired
+    ProductTypeRepo productTypeRepo;
+
+
     public List<ProductResponse> getProducts(){
        return   productRepository.findAll().stream().map(productMapper::toDTO).collect(Collectors.toList());
     }
@@ -138,4 +151,43 @@ public class ProductService {
 
         return res;
     }
+
+
+    public Boolean createProduct(CreationProductRequest request) {
+        Products products = productMapper.toEntity(request);
+
+        ProductTypes productTypes = productTypeRepo.findById(request.getMaLoai()).orElseThrow(() -> new RuntimeException("Không tìm thấy màu"));
+        products.setTypes(productTypes);
+        productRepository.save(products);
+        List<ColorRequest> colors = request.getColors();
+
+        colors.forEach(color -> {
+            ProductColors colorsX = productColorRepo.findById(color.getMaMs()).orElseThrow(() -> new RuntimeException("Không tìm thấy màu"));
+            List<String> urlImages = color.getUrlImages();
+            urlImages.forEach(url -> {
+                ProductImages productImages = new ProductImages();
+                productImages.setUrlImage(url);
+                productImages.setProducts(products);
+                productImages.setProductColor(colorsX);
+                productImages.setDaiDien(false);
+                productImagesRepo.save(productImages);
+            });
+
+            List<SizeRequest> size = color.getSizes();
+
+            size.forEach(sizeRequest -> {
+                ProductSizes sizes = productSizeRepo.findById(sizeRequest.getMaKc()).orElseThrow(() -> new RuntimeException("Không tìm thấy size"));
+                ProductVariants productVariants = new ProductVariants();
+                productVariants.setProducts(products);
+                productVariants.setColors(colorsX);
+                productVariants.setSizes(sizes);
+                productVariants.setSoluong(sizeRequest.getSoluong());
+                productVariantsRepo.save(productVariants);
+            });
+        });
+
+        return true;
+    }
+
+
 }

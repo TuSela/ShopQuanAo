@@ -17,7 +17,11 @@ import javax.crypto.spec.SecretKeySpec;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    private final String[] PUBLIC_ENDPOINTS = {"/auth/login","users","users/{userId}","products","products/type","home","products/{maSp}","home/{maSp}","/types","/colors","/sizes"
+    private final String[] PUBLIC_ENDPOINTS = {"/auth/login","users","users/{userId}","products"
+            ,"products/type","home","products/{maSp}","home/{maSp}","/types","/colors","/sizes"
+            ,"files","files/images"
+    };
+    private final String[] PUBLIC_Img = {"/avatar/**","/image/**","/public/**"
     };
     @Value("${jwt.signerKey}")
     private String jwtSignerKey;
@@ -28,7 +32,7 @@ public class SecurityConfig {
                         requestMatchers(HttpMethod.GET,PUBLIC_ENDPOINTS).permitAll().
                         requestMatchers(HttpMethod.DELETE,PUBLIC_ENDPOINTS).permitAll().
                         requestMatchers(HttpMethod.PUT,PUBLIC_ENDPOINTS).permitAll()
-                .requestMatchers("/avatar/**").permitAll().requestMatchers("/image/**").permitAll()
+                .requestMatchers(PUBLIC_Img).permitAll()
 //                      requestMatchers(HttpMethod.GET,"/users").hasAuthority("SCOPE_ADMIN")
               .anyRequest().authenticated());
         httpSecurity.oauth2ResourceServer(ouath2-> ouath2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())));

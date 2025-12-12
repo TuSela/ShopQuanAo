@@ -72,16 +72,6 @@
             class="w-full border rounded px-3 py-2"
           />
         </div>
-
-        <div>
-          <label class="block font-medium">Số lượng tổng</label>
-          <input
-            v-model.number="form.soLuong"
-            type="number"
-            min="0"
-            class="w-full border rounded px-3 py-2"
-          />
-        </div>
       </section>
 
       <section>
@@ -125,7 +115,9 @@
           @input="syncEditor"
         >
           <!-- initial html -->
-          <p>Nhập mô tả ở đây...</p>
+          <p>
+            <H2><b>MÔ TẢ SẢN PHẨM</b></H2>ĐẶC ĐIỂM SẢN PHẨM<br /><br /><br /><br /><br /><br />
+          </p>
         </div>
       </section>
 
@@ -144,7 +136,7 @@
               v-model="color.maMs"
               class="w-full border rounded px-3 py-2"
             >
-              <option disabled value="">Chọn màu</option>
+              <option disabled value="">Chọn màu</option>
               <option v-for="t in Colors" :key="t.maMs" :value="t.maMs">
                 {{ t.tenMs }}
               </option>
@@ -170,9 +162,7 @@
           <div class="flex gap-2 mb-2">
             <div
               v-for="(img, i) in color.urlImages"
-              :key="i"
-              class="w-20 h-20 overflow-hidden border rounded"
-            >
+              :key="i"            >
               <img :src="img" class="w-full h-full object-cover" />
             </div>
           </div>
@@ -186,7 +176,7 @@
             >
               <label class="block font-medium">Chọn size</label>
               <select v-model="s.maKc" class="w-full border rounded px-3 py-2">
-                <option disabled value="">Chọn màu</option>
+                <option disabled value="">Chọn size</option>
                 <option v-for="t in Sizes" :key="t.maKc" :value="t.maKc">
                   {{ t.tenKc }}
                 </option>
@@ -233,7 +223,6 @@
         <input
           type="file"
           accept="image/*"
-          multiple
           @change="onMainImagesChange"
         />
         <div class="mt-2 flex gap-2 flex-wrap">
@@ -284,39 +273,68 @@
 import { ref, reactive, onMounted, computed, watch } from "vue";
 import axios from "axios";
 
+/* ============================================================
+    LOAD DỮ LIỆU BAN ĐẦU
+============================================================ */
 const allTypes = ref([]);
+const Colors = ref([]);
+const Sizes = ref([]);
 
-// selections
+onMounted(async () => {
+  await Promise.all([loadTypes(), loadColors(), loadSizes()]);
+});
+
+const loadTypes = async () => {
+  try {
+    const res = await axios.get("http://localhost:8081/nhom19/types");
+    allTypes.value = res.data.result || [];
+  } catch (err) {
+    console.error("Lỗi tải types:", err);
+  }
+};
+
+const loadColors = async () => {
+  try {
+    const res = await axios.get("http://localhost:8081/nhom19/colors");
+    Colors.value = res.data.result || [];
+  } catch (err) {
+    console.error("Lỗi tải colors:", err);
+  }
+};
+
+const loadSizes = async () => {
+  try {
+    const res = await axios.get("http://localhost:8081/nhom19/sizes");
+    Sizes.value = res.data.result || [];
+  } catch (err) {
+    console.error("Lỗi tải sizes:", err);
+  }
+};
+
+/* ============================================================
+    SELECT TỪ LOẠI - ĐỐI TƯỢNG
+============================================================ */
+
 const selectedDoiTuong = ref("");
 const selectedTenLoai = ref("");
 
-// load API
-onMounted(async () => {
-  const res = await axios.get("http://localhost:8081/nhom19/types");
-  allTypes.value = res.data.result;
-});
-
-// 1) danh sách đối tượng
 const doiTuongOptions = computed(() => {
-  const set = new Set(allTypes.value.map((x) => x.doiTuong?.trim()));
-  return [...set];
+  return [...new Set(allTypes.value.map((x) => x.doiTuong?.trim()))];
 });
 
-// 2) danh sách tên loại theo đối tượng
 const tenLoaiOptions = computed(() => {
   if (!selectedDoiTuong.value) return [];
-
-  const list = allTypes.value
-    .filter((x) => x.doiTuong?.trim() === selectedDoiTuong.value.trim())
-    .map((x) => x.tenLoai.trim());
-
-  return [...new Set(list)];
+  return [
+    ...new Set(
+      allTypes.value
+        .filter((x) => x.doiTuong.trim() === selectedDoiTuong.value.trim())
+        .map((x) => x.tenLoai.trim())
+    ),
+  ];
 });
 
-// 3) danh sách chi tiết loại theo tên loại
 const chiTietLoaiOptions = computed(() => {
   if (!selectedTenLoai.value) return [];
-
   return allTypes.value.filter(
     (x) =>
       x.tenLoai.trim() === selectedTenLoai.value.trim() &&
@@ -324,63 +342,34 @@ const chiTietLoaiOptions = computed(() => {
   );
 });
 
-// reset logic
+/* Reset */
 watch(selectedDoiTuong, () => {
   selectedTenLoai.value = "";
   form.maLoai = "";
 });
-
 watch(selectedTenLoai, () => {
   form.maLoai = "";
 });
 
-const Colors = ref([]);
-onMounted(async () => {
-  await loadColors();
-});
+/* ============================================================
+    FORM SẢN PHẨM
+============================================================ */
 
-const loadColors = async () => {
-  try {
-    const res = await axios.get("http://localhost:8081/nhom19/colors");
-
-    // API trả về dạng: { code, message, result: [...] }
-    Colors.value = res.data.result;
-  } catch (error) {
-    console.error("Lỗi khi tải màu sản phẩm:", error);
-  }
-};
-
-const Sizes = ref([]);
-onMounted(async () => {
-  await loadSizes();
-});
-
-const loadSizes = async () => {
-  try {
-    const res = await axios.get("http://localhost:8081/nhom19/sizes");
-
-    // API trả về dạng: { code, message, result: [...] }
-    Sizes.value = res.data.result;
-  } catch (error) {
-    console.error("Lỗi khi tải size sản phẩm:", error);
-  }
-};
-// form
 const form = reactive({
   tenSp: "",
-  maLoai: "", // giá trị cuối chọn từ chi tiết loại
+  maLoai: "",
   gia: 0,
-  soLuong: 0,
   chiTiet: "",
-  colors: [],
+  colors: [],// [{ maMs, urlImages[], sizes: [] }]
+  daiDien:"" 
 });
 
-// editor
-const editor = ref(null);
-const mainImages = ref([]);
 const mainImagesPreview = ref([]);
-const showPreview = ref(false);
-const previewData = ref("");
+
+/* ============================================================
+    RICH TEXT EDITOR
+============================================================ */
+const editor = ref(null);
 
 function execCmd(cmd) {
   document.execCommand(cmd);
@@ -390,23 +379,133 @@ function insertHeading() {
   document.execCommand("formatBlock", false, "h2");
 }
 
-function insertImageToEditor(e) {
-  const f = e.target.files?.[0];
-  if (!f) return;
-  const reader = new FileReader();
-  reader.onload = () => {
-    document.execCommand("insertImage", false, reader.result);
-    syncEditor();
-  };
-  reader.readAsDataURL(f);
+async function insertImageToEditor(e) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  const url = await uploadImage(file);
+  if (!url) return;
+
+  const img = document.createElement("img");
+  img.src = url;
+  img.style.maxWidth = "100%";
+  img.style.height = "auto";
+
+  insertNodeAtCaret(img);
+  syncEditor();
+}
+
+function insertNodeAtCaret(node) {
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount === 0) return;
+
+  const range = sel.getRangeAt(0);
+  range.insertNode(node);
+  range.collapse(false);
 }
 
 function syncEditor() {
-  form.descriptionHtml = editor.value?.innerHTML || "";
+  form.chiTiet = editor.value?.innerHTML || "";
 }
 
+/* ============================================================
+    UPLOAD ẢNH (DÙNG URL, KHÔNG BASE64)
+============================================================ */
+async function uploadImage(file) {
+  try {
+    const fd = new FormData();
+    fd.append("file", file);
+
+    const res = await axios.post(
+      "http://localhost:8081/nhom19/files/images",
+      fd,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+      }
+    );
+
+    return res.data.url;
+  } catch (err) {
+    console.error("Lỗi upload ảnh:", err);
+    alert("Không thể upload ảnh!");
+    return null;
+  }
+}
+
+/* ============================================================
+    ẢNH GALLERY CHÍNH
+============================================================ */
+// async function onMainImagesChange(e) {
+//   const files = Array.from(e.target.files || []);
+
+//   mainImagesPreview.value = [];
+
+//   for (const f of files) {
+//     const url = await uploadImage(f);
+//     if (url) mainImagesPreview.value.push(url);
+//   }
+// }
+async function onMainImagesChange(e) {
+  const files = Array.from(e.target.files || []);
+
+  if (files.length === 0) return;
+
+  // chỉ lấy file cuối cùng
+  const lastFile = files[files.length - 1];
+
+  const url = await uploadImage(lastFile);
+
+  if (url) {
+    form.daiDien = url
+    mainImagesPreview.value = [url]; // RESET về đúng 1 ảnh
+  }
+}
+/* ============================================================
+    ẢNH MÀU
+============================================================ */
+async function onColorImagesChange(e, idx) {
+  const files = Array.from(e.target.files || []);
+
+  for (const f of files) {
+    const formData = new FormData();
+    formData.append("file", f);
+
+    const res = await axios.post(
+      "http://localhost:8081/nhom19/files/images",
+      formData,
+      { headers: { "Content-Type": "multipart/form-data" } }
+    );
+    const url = res.data.url;
+
+    form.colors[idx].urlImages.push(url);
+  }
+}
+
+function setDaiDien(colorIndex, imgIndex) {
+  const imgs = form.colors[colorIndex].urlImages;
+
+  // 1) Tìm ảnh đại diện hiện tại
+  const oldIndex = imgs.findIndex((img) => img.daiDien);
+
+  // 2) Nếu có ảnh đại diện cũ và KHÁC ảnh mới → bỏ chọn nó
+  if (oldIndex !== -1 && oldIndex !== imgIndex) {
+    imgs[oldIndex].daiDien = false;
+  }
+
+  // 3) Chọn ảnh mới nhất
+  imgs[imgIndex].daiDien = true;
+}
+
+/* ============================================================
+    COLORS + SIZES
+============================================================ */
+
 function addColor() {
-  form.colors.push({ maMs: null, tenMs: "", urlImages: [], sizes: [] });
+  form.colors.push({
+    maMs: "",
+    urlImages: [],
+    sizes: [],
+  });
 }
 
 function removeColor(i) {
@@ -414,62 +513,45 @@ function removeColor(i) {
 }
 
 function addSize(i) {
-  form.colors[i].sizes.push({ maKc: null, tenKc: "", soluong: 0 });
-}
-
-function removeSize(ci, si) {
-  form.colors[ci].sizes.splice(si, 1);
-}
-
-function onMainImagesChange(e) {
-  const files = Array.from(e.target.files || []);
-  mainImages.value = files;
-  mainImagesPreview.value = [];
-  files.forEach((f) => {
-    const r = new FileReader();
-    r.onload = () => mainImagesPreview.value.push(r.result);
-    r.readAsDataURL(f);
+  form.colors[i].sizes.push({
+    maKc: "",
+    soluong: 0,
   });
 }
 
-function onColorImagesChange(e, idx) {
-  const files = Array.from(e.target.files || []);
-  files.forEach((f) => {
-    const r = new FileReader();
-    r.onload = () => form.colors[idx].urlImages.push(r.result);
-    r.readAsDataURL(f);
-  });
+function removeSize(i, si) {
+  form.colors[i].sizes.splice(si, 1);
 }
+
+/* ============================================================
+    SUBMIT
+============================================================ */
 
 async function onSubmit() {
-  const payload = {
-    tenSp: form.tenSp,
-    maLoai: form.maLoai,
-    gia: form.gia,
-    soLuong: form.soLuong,
-    chiTiet: form.descriptionHtml,
-    colors: form.colors,
-    gallery: mainImagesPreview.value,
-  };
+  const payload = JSON.parse(JSON.stringify(form));
 
   try {
-    const res = await fetch("/api/admin/products", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+    const res = await axios.post(
+      "http://localhost:8081/nhom19/products",
+      payload
+    );
 
-    if (!res.ok) throw new Error(await res.text());
-
-    alert("Đã lưu sản phẩm");
+    alert("Lưu sản phẩm thành công!");
   } catch (err) {
-    alert("Lỗi khi lưu: " + err.message);
+    console.error(err);
+    alert("Lỗi khi lưu sản phẩm!");
   }
 }
 
+/* ============================================================
+    PREVIEW JSON
+============================================================ */
+const showPreview = ref(false);
+const previewData = ref("");
+
 function preview() {
   previewData.value = JSON.stringify(
-    { ...form, gallery: mainImagesPreview.value },
+    { ...form,},
     null,
     2
   );
@@ -477,7 +559,7 @@ function preview() {
 }
 
 onMounted(() => {
-  if (editor.value) form.descriptionHtml = editor.value.innerHTML;
+  if (editor.value) form.chiTiet = editor.value.innerHTML;
 });
 </script>
 
