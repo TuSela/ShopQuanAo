@@ -7,5 +7,8 @@ public class AddressResponse {
     private String hoten;
     private String sdt;
     private String email;
+    private String tinhThanhPho;
+    private String phuongXa;
+    private String quanHuyen;
     private String diaChi;
 }
