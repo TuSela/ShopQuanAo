@@ -6,6 +6,7 @@ import com.Nhom19.shopQuanAo.DTO.Request.Customer.UpdatePassRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.Admin.UserResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.ApiResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.MyOrder.MyOrderResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.OrderDetailRes.AddressResponse;
 import com.Nhom19.shopQuanAo.entity.addresses;
 import com.Nhom19.shopQuanAo.service.AddressSevice;
 import com.Nhom19.shopQuanAo.service.JwtUtils;
@@ -37,8 +38,8 @@ public class CustomerController {
     }
 
     @GetMapping("/address")
-    public ApiResponse<List<addresses>> getAddresses() {
-        ApiResponse<List<addresses>> apiResponse = new ApiResponse<>();
+    public ApiResponse<List<AddressResponse>> getAddresses() {
+        ApiResponse<List<AddressResponse>> apiResponse = new ApiResponse<>();
         apiResponse.setResult(addressSevice.getmyaddress());
         return apiResponse;
     }

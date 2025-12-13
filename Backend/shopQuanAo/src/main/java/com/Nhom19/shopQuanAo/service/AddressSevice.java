@@ -1,6 +1,7 @@
 package com.Nhom19.shopQuanAo.service;
 
 import com.Nhom19.shopQuanAo.DTO.Request.Customer.AddressRequest;
+import com.Nhom19.shopQuanAo.DTO.Response.OrderDetailRes.AddressResponse;
 import com.Nhom19.shopQuanAo.entity.Users;
 import com.Nhom19.shopQuanAo.entity.addresses;
 import com.Nhom19.shopQuanAo.mapper.AddressMapper;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -21,14 +23,17 @@ public class AddressSevice {
 
     @Autowired
     UserRepository userRepository;
-    public List<addresses> getmyaddress (){
+    public List<AddressResponse> getmyaddress (){
         var context = SecurityContextHolder.getContext();
         String sdt = context.getAuthentication().getName();
         Users users = userRepository.findBySdt(sdt);
-        int maTk = users.getMaTk();
-        System.out.println("maTk:"+maTk);
         List<addresses> addr = addressRepository.findByUsers(users);
-        return addr;
+        List<AddressResponse> addressResponse = new ArrayList<>();
+        addr.forEach(address -> {
+            addressMapper.ToDTO(address);
+            addressResponse.add(addressMapper.ToDTO(address));
+        });
+        return addressResponse;
     }
     public Boolean CreateAddress (AddressRequest request){
         var context = SecurityContextHolder.getContext();

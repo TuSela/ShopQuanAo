@@ -14,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 public class addresses {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer maDiaChi;
