@@ -13,6 +13,10 @@ public class ProductComments {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int maBl;
 
+    @ManyToOne
+    @JoinColumn(name="ma_ddh")
+    private Orders orders;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ma_tk")
     private Users users;
@@ -26,4 +30,5 @@ public class ProductComments {
     private float diemDanhGia;
     private String noiDung;
     private String trangThai;
+
 }

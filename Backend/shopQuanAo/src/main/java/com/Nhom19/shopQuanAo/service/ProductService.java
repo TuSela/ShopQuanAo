@@ -5,20 +5,25 @@ import com.Nhom19.shopQuanAo.DTO.Request.ColorRequest;
 import com.Nhom19.shopQuanAo.DTO.Request.ProductRequest;
 import com.Nhom19.shopQuanAo.DTO.Request.SizeRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.Admin.UserResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.CommentVariantResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.*;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.SPNamResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.ProductDetailResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.ProductResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.ProductVariantResponse;
 import com.Nhom19.shopQuanAo.entity.*;
 import com.Nhom19.shopQuanAo.mapper.ProductMapper;
 import com.Nhom19.shopQuanAo.mapper.UserMapper;
+import com.Nhom19.shopQuanAo.mapper.VariantMapper;
 import com.Nhom19.shopQuanAo.repository.*;
+import org.hibernate.type.descriptor.java.ObjectJavaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -30,23 +35,25 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
     @Autowired
-    ProductMapper productMapper;
+    private ProductMapper productMapper;
     @Autowired
-    ProductVariantRepo productVariantsRepo;
+    private ProductVariantRepo productVariantsRepo;
     @Autowired
     private ProductImagesRepo productImagesRepo;
     @Autowired
     private ProductCommentRepo productCommentRepo;
     @Autowired
-    UserMapper userMapper;
+      private UserMapper userMapper;
     @Autowired
-    ProductColorRepo productColorRepo;
+    private   ProductColorRepo productColorRepo;
     @Autowired
-    ProductSizeRepo productSizeRepo;
+    private   ProductSizeRepo productSizeRepo;
     @Autowired
-    ProductTypeRepo productTypeRepo;
-
-
+    private ProductTypeRepo productTypeRepo;
+    @Autowired
+    private OrderItemRepo orderItemRepo;
+    @Autowired
+    private VariantMapper variantMapper;
     public List<ProductResponse> getProducts(){
        return   productRepository.findAll().stream().map(productMapper::toDTO).collect(Collectors.toList());
     }
@@ -65,10 +72,7 @@ public class ProductService {
     }
 
 
-
-
-
-
+    //SHOW CHI TIẾT SẢN PHẨM
     public ProductDetailResponse getProductDetail(int id) {
         Products products = productRepository.getById(id);
         Set<ProductVariants> productVariant = productVariantsRepo.findByProducts(products);
@@ -102,6 +106,20 @@ public class ProductService {
                             res.setNoiDung(pc.getNoiDung());
                             res.setDiemDanhGia(pc.getDiemDanhGia());
                             res.setUsers(userResponse);
+                            List<OrderItems> orderItems = orderItemRepo.findByOrders(pc.getOrders());
+                            List<CommentVariantResponse> productVariants = res.getProductVariants();
+                            orderItems.forEach(o -> {
+                                ProductVariants pv =  o.getProductVariants();
+                                CommentVariantResponse commentVariantResponse = variantMapper.toDTO2(pv);
+                                commentVariantResponse.setTenKc(String.valueOf(pv.getSizes().getTenKc()));
+                                commentVariantResponse.setTenMs(String.valueOf(pv.getColors().getTenMs()));
+
+                                commentVariantResponse.setSoLuongDat(o.getSoLuong());
+                                productVariants.add(commentVariantResponse);
+
+                            });
+                            res.setProductVariants(productVariants);
+
 
                             return res;
                         })
@@ -122,6 +140,9 @@ public class ProductService {
 
         return productDetailResponse;
     }
+
+
+    ///LẤY RA SẢN PHẨM BIẾN THỂ
     public ColorResponse getColorDetail(Integer maSp, Integer maMs) {
         ColorResponse res = new ColorResponse();
         ProductColors color = productColorRepo.findById(maMs)
@@ -153,6 +174,7 @@ public class ProductService {
     }
 
 
+// THÊM SẢN PHẨM MỚI
     public Boolean createProduct(CreationProductRequest request) {
         Products products = productMapper.toEntity(request);
 

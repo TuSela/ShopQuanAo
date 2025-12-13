@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -32,6 +33,6 @@ public class ProductVariants {
 
     private boolean TrangThai;
 
-    @OneToMany(mappedBy = "variants", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<OrderItems> ordersItems = new HashSet<>();
+    @OneToMany(mappedBy = "productVariants", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItems> ordersItems;
 }

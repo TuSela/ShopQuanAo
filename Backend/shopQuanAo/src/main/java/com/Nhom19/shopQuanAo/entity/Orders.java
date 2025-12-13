@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -24,7 +25,7 @@ import java.util.Set;
         private Users users;
 
         @Column(name = "ngay_thanh_toan")
-        private LocalDateTime paidAt;
+        private LocalDateTime ngayThanhToan;
 
         @Column(name = "ngay_van_chuyen")
         private LocalDateTime shippedAt;
@@ -40,5 +41,5 @@ import java.util.Set;
         private float tongTien;
 
         @OneToMany(mappedBy = "orders", cascade = CascadeType.ALL, orphanRemoval = true)
-        private Set<OrderItems> items = new HashSet<>();
+        private List<OrderItems> items ;
     }

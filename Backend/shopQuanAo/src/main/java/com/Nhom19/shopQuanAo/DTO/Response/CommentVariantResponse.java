@@ -1,29 +1,21 @@
 package com.Nhom19.shopQuanAo.DTO.Response;
 
-import com.Nhom19.shopQuanAo.entity.OrderItems;
 import com.Nhom19.shopQuanAo.entity.ProductColors;
 import com.Nhom19.shopQuanAo.entity.ProductSizes;
-import com.Nhom19.shopQuanAo.entity.Products;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductVariantResponse {
+public class CommentVariantResponse {
     private int maBienThe;
-    private int soluong;
-    private boolean trangThai;
-    private String urlImage;
-    private boolean daiDien;
-    private ProductColors colors;
-    private ProductSizes sizes;
+    private int soLuongDat;
+    private String tenKc;
+    private String tenMs;
 }

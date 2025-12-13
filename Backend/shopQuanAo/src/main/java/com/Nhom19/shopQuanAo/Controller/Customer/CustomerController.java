@@ -5,9 +5,12 @@ import com.Nhom19.shopQuanAo.DTO.Request.Customer.AddressRequest;
 import com.Nhom19.shopQuanAo.DTO.Request.Customer.UpdatePassRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.Admin.UserResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.ApiResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.MyOrderResponse;
+import com.Nhom19.shopQuanAo.entity.Orders;
 import com.Nhom19.shopQuanAo.entity.addresses;
 import com.Nhom19.shopQuanAo.service.AddressSevice;
 import com.Nhom19.shopQuanAo.service.JwtUtils;
+import com.Nhom19.shopQuanAo.service.OrderService;
 import com.Nhom19.shopQuanAo.service.UserService;
 import com.nimbusds.jwt.JWTClaimsSet;
 import jakarta.validation.Valid;
@@ -26,7 +29,8 @@ public class CustomerController {
     UserService userService;
     @Autowired
     AddressSevice addressSevice;
-
+    @Autowired
+    OrderService orderService;
     @GetMapping()
     public ApiResponse<UserResponse> getMyInfo() {
         ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
@@ -109,6 +113,21 @@ public class CustomerController {
         } catch (ParseException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @GetMapping("/orders")
+    public ApiResponse<List<MyOrderResponse>> getMyOrders(@RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.substring(7);
+        JWTClaimsSet claims = jwtUtils.parseToken(token);
+        try {
+            Integer Id = claims.getIntegerClaim("id");
+            ApiResponse<List<MyOrderResponse>> apiResponse = new ApiResponse<>();
+
+            apiResponse.setResult(orderService.getMyOrders(Id));
+            return apiResponse;
+        } catch (ParseException e) {
             throw new RuntimeException(e);
         }
     }

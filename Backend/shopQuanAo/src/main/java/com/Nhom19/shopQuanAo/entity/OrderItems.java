@@ -1,32 +1,33 @@
 package com.Nhom19.shopQuanAo.entity;
 
 
+import com.Nhom19.shopQuanAo.entityCompositeKey.OrderItemId;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+
 
 import java.math.BigDecimal;
 
-@Getter
-@Setter
+@Data
 @Entity
 public class OrderItems {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @EmbeddedId
+    private OrderItemId id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("orderId")  // ánh xạ field orderId trong OrderItemId
     @JoinColumn(name = "ma_ddh")
     private Orders orders;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("variantId") // ánh xạ field variantId trong OrderItemId
     @JoinColumn(name = "ma_bien_the")
-    private ProductVariants variants;   // owner field name: "variant"
+    private ProductVariants productVariants;
 
     @Column(name = "so_luong_dat")
-    private Integer quantity;
+    private int soLuong;
 
     @Column(name = "tong_tien")
-    private BigDecimal total;
+    private BigDecimal tongTien;
 }
 

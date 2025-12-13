@@ -161,6 +161,22 @@
             <div v-for="(img, i) in color.urlImages" :key="i">
               <img :src="img" class="w-full h-full object-cover" />
             </div>
+            <div class="absolute left-1 bottom-1 flex gap-1">
+              <button
+                type="button"
+                @click="setDaiDien(idx, i)"
+                class="px-2 py-1 text-xs border rounded bg-white/90"
+              >
+                Đại diện
+              </button>
+              <button
+                type="button"
+                @click="color.urlImages.splice(i, 1)"
+                class="px-2 py-1 text-xs border rounded bg-white/90"
+              >
+                Xóa
+              </button>
+            </div>
           </div>
 
           <!-- SIZE CỦA TỪNG MÀU -->
