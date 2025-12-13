@@ -36,7 +36,9 @@ import java.util.Set;
         @Column(name = "tt_don_hang")
         private String orderStatus;
 
-        private int maDiaChi;
+        @ManyToOne(fetch = FetchType.LAZY)
+        @JoinColumn(name = "ma_dia_chi")
+        private addresses addresses;
 
         private float tongTien;
 

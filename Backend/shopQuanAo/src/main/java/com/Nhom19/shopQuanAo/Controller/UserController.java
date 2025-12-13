@@ -3,7 +3,7 @@ package com.Nhom19.shopQuanAo.Controller;
 import com.Nhom19.shopQuanAo.DTO.Request.Admin.CapNhatUserRequest;
 import com.Nhom19.shopQuanAo.DTO.Request.Customer.TaoUsersRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.ApiResponse;
-import com.Nhom19.shopQuanAo.DTO.Response.TaoUsersResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Admin.TaoUsersResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Admin.UserResponse;
 import com.Nhom19.shopQuanAo.service.AddressSevice;
 import com.Nhom19.shopQuanAo.service.UserService;

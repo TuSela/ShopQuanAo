@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -14,9 +16,12 @@ import lombok.Setter;
 public class addresses {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int maDiaChi;
+    private Integer maDiaChi;
 
-    private int maTk;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ma_tk")
+    private Users users;
+
     private String hoten;
     private String sdt;
     private String email;
@@ -24,4 +29,7 @@ public class addresses {
     private String phuongXa;
     private String quanHuyen;
     private String diaChi;
+
+    @OneToMany(mappedBy = "addresses", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Orders> orders;
 }

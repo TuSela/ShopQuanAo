@@ -11,7 +11,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class AddressSevice {
@@ -28,7 +27,7 @@ public class AddressSevice {
         Users users = userRepository.findBySdt(sdt);
         int maTk = users.getMaTk();
         System.out.println("maTk:"+maTk);
-        List<addresses> addr = addressRepository.findByMaTk(maTk);
+        List<addresses> addr = addressRepository.findByUsers(users);
         return addr;
     }
     public Boolean CreateAddress (AddressRequest request){
@@ -37,7 +36,7 @@ public class AddressSevice {
         Users users = userRepository.findBySdt(sdt);
         int maTk = users.getMaTk();
         addresses addr = addressMapper.ToEntity(request);
-        addr.setMaTk(maTk);
+        addr.setUsers(users);
         addressRepository.save(addr);
         return true;
     }

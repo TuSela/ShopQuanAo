@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface AddressRepository extends JpaRepository<addresses, Integer> {
-    public List<addresses> findByMaTk(int maTk);
+    public List<addresses> findByUsers(Users users);
 }

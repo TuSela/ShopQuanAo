@@ -1,21 +1,26 @@
 package com.Nhom19.shopQuanAo.service;
 
-import com.Nhom19.shopQuanAo.DTO.Response.MyOrderItemResponse;
-import com.Nhom19.shopQuanAo.DTO.Response.MyOrderResponse;
-import com.Nhom19.shopQuanAo.DTO.Response.OrderProductDTO;
-import com.Nhom19.shopQuanAo.DTO.Response.OrderResponseDTO;
-import com.Nhom19.shopQuanAo.entity.Orders;
-import com.Nhom19.shopQuanAo.entity.ProductImages;
-import com.Nhom19.shopQuanAo.entity.ProductVariants;
-import com.Nhom19.shopQuanAo.entity.Products;
+import com.Nhom19.shopQuanAo.DTO.Response.MyOrder.MyOrderItemResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.MyOrder.MyOrderResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.MyOrder.OrderProductDTO;
+import com.Nhom19.shopQuanAo.DTO.Response.MyOrder.OrderResponseDTO;
+import com.Nhom19.shopQuanAo.DTO.Response.OrderDetailRes.AddressResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.OrderDetailRes.OrderDetailResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.OrderDetailRes.PaymentResponse;
+import com.Nhom19.shopQuanAo.entity.*;
+import com.Nhom19.shopQuanAo.mapper.AddressMapper;
+import com.Nhom19.shopQuanAo.mapper.PaymentMapper;
+import com.Nhom19.shopQuanAo.repository.AddressRepository;
 import com.Nhom19.shopQuanAo.repository.OrderItemRepo;
 import com.Nhom19.shopQuanAo.repository.OrderRepository;
+import com.Nhom19.shopQuanAo.repository.PaymentMethodRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -92,6 +97,44 @@ public class OrderService {
             return orderRes;
 
         }).toList();
+    }
+    @Autowired
+    private AddressRepository addressRepository;
+    @Autowired
+    private AddressMapper addressMapper;
+    @Autowired
+    private PaymentMethodRepo paymentMethodRepo;
+    @Autowired
+    private PaymentMapper paymentMapper;
+    public OrderDetailResponse getOrderDetail(Integer maDdh) {
+
+        Orders order = orderRepository.findById(maDdh)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        OrderDetailResponse response = new OrderDetailResponse();
+
+        response.setMaDdh(order.getMaDdh());
+        response.setOrderStatus(order.getOrderStatus());
+        response.setNgayThanhToan(order.getNgayThanhToan());
+        response.setShippedAt(order.getShippedAt());
+
+        // Address
+        Optional<addresses> addresses = addressRepository.findById(order.getAddresses().getMaDiaChi());
+        AddressResponse addressRes = addressMapper.ToDTO(addresses.orElse(null));
+        response.setAddress(addressRes);
+
+        // Payment
+        Optional<PaymentMethods> paymentMethods= paymentMethodRepo.findById(order.getPaymentMethods().getMaPt());
+        PaymentResponse paymentResponse = paymentMapper.toDTO(paymentMethods.orElse(null));
+        response.setPayment(paymentResponse);
+
+        // Items
+
+        response.setItems(orderItemRepo.findOrderItems(order.getMaDdh()));
+
+        response.setTotalAmount(BigDecimal.valueOf(order.getTongTien()));
+
+        return response;
     }
 
 }

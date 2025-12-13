@@ -1,10 +1,13 @@
 package com.Nhom19.shopQuanAo.Controller;
 
-import com.Nhom19.shopQuanAo.DTO.Response.OrderResponseDTO;
+import com.Nhom19.shopQuanAo.DTO.Response.MyOrder.OrderResponseDTO;
+import com.Nhom19.shopQuanAo.DTO.Response.OrderDetailRes.OrderDetailResponse;
 import com.Nhom19.shopQuanAo.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,4 +23,10 @@ public class OrderController {
     public List<OrderResponseDTO> getOrders() {
         return orderService.getAllOrdersWithProducts();
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<OrderDetailResponse> getOrderDetail(@PathVariable Integer id) {
+        return ResponseEntity.ok(orderService.getOrderDetail(id));
+    }
+
 }

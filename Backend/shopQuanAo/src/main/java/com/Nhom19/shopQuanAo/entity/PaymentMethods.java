@@ -15,7 +15,7 @@ public class PaymentMethods {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ma_pt")
-    private Long maPt;
+    private Integer maPt;
 
     @Column(name = "ten_pt")
     private String tenPt;

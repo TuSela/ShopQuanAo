@@ -1,7 +1,7 @@
 package com.Nhom19.shopQuanAo.Controller;
 
 import com.Nhom19.shopQuanAo.DTO.Response.ApiResponse;
-import com.Nhom19.shopQuanAo.DTO.Response.ProductSizeResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.ProductDetail.ProductSizeResponse;
 import com.Nhom19.shopQuanAo.service.ProductSizeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

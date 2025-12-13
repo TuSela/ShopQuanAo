@@ -1,6 +1,6 @@
 package com.Nhom19.shopQuanAo.service;
 
-import com.Nhom19.shopQuanAo.DTO.Response.ProductSizeResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.ProductDetail.ProductSizeResponse;
 import com.Nhom19.shopQuanAo.mapper.ProductTypeMapper;
 import com.Nhom19.shopQuanAo.repository.ProductSizeRepo;
 import org.springframework.beans.factory.annotation.Autowired;

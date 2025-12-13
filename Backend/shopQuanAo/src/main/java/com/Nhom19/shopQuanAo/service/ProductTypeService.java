@@ -1,7 +1,7 @@
 package com.Nhom19.shopQuanAo.service;
 
 import com.Nhom19.shopQuanAo.DTO.Request.Admin.TypeCreationRequest;
-import com.Nhom19.shopQuanAo.DTO.Response.ProductTypeResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.ProductDetail.ProductTypeResponse;
 import com.Nhom19.shopQuanAo.entity.ProductTypes;
 import com.Nhom19.shopQuanAo.mapper.ProductTypeMapper;
 import com.Nhom19.shopQuanAo.repository.ProductTypeRepo;
