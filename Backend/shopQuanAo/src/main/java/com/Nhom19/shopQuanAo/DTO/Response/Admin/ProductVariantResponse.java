@@ -1,4 +1,4 @@
-package com.Nhom19.shopQuanAo.DTO.Response.ProductDetail;
+package com.Nhom19.shopQuanAo.DTO.Response.Admin;
 
 import com.Nhom19.shopQuanAo.entity.ProductColors;
 import com.Nhom19.shopQuanAo.entity.ProductSizes;

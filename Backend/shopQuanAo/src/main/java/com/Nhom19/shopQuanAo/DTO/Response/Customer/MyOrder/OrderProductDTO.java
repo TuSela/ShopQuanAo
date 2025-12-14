@@ -1,4 +1,4 @@
-package com.Nhom19.shopQuanAo.DTO.Response.MyOrder;
+package com.Nhom19.shopQuanAo.DTO.Response.Customer.MyOrder;
 
 public record OrderProductDTO(
         Integer variantId,

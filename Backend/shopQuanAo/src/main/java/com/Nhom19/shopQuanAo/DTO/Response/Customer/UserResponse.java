@@ -9,8 +9,12 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserCommentResponse {
+public class UserResponse {
     private Integer maTk;
     private String hoten;
+    private String email;
+    private String sdt;
+    private String gioiTinh;
+    private String ngaySinh;
     private String avatar;
 }

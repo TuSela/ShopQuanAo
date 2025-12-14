@@ -1,8 +1,8 @@
 package com.Nhom19.shopQuanAo.mapper;
 
 import com.Nhom19.shopQuanAo.DTO.Request.Customer.TaoUsersRequest;
-import com.Nhom19.shopQuanAo.DTO.Response.Admin.UserResponse;
-import com.Nhom19.shopQuanAo.DTO.Response.Customer.UserCommentResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductDetail.UserCommentResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.UserResponse;
 import com.Nhom19.shopQuanAo.entity.Users;
 import org.mapstruct.Mapper;
 

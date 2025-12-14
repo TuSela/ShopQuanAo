@@ -6,12 +6,14 @@ import com.Nhom19.shopQuanAo.entity.Users;
 import com.Nhom19.shopQuanAo.enums.Role;
 import com.Nhom19.shopQuanAo.exception.AppException;
 import com.Nhom19.shopQuanAo.exception.ErrorCode;
+import com.Nhom19.shopQuanAo.repository.CartItemRepo;
 import com.Nhom19.shopQuanAo.repository.UserRepository;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jwt.JWTClaimsSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -44,7 +46,13 @@ public class AuthenticationService {
         authenticationResponse.setSuccess(true);
         return authenticationResponse;
     }
+    @Autowired
+    CartItemRepo  cartItemRepo;
     private String generateToken(Users user) {
+
+
+        Integer soluong = cartItemRepo.countCartItemByUser(user.getMaTk());
+
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
@@ -56,6 +64,7 @@ public class AuthenticationService {
                 .claim("hoten",user.getHoten())
                 .claim("scope", Role.USER.toString())
                 .claim("avatar",user.getAvatar())
+                .claim("giohang",soluong)
                 .build();
         Payload payload =new Payload(jwtClaimsSet.toJSONObject());
 

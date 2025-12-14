@@ -1,4 +1,4 @@
-package com.Nhom19.shopQuanAo.DTO.Response.Customer;
+package com.Nhom19.shopQuanAo.DTO.Response.Customer.Home;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

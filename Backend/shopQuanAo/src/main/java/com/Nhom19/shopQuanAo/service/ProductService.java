@@ -3,10 +3,9 @@ package com.Nhom19.shopQuanAo.service;
 import com.Nhom19.shopQuanAo.DTO.Request.Admin.CreationProductRequest;
 import com.Nhom19.shopQuanAo.DTO.Request.ColorRequest;
 import com.Nhom19.shopQuanAo.DTO.Request.SizeRequest;
-import com.Nhom19.shopQuanAo.DTO.Response.ProductDetail.CommentVariantResponse;
-import com.Nhom19.shopQuanAo.DTO.Response.Customer.*;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.ProductBestSellerResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductDetail.*;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.SPNamResponse;
-import com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.ProductDetailResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Admin.ProductResponse;
 import com.Nhom19.shopQuanAo.entity.*;
 import com.Nhom19.shopQuanAo.mapper.ProductMapper;
@@ -98,17 +97,23 @@ public class ProductService {
                             res.setNoiDung(pc.getNoiDung());
                             res.setDiemDanhGia(pc.getDiemDanhGia());
                             res.setUsers(userResponse);
+
                             List<OrderItems> orderItems = orderItemRepo.findByOrders(pc.getOrders());
+
+
                             List<CommentVariantResponse> productVariants = res.getProductVariants();
+
                             orderItems.forEach(o -> {
-                                ProductVariants pv =  o.getProductVariants();
-                                CommentVariantResponse commentVariantResponse = variantMapper.toDTO2(pv);
-                                commentVariantResponse.setTenKc(String.valueOf(pv.getSizes().getTenKc()));
-                                commentVariantResponse.setTenMs(String.valueOf(pv.getColors().getTenMs()));
+                                if(o.getProductVariants().getProducts() == products) {
+                                    ProductVariants pv = o.getProductVariants();
+                                    CommentVariantResponse commentVariantResponse = variantMapper.toDTO2(pv);
 
-                                commentVariantResponse.setSoLuongDat(o.getSoLuong());
-                                productVariants.add(commentVariantResponse);
+                                    commentVariantResponse.setTenKc(String.valueOf(pv.getSizes().getTenKc()));
+                                    commentVariantResponse.setTenMs(String.valueOf(pv.getColors().getTenMs()));
 
+                                    commentVariantResponse.setSoLuongDat(o.getSoLuong());
+                                    productVariants.add(commentVariantResponse);
+                                }
                             });
                             res.setProductVariants(productVariants);
 

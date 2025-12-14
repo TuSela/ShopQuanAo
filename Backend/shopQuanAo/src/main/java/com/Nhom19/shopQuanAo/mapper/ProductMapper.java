@@ -3,8 +3,8 @@ package com.Nhom19.shopQuanAo.mapper;
 import com.Nhom19.shopQuanAo.DTO.Request.Admin.CreationProductRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.Admin.ProductResponse;
 
-import com.Nhom19.shopQuanAo.DTO.Response.ProductDetail.ProductVariantResponse;
-import com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.ProductDetailResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Admin.ProductVariantResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductDetail.ProductDetailResponse;
 import com.Nhom19.shopQuanAo.entity.ProductVariants;
 import com.Nhom19.shopQuanAo.entity.Products;
 import org.mapstruct.Mapper;

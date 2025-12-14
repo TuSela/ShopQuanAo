@@ -1,4 +1,4 @@
-package com.Nhom19.shopQuanAo.DTO.Response.MyOrder;
+package com.Nhom19.shopQuanAo.DTO.Response.Customer.MyOrder;
 
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.Nhom19.shopQuanAo.DTO.Response.OrderDetailRes;
+package com.Nhom19.shopQuanAo.DTO.Response.Customer.OrderDetailRes;
 
 import lombok.Data;
 

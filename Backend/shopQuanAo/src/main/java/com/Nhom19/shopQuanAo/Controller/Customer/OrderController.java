@@ -1,7 +1,7 @@
-package com.Nhom19.shopQuanAo.Controller;
+package com.Nhom19.shopQuanAo.Controller.Customer;
 
-import com.Nhom19.shopQuanAo.DTO.Response.MyOrder.OrderResponseDTO;
-import com.Nhom19.shopQuanAo.DTO.Response.OrderDetailRes.OrderDetailResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyOrder.OrderResponseDTO;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.OrderDetailRes.OrderDetailResponse;
 import com.Nhom19.shopQuanAo.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;

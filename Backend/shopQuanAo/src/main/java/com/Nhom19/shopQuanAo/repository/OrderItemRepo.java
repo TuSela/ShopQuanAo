@@ -1,6 +1,6 @@
 package com.Nhom19.shopQuanAo.repository;
 
-import com.Nhom19.shopQuanAo.DTO.Response.OrderDetailRes.OrderItemResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.OrderDetailRes.OrderItemResponse;
 import com.Nhom19.shopQuanAo.entity.OrderItems;
 import com.Nhom19.shopQuanAo.entity.Orders;
 import com.Nhom19.shopQuanAo.entityCompositeKey.OrderItemId;
@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 public interface OrderItemRepo extends JpaRepository<OrderItems, OrderItemId> {

@@ -1,12 +1,12 @@
 package com.Nhom19.shopQuanAo.service;
 
-import com.Nhom19.shopQuanAo.DTO.Response.MyOrder.MyOrderItemResponse;
-import com.Nhom19.shopQuanAo.DTO.Response.MyOrder.MyOrderResponse;
-import com.Nhom19.shopQuanAo.DTO.Response.MyOrder.OrderProductDTO;
-import com.Nhom19.shopQuanAo.DTO.Response.MyOrder.OrderResponseDTO;
-import com.Nhom19.shopQuanAo.DTO.Response.OrderDetailRes.AddressResponse;
-import com.Nhom19.shopQuanAo.DTO.Response.OrderDetailRes.OrderDetailResponse;
-import com.Nhom19.shopQuanAo.DTO.Response.OrderDetailRes.PaymentResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyOrder.MyOrderItemResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyOrder.MyOrderResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyOrder.OrderProductDTO;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyOrder.OrderResponseDTO;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.OrderDetailRes.AddressResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.OrderDetailRes.OrderDetailResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.OrderDetailRes.PaymentResponse;
 import com.Nhom19.shopQuanAo.entity.*;
 import com.Nhom19.shopQuanAo.mapper.AddressMapper;
 import com.Nhom19.shopQuanAo.mapper.PaymentMapper;
@@ -29,6 +29,7 @@ public class OrderService {
     OrderRepository orderRepository;
     @Autowired
     OrderItemRepo orderItemRepo;
+
     public List<OrderResponseDTO> getAllOrdersWithProducts() {
 
         List<Orders> orders = orderRepository.findAllOrdersWithItems();
@@ -51,6 +52,7 @@ public class OrderService {
             );
         }).toList();
     }
+
     public List<MyOrderResponse> getMyOrders(Integer maTk) {
 
         List<Orders> ordersList =

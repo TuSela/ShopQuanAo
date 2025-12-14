@@ -1,7 +1,6 @@
 package com.Nhom19.shopQuanAo.DTO.Response.Customer.Home;
 
-import com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductBestSellerResponse;
-import com.Nhom19.shopQuanAo.DTO.Response.ProductDetail.ProductTypeResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Admin.ProductTypeResponse;
 
 import java.util.List;
 

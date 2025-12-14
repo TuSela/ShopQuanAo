@@ -1,7 +1,7 @@
 package com.Nhom19.shopQuanAo.service;
 
 import com.Nhom19.shopQuanAo.DTO.Request.Customer.AddressRequest;
-import com.Nhom19.shopQuanAo.DTO.Response.OrderDetailRes.AddressResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.OrderDetailRes.AddressResponse;
 import com.Nhom19.shopQuanAo.entity.Users;
 import com.Nhom19.shopQuanAo.entity.addresses;
 import com.Nhom19.shopQuanAo.mapper.AddressMapper;

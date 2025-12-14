@@ -1,9 +1,9 @@
 package com.Nhom19.shopQuanAo.mapper;
 
 import com.Nhom19.shopQuanAo.DTO.Request.Admin.TypeCreationRequest;
-import com.Nhom19.shopQuanAo.DTO.Response.Customer.ColorResponse;
-import com.Nhom19.shopQuanAo.DTO.Response.ProductDetail.ProductSizeResponse;
-import com.Nhom19.shopQuanAo.DTO.Response.ProductDetail.ProductTypeResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductDetail.ColorResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Admin.ProductSizeResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Admin.ProductTypeResponse;
 import com.Nhom19.shopQuanAo.entity.ProductColors;
 import com.Nhom19.shopQuanAo.entity.ProductSizes;
 import com.Nhom19.shopQuanAo.entity.ProductTypes;

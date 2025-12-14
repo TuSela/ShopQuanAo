@@ -1,15 +1,13 @@
 package com.Nhom19.shopQuanAo.repository;
 
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.SPNamResponse;
-import com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductBestSellerResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.ProductBestSellerResponse;
 import com.Nhom19.shopQuanAo.entity.Products;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -118,7 +116,7 @@ List<ProductBestSellerResponse> getTopBestSeller();
 //    List<ProductBestSellerResponse> getSanPhamTheoMau();
 
     @Query("""
-    SELECT new com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductBestSellerResponse(
+    SELECT new com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.ProductBestSellerResponse(
         p.maSp,
         p.tenSp,
         p.gia,

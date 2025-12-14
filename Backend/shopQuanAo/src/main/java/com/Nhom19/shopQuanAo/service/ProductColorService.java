@@ -1,8 +1,7 @@
 package com.Nhom19.shopQuanAo.service;
 
-import com.Nhom19.shopQuanAo.DTO.Response.Customer.ColorResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductDetail.ColorResponse;
 import com.Nhom19.shopQuanAo.entity.ProductColors;
-import com.Nhom19.shopQuanAo.entity.ProductTypes;
 import com.Nhom19.shopQuanAo.mapper.ColorMapper;
 import com.Nhom19.shopQuanAo.mapper.ProductTypeMapper;
 import com.Nhom19.shopQuanAo.repository.ProductColorRepo;

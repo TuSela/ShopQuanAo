@@ -1,4 +1,4 @@
-package com.Nhom19.shopQuanAo.DTO.Response.Admin;
+package com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductDetail;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,12 +9,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserResponse {
+public class UserCommentResponse {
     private Integer maTk;
     private String hoten;
-    private String email;
-    private String sdt;
-    private String gioiTinh;
-    private String ngaySinh;
     private String avatar;
 }

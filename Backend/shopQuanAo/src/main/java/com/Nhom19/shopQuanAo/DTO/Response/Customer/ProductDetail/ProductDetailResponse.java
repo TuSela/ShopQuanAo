@@ -1,7 +1,5 @@
-package com.Nhom19.shopQuanAo.DTO.Response.Customer.Home;
+package com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductDetail;
 
-import com.Nhom19.shopQuanAo.DTO.Response.Customer.ColorResponse;
-import com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductCommentResponse;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -1,4 +1,4 @@
-package com.Nhom19.shopQuanAo.DTO.Response.Customer;
+package com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductDetail;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;

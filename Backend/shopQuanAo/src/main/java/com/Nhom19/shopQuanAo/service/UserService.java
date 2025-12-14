@@ -3,7 +3,7 @@ package com.Nhom19.shopQuanAo.service;
 import com.Nhom19.shopQuanAo.DTO.Request.Admin.CapNhatUserRequest;
 import com.Nhom19.shopQuanAo.DTO.Request.Customer.TaoUsersRequest;
 import com.Nhom19.shopQuanAo.DTO.Request.Customer.UpdatePassRequest;
-import com.Nhom19.shopQuanAo.DTO.Response.Admin.UserResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.UserResponse;
 import com.Nhom19.shopQuanAo.entity.Users;
 import com.Nhom19.shopQuanAo.exception.AppException;
 import com.Nhom19.shopQuanAo.exception.ErrorCode;

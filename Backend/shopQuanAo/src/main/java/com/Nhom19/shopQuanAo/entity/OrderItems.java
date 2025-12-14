@@ -15,7 +15,7 @@ public class OrderItems {
     private OrderItemId id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("orderId")  // ánh xạ field orderId trong OrderItemId
+    @MapsId("orderId")  // ánh xạ field cartId trong OrderItemId
     @JoinColumn(name = "ma_ddh")
     private Orders orders;
 

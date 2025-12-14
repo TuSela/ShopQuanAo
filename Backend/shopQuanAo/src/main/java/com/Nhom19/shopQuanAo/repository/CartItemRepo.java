@@ -1,0 +1,22 @@
+package com.Nhom19.shopQuanAo.repository;
+
+import com.Nhom19.shopQuanAo.entity.CartItems;
+import com.Nhom19.shopQuanAo.entity.Cart;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
+
+public interface CartItemRepo extends JpaRepository<CartItems, CartItems> {
+    List<CartItems> findByCart(Cart cart);
+
+    @Query(value = """
+    SELECT COUNT(*)
+    FROM cart_items ci
+    JOIN cart c ON ci.ma_gh = c.ma_gh
+    WHERE c.ma_tk = :maTk
+""", nativeQuery = true)
+    Integer countCartItemByUser(@Param("maTk") Integer maTk);
+
+}

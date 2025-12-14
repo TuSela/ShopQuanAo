@@ -2,8 +2,8 @@ package com.Nhom19.shopQuanAo.Controller;
 
 import com.Nhom19.shopQuanAo.DTO.Request.Admin.CreationProductRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.ApiResponse;
-import com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.ProductDetailResponse;
-import com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductBestSellerResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductDetail.ProductDetailResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.ProductBestSellerResponse;
 import com.Nhom19.shopQuanAo.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
