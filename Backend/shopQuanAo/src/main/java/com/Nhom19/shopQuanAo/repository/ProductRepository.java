@@ -128,5 +128,11 @@ List<ProductBestSellerResponse> getTopBestSeller();
     """)
     List<ProductBestSellerResponse> getProductsForHome();
 
+//    @Query("""
+//        SELECT p FROM Products p
+//        WHERE LOWER(p.tenSanPham) LIKE LOWER(CONCAT('%', :keyword, '%'))
+//           OR LOWER(p.moTa) LIKE LOWER(CONCAT('%', :keyword, '%'))
+//    """)
+//    List<Products> searchByKeyword(@Param("keyword") String keyword);
 }
 

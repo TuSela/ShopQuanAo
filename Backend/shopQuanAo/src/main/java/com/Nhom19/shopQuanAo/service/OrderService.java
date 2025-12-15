@@ -196,7 +196,6 @@ public class OrderService {
             order.setNgayThanhToan(LocalDateTime.now());
         }
 
-
         order.setNgayThanhToan(LocalDateTime.now());
         order.setTongTien(cart.getTongTien());
         var context = SecurityContextHolder.getContext();
@@ -226,5 +225,6 @@ public class OrderService {
         creatCartResponse.setToken(authenticationService.generateToken(users));
         creatCartResponse.setSuccess(Boolean.TRUE);
         return creatCartResponse;
+
     }
 }

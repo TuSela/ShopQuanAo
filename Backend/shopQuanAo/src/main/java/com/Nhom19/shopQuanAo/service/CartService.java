@@ -83,12 +83,16 @@ public class CartService {
             BigDecimal thanhTien = products.getGia().multiply(BigDecimal.valueOf(request.getSoLuong()));
             cartItems.setTongTien(thanhTien);
         }
-        cartItemRepo.save(cartItems);
 
-       List<CartItems> cartItemsList= cartItemRepo.findByCart(cart1);
-       cartItemsList.forEach(cartItems1 -> {
-           cart1.setTongTien(cart1.getTongTien().add(cartItems1.getTongTien()));
-       });
+        cartItemRepo.save(cartItems);
+        BigDecimal thanhTien = BigDecimal.ZERO;
+
+        List<CartItems> cartItemsList = cartItemRepo.findByCart(cart1);
+
+        for (CartItems item : cartItemsList) {
+            thanhTien = thanhTien.add(item.getTongTien());
+        }
+        cart1.setTongTien(thanhTien);
 
        cart1.setNgaySua(LocalDateTime.now());
        cartRepository.save(cart1);
@@ -163,10 +167,15 @@ public class CartService {
         cartItems.setTongTien(thanhTien);
         cartItemRepo.save(cartItems);
 
-        List<CartItems> cartItemsList= cartItemRepo.findByCart(cart);
-        cartItemsList.forEach(cartItems1 -> {
-            cart.setTongTien(cart.getTongTien().add(cartItems1.getTongTien()));
-        });
+        BigDecimal thanhTien2 = BigDecimal.ZERO;
+
+        List<CartItems> cartItemsList = cartItemRepo.findByCart(cart);
+
+        for (CartItems item : cartItemsList) {
+            thanhTien2 = thanhTien2.add(item.getTongTien());
+        }
+        cart.setTongTien(thanhTien2);
+
 
         cart.setNgaySua(LocalDateTime.now());
         cartRepository.save(cart);
@@ -187,6 +196,7 @@ public class CartService {
         cart.setTongTien(cart.getTongTien().subtract(cartItems.getTongTien()));
         cart.setNgaySua(LocalDateTime.now());
         cartItemRepo.delete(cartItems);
+        
         return true;
     }
 }
