@@ -12,7 +12,7 @@ import java.util.List;
 public interface CartItemRepo extends JpaRepository<CartItems, CartItems> {
     List<CartItems> findByCart(Cart cart);
     CartItems findByCartAndProductVariants(Cart cart, ProductVariants productVariants);
-
+    Boolean existsByCartAndProductVariants(Cart cart, ProductVariants productVariants);
     @Query(value = """
     SELECT COUNT(*)
     FROM cart_items ci

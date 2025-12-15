@@ -64,25 +64,34 @@ public class CartService {
         cartItems.setSoluong(cartItems.getSoluong() + request.getSoLuong());
         Products products =productRepo.findById(request.getMaSp()).orElseThrow(() -> new RuntimeException("người dùng không tồn tại"));
 
-        BigDecimal thanhTien = products.getGia().multiply(BigDecimal.valueOf(request.getSoLuong()));
 
-        cartItems.setTongTien(thanhTien);
         ProductVariants productVariants = productVariantRepo.findByProductAndColorAndSize(request.getMaSp(),  request.getMaMs(), request.getMaKc()).orElseThrow(() -> new RuntimeException("Sản phẩm biến thể không tồn tại"));
-        CartItems cartItemsX = cartItemRepo.findByCartAndProductVariants(cart1, productVariants);
-        if ( cartItemsX != null) {
-            cartItems.setSoluong(cartItemsX.getSoluong() + request.getSoLuong());
-        }
+
         cartItems.setProductVariants(productVariants);
         CartItemId id = new CartItemId(
                 cart1.getMaGh(),
                 productVariants.getMaBienThe()
         );
+
+        boolean cartItemsX = cartItemRepo.existsByCartAndProductVariants(cart1, productVariants);
         cartItems.setId(id);
+        if (cartItemsX) {
+            CartItems cartItems2 = cartItemRepo.findByCartAndProductVariants(cart1, productVariants);
+            cartItems.setSoluong(cartItems2.getSoluong() + request.getSoLuong());
+            BigDecimal thanhTien = products.getGia().multiply(BigDecimal.valueOf(cartItems.getSoluong()));
+            cartItems.setTongTien(thanhTien);
+
+        }else {
+            BigDecimal thanhTien = products.getGia().multiply(BigDecimal.valueOf(request.getSoLuong()));
+            cartItems.setTongTien(thanhTien);
+        }
+
         cartItemRepo.save(cartItems);
+
 
        List<CartItems> cartItemsList= cartItemRepo.findByCart(cart1);
        cartItemsList.forEach(cartItems1 -> {
-         cart1.setTongTien(cart1.getTongTien().add(cartItems1.getTongTien()));
+           cart1.setTongTien(cart1.getTongTien().add(cartItems1.getTongTien()));
        });
 
        cart1.setNgaySua(LocalDateTime.now());
