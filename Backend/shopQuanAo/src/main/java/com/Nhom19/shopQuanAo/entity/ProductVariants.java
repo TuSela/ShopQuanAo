@@ -35,4 +35,6 @@ public class ProductVariants {
 
     @OneToMany(mappedBy = "productVariants", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItems> ordersItems;
+
+
 }

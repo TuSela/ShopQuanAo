@@ -34,7 +34,7 @@ public class ProductService {
     @Autowired
     private ProductCommentRepo productCommentRepo;
     @Autowired
-      private UserMapper userMapper;
+    private UserMapper userMapper;
     @Autowired
     private   ProductColorRepo productColorRepo;
     @Autowired

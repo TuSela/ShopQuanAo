@@ -50,7 +50,6 @@ public class AuthenticationService {
     CartItemRepo  cartItemRepo;
     private String generateToken(Users user) {
 
-
         Integer soluong = cartItemRepo.countCartItemByUser(user.getMaTk());
 
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);

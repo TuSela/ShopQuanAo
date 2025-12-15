@@ -2,6 +2,7 @@ package com.Nhom19.shopQuanAo.Controller.Customer;
 
 import com.Nhom19.shopQuanAo.DTO.Request.Customer.CreateCartRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.ApiResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyCart.MyCartResponse;
 import com.Nhom19.shopQuanAo.entity.Cart;
 import com.Nhom19.shopQuanAo.repository.CartItemRepo;
 import com.Nhom19.shopQuanAo.service.CartService;
@@ -31,5 +32,11 @@ public class CartController {
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
+    }
+    @GetMapping
+    public ApiResponse<MyCartResponse> getMyCart() {
+        ApiResponse<MyCartResponse> response = new ApiResponse<>();
+        response.setResult(cartService.getAllMyCart());
+        return response;
     }
 }

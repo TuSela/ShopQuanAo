@@ -1,8 +1,13 @@
 package com.Nhom19.shopQuanAo.service;
 
 import com.Nhom19.shopQuanAo.DTO.Request.Customer.CreateCartRequest;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.ProductBestSellerResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyCart.MyCartItemResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyCart.MyCartResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductDetail.CommentVariantResponse;
 import com.Nhom19.shopQuanAo.entity.*;
 import com.Nhom19.shopQuanAo.entityCompositeKey.CartItemId;
+import com.Nhom19.shopQuanAo.mapper.ProductMapper;
 import com.Nhom19.shopQuanAo.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -10,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -24,6 +30,8 @@ public class CartService {
     private ProductRepository productRepo;
     @Autowired
     private UserRepository userRepo;
+    @Autowired
+    ProductMapper productMapper;
 
     public Boolean createCart(CreateCartRequest request, Integer Id) {
 
@@ -68,5 +76,53 @@ public class CartService {
        cart1.setNgaySua(LocalDateTime.now());
        cartRepository.save(cart1);
        return true;
+    }
+    public MyCartResponse getAllMyCart() {
+        var context = SecurityContextHolder.getContext();
+        String sdt = context.getAuthentication().getName();
+        Users users = userRepo.findBySdt(sdt);
+
+        Cart cart = cartRepository.findByUsers(users);
+        MyCartResponse myCartResponse = new MyCartResponse();
+        myCartResponse.setMaGioHang(cart.getMaGh());
+        myCartResponse.setTongTien(cart.getTongTien());
+
+        List<CartItems> cartItems = cartItemRepo.findByCart(cart);
+        List<MyCartItemResponse> myCartItemResponseList = new ArrayList<>();
+        cartItems.forEach(cartItems1 -> {
+
+            MyCartItemResponse cartItemResponse = new MyCartItemResponse();
+
+            CommentVariantResponse commentVariantResponse = productMapper.toDTO6(cartItems1.getProductVariants());
+            commentVariantResponse.setTenKc(cartItems1.getProductVariants().getSizes().getTenKc());
+            commentVariantResponse.setTenMs(cartItems1.getProductVariants().getColors().getTenMs());
+            commentVariantResponse.setSoLuongDat(cartItems1.getSoluong());
+            cartItemResponse.setVariant(commentVariantResponse);
+
+            ProductBestSellerResponse productBestSellerResponse = productMapper.toDTO5(cartItems1.getProductVariants().getProducts());
+            List<ProductImages> images =
+                    cartItems1.getProductVariants()
+                            .getProducts()
+                            .getImages();
+            ProductImages firstImage = new ProductImages();
+
+            if (images != null && !images.isEmpty()) {
+                for (ProductImages image : images) {
+                    if (image.getDaiDien() == true) {
+                        firstImage.setUrlImage(image.getUrlImage());
+                        break;
+                    }
+                }
+            }
+
+            productBestSellerResponse.setUrlImage(firstImage.getUrlImage());
+            cartItemResponse.setProduct(productBestSellerResponse);
+
+
+            myCartItemResponseList.add(cartItemResponse);
+
+        });
+        myCartResponse.setItems(myCartItemResponseList);
+        return myCartResponse;
     }
 }

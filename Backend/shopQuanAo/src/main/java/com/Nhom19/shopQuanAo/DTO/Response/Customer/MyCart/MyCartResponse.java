@@ -10,9 +10,6 @@ import java.util.List;
 @Data
 public class MyCartResponse {
     private Integer maGioHang;
-    private LocalDateTime ngayTao;
-    private LocalDateTime ngaySua;
     private BigDecimal tongTien;
     private List<MyCartItemResponse> items;
-
 }
