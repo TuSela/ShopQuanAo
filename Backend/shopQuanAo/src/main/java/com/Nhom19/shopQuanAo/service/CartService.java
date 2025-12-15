@@ -1,12 +1,15 @@
 package com.Nhom19.shopQuanAo.service;
 
 import com.Nhom19.shopQuanAo.DTO.Request.Customer.CreateCartRequest;
+import com.Nhom19.shopQuanAo.DTO.Request.Customer.UpdateMyCartReq;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.ProductBestSellerResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyCart.MyCartItemResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyCart.MyCartResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductDetail.CommentVariantResponse;
 import com.Nhom19.shopQuanAo.entity.*;
 import com.Nhom19.shopQuanAo.entityCompositeKey.CartItemId;
+import com.Nhom19.shopQuanAo.exception.AppException;
+import com.Nhom19.shopQuanAo.exception.ErrorCode;
 import com.Nhom19.shopQuanAo.mapper.ProductMapper;
 import com.Nhom19.shopQuanAo.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +34,8 @@ public class CartService {
     @Autowired
     private UserRepository userRepo;
     @Autowired
-    ProductMapper productMapper;
+    private ProductMapper productMapper;
+
 
     public Boolean createCart(CreateCartRequest request, Integer Id) {
 
@@ -47,7 +51,7 @@ public class CartService {
             cart.setNgaySua(LocalDateTime.now());
             cartRepository.save(cart);
         }
-        Cart cart1 = cartRepository.findByUsers(user);
+        Cart cart1 = cartRepository.findByUsers(user).orElseThrow(()->new AppException(ErrorCode.CART_NOT_EXISTED));
         CartItems cartItems = new CartItems();
 
         cartItems.setCart(cart1);
@@ -70,7 +74,6 @@ public class CartService {
        List<CartItems> cartItemsList= cartItemRepo.findByCart(cart1);
        cartItemsList.forEach(cartItems1 -> {
          cart1.setTongTien(cart1.getTongTien().add(cartItems1.getTongTien()));
-
        });
 
        cart1.setNgaySua(LocalDateTime.now());
@@ -82,7 +85,7 @@ public class CartService {
         String sdt = context.getAuthentication().getName();
         Users users = userRepo.findBySdt(sdt);
 
-        Cart cart = cartRepository.findByUsers(users);
+        Cart cart = cartRepository.findByUsers(users).orElseThrow(()-> new AppException(ErrorCode.CART_NOT_EXISTED));
         MyCartResponse myCartResponse = new MyCartResponse();
         myCartResponse.setMaGioHang(cart.getMaGh());
         myCartResponse.setTongTien(cart.getTongTien());
@@ -118,11 +121,50 @@ public class CartService {
             productBestSellerResponse.setUrlImage(firstImage.getUrlImage());
             cartItemResponse.setProduct(productBestSellerResponse);
 
-
             myCartItemResponseList.add(cartItemResponse);
 
         });
         myCartResponse.setItems(myCartItemResponseList);
         return myCartResponse;
+    }
+    public Boolean UpdateMyCart(UpdateMyCartReq request, Integer maBienThe) {
+        var context = SecurityContextHolder.getContext();
+        String sdt = context.getAuthentication().getName();
+        Users users = userRepo.findBySdt(sdt);
+        Cart cart = cartRepository.findByUsers(users).orElseThrow(()-> new AppException(ErrorCode.CART_NOT_EXISTED));
+
+        ProductVariants productVariants= productVariantRepo.findById(maBienThe).orElseThrow(()-> new RuntimeException("Không tìm thấy mã biến thể"));
+
+        CartItems cartItems = cartItemRepo.findByCartAndProductVariants(cart, productVariants);
+        cartItems.setSoluong(request.getSoLuong());
+
+        BigDecimal thanhTien = productVariants.getProducts().getGia().multiply(BigDecimal.valueOf(request.getSoLuong()));
+        cartItems.setTongTien(thanhTien);
+        cartItemRepo.save(cartItems);
+
+        List<CartItems> cartItemsList= cartItemRepo.findByCart(cart);
+        cartItemsList.forEach(cartItems1 -> {
+            cart.setTongTien(cart.getTongTien().add(cartItems1.getTongTien()));
+        });
+
+        cart.setNgaySua(LocalDateTime.now());
+        cartRepository.save(cart);
+
+        return true;
+    }
+
+    public Boolean DeleteMyCartItem(Integer maBienThe) {
+        var context = SecurityContextHolder.getContext();
+        String sdt = context.getAuthentication().getName();
+        Users users = userRepo.findBySdt(sdt);
+        Cart cart = cartRepository.findByUsers(users).orElseThrow(()-> new AppException(ErrorCode.CART_NOT_EXISTED));
+        ProductVariants productVariants= productVariantRepo.findById(maBienThe).orElseThrow(()-> new RuntimeException("Không tìm thấy mã biến thể"));
+
+        CartItems cartItems = cartItemRepo.findByCartAndProductVariants(cart, productVariants);
+
+        cart.setTongTien(cart.getTongTien().subtract(cartItems.getTongTien()));
+        cart.setNgaySua(LocalDateTime.now());
+        cartItemRepo.delete(cartItems);
+        return true;
     }
 }

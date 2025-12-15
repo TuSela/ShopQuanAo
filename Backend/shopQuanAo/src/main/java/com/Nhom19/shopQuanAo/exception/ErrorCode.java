@@ -12,9 +12,8 @@ public enum ErrorCode {
     UNAUTHORIZED(9999, "Unauthorized"),
     USER_EXISTED(1002,"user already exists"),
     INVALID_REQUEST(1007,"invalid request"),
+    CART_NOT_EXISTED(1009,"cart not existed"),
     ;
-
-
     private int code;
     private String message;
 

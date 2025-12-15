@@ -1,6 +1,7 @@
 package com.Nhom19.shopQuanAo.Controller.Customer;
 
 import com.Nhom19.shopQuanAo.DTO.Request.Customer.CreateCartRequest;
+import com.Nhom19.shopQuanAo.DTO.Request.Customer.UpdateMyCartReq;
 import com.Nhom19.shopQuanAo.DTO.Response.ApiResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyCart.MyCartResponse;
 import com.Nhom19.shopQuanAo.entity.Cart;
@@ -37,6 +38,18 @@ public class CartController {
     public ApiResponse<MyCartResponse> getMyCart() {
         ApiResponse<MyCartResponse> response = new ApiResponse<>();
         response.setResult(cartService.getAllMyCart());
+        return response;
+    }
+    @PutMapping("/{maBienThe}")
+    public ApiResponse<Boolean> updateMyCart(@RequestBody UpdateMyCartReq request, @PathVariable Integer maBienThe) {
+        ApiResponse<Boolean> response = new ApiResponse<>();
+        response.setResult(cartService.UpdateMyCart(request,maBienThe));
+        return response;
+    }
+    @DeleteMapping("/{maBienThe}")
+    public ApiResponse<Boolean> deleteMyCart(@PathVariable Integer maBienThe) {
+        ApiResponse<Boolean> response = new ApiResponse<>();
+        response.setResult(cartService.DeleteMyCartItem(maBienThe));
         return response;
     }
 }

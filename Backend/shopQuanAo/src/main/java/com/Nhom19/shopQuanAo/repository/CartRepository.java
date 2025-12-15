@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CartRepository extends JpaRepository<Cart, Integer> {
@@ -21,7 +22,8 @@ public interface CartRepository extends JpaRepository<Cart, Integer> {
 
     boolean existsByUsers(Users user);
 
-    Cart findByUsers(Users user);
 
+
+    Optional<Cart> findByUsers(Users users);
 
 }
