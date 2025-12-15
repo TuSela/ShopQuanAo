@@ -48,8 +48,8 @@ public class CartController {
         return response;
     }
     @DeleteMapping("/{maBienThe}")
-    public ApiResponse<Boolean> deleteMyCart(@PathVariable Integer maBienThe) {
-        ApiResponse<Boolean> response = new ApiResponse<>();
+    public ApiResponse<CreatCartResponse> deleteMyCart(@PathVariable Integer maBienThe) {
+        ApiResponse<CreatCartResponse> response = new ApiResponse<>();
         response.setResult(cartService.DeleteMyCartItem(maBienThe));
         return response;
     }

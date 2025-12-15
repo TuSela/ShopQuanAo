@@ -13,6 +13,7 @@ import com.Nhom19.shopQuanAo.exception.AppException;
 import com.Nhom19.shopQuanAo.exception.ErrorCode;
 import com.Nhom19.shopQuanAo.mapper.ProductMapper;
 import com.Nhom19.shopQuanAo.repository.*;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -177,14 +178,15 @@ public class CartService {
         cart.setTongTien(thanhTien2);
 
 
+
         cart.setNgaySua(LocalDateTime.now());
         cartRepository.save(cart);
 
         return true;
 
     }
-
-    public Boolean DeleteMyCartItem(Integer maBienThe) {
+    @Transactional
+    public CreatCartResponse DeleteMyCartItem(Integer maBienThe) {
         var context = SecurityContextHolder.getContext();
         String sdt = context.getAuthentication().getName();
         Users users = userRepo.findBySdt(sdt);
@@ -193,10 +195,23 @@ public class CartService {
 
         CartItems cartItems = cartItemRepo.findByCartAndProductVariants(cart, productVariants);
 
-        cart.setTongTien(cart.getTongTien().subtract(cartItems.getTongTien()));
+        BigDecimal thanhTien2 = BigDecimal.ZERO;
+
+        List<CartItems> cartItemsList = cartItemRepo.findByCart(cart);
+
+        for (CartItems item : cartItemsList) {
+            thanhTien2 = thanhTien2.add(item.getTongTien());
+        }
+        cart.setTongTien(thanhTien2);
+
         cart.setNgaySua(LocalDateTime.now());
         cartItemRepo.delete(cartItems);
-        
-        return true;
+        if(!cartItemRepo.existsByCart(cart)){
+            cartRepository.delete(cart);
+        }
+        CreatCartResponse creatCartResponse = new CreatCartResponse();
+        creatCartResponse.setToken(authenticationService.generateToken(users));
+        creatCartResponse.setSuccess(Boolean.TRUE);
+        return creatCartResponse;
     }
 }
