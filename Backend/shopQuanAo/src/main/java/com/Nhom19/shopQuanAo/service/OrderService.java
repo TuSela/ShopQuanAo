@@ -1,24 +1,20 @@
 package com.Nhom19.shopQuanAo.service;
 
-import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyOrder.MyOrderItemResponse;
-import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyOrder.MyOrderResponse;
-import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyOrder.OrderProductDTO;
-import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyOrder.OrderResponseDTO;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyOrder.*;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.OrderDetailRes.AddressResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.OrderDetailRes.OrderDetailResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.OrderDetailRes.PaymentResponse;
 import com.Nhom19.shopQuanAo.entity.*;
 import com.Nhom19.shopQuanAo.mapper.AddressMapper;
 import com.Nhom19.shopQuanAo.mapper.PaymentMapper;
-import com.Nhom19.shopQuanAo.repository.AddressRepository;
-import com.Nhom19.shopQuanAo.repository.OrderItemRepo;
-import com.Nhom19.shopQuanAo.repository.OrderRepository;
-import com.Nhom19.shopQuanAo.repository.PaymentMethodRepo;
+import com.Nhom19.shopQuanAo.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -137,6 +133,38 @@ public class OrderService {
         response.setTotalAmount(BigDecimal.valueOf(order.getTongTien()));
 
         return response;
+    }
+    @Autowired
+    private CartService cartService;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private PaymentMethodRepo paymentMethodRepository;
+
+    public CreatOrderResponse Order() {
+
+        var context = SecurityContextHolder.getContext();
+        String sdt = context.getAuthentication().getName();
+        Users users = userRepository.findBySdt(sdt);
+        List<addresses> addressesList = addressRepository.findByUsers(users);
+        CreatOrderResponse creatOrderResponse = new CreatOrderResponse();
+        List<AddressResponse> addressResponseList = new ArrayList<>();
+        addressesList.forEach(address -> {
+            AddressResponse addressRes = addressMapper.ToDTO(address);
+            addressResponseList.add(addressRes);
+        });
+        List<PaymentMethods> paymentMethodsList = paymentMethodRepository.findAll();
+        List<PaymentResponse> paymentResponseList = new ArrayList<>();
+        paymentMethodsList.forEach(paymentMethod -> {
+            PaymentResponse paymentResponse = paymentMapper.toDTO(paymentMethod);
+            paymentResponseList.add(paymentResponse);
+        });
+
+        creatOrderResponse.setAddress(addressResponseList);
+        creatOrderResponse.setPayment(paymentResponseList);
+        creatOrderResponse.setMyCartResponse(cartService.getAllMyCart());
+
+        return creatOrderResponse;
     }
 
 }

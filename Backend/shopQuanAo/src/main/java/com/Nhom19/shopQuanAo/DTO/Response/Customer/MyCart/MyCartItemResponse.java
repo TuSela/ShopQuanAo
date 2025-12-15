@@ -10,5 +10,4 @@ import java.math.BigDecimal;
 public class MyCartItemResponse {
     private ProductBestSellerResponse product;
     private CommentVariantResponse variant;
-
 }

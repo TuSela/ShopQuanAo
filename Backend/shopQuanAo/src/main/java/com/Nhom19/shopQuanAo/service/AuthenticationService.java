@@ -48,7 +48,7 @@ public class AuthenticationService {
     }
     @Autowired
     CartItemRepo  cartItemRepo;
-    private String generateToken(Users user) {
+    public String generateToken(Users user) {
 
         Integer soluong = cartItemRepo.countCartItemByUser(user.getMaTk());
 

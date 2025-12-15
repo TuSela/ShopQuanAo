@@ -3,6 +3,7 @@ package com.Nhom19.shopQuanAo.service;
 import com.Nhom19.shopQuanAo.DTO.Request.Customer.CreateCartRequest;
 import com.Nhom19.shopQuanAo.DTO.Request.Customer.UpdateMyCartReq;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.ProductBestSellerResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyCart.CreatCartResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyCart.MyCartItemResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyCart.MyCartResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductDetail.CommentVariantResponse;
@@ -13,6 +14,7 @@ import com.Nhom19.shopQuanAo.exception.ErrorCode;
 import com.Nhom19.shopQuanAo.mapper.ProductMapper;
 import com.Nhom19.shopQuanAo.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -36,8 +38,10 @@ public class CartService {
     @Autowired
     private ProductMapper productMapper;
 
+    @Autowired
+    AuthenticationService authenticationService;
 
-    public Boolean createCart(CreateCartRequest request, Integer Id) {
+    public CreatCartResponse createCart(CreateCartRequest request, Integer Id) {
 
         Cart cart = new Cart();
 
@@ -78,7 +82,10 @@ public class CartService {
 
        cart1.setNgaySua(LocalDateTime.now());
        cartRepository.save(cart1);
-       return true;
+       CreatCartResponse response = new CreatCartResponse();
+       response.setSuccess(Boolean.TRUE);
+       response.setToken(authenticationService.generateToken(user));
+       return response;
     }
     public MyCartResponse getAllMyCart() {
         var context = SecurityContextHolder.getContext();
@@ -125,6 +132,7 @@ public class CartService {
 
         });
         myCartResponse.setItems(myCartItemResponseList);
+
         return myCartResponse;
     }
     public Boolean UpdateMyCart(UpdateMyCartReq request, Integer maBienThe) {
@@ -151,6 +159,7 @@ public class CartService {
         cartRepository.save(cart);
 
         return true;
+
     }
 
     public Boolean DeleteMyCartItem(Integer maBienThe) {

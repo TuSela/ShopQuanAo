@@ -3,6 +3,7 @@ package com.Nhom19.shopQuanAo.Controller.Customer;
 import com.Nhom19.shopQuanAo.DTO.Request.Customer.CreateCartRequest;
 import com.Nhom19.shopQuanAo.DTO.Request.Customer.UpdateMyCartReq;
 import com.Nhom19.shopQuanAo.DTO.Response.ApiResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyCart.CreatCartResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyCart.MyCartResponse;
 import com.Nhom19.shopQuanAo.entity.Cart;
 import com.Nhom19.shopQuanAo.repository.CartItemRepo;
@@ -22,8 +23,8 @@ public class CartController {
     @Autowired
     JwtUtils jwtUtils;
     @PostMapping
-    public ApiResponse<Boolean> CreateCart(@RequestBody CreateCartRequest request,@RequestHeader("Authorization") String authHeader) {
-        ApiResponse <Boolean> response = new ApiResponse<>();
+    public ApiResponse<CreatCartResponse> CreateCart(@RequestBody CreateCartRequest request, @RequestHeader("Authorization") String authHeader) {
+        ApiResponse <CreatCartResponse> response = new ApiResponse<>();
         String token = authHeader.substring(7);
         JWTClaimsSet claims = jwtUtils.parseToken(token);
         try {
