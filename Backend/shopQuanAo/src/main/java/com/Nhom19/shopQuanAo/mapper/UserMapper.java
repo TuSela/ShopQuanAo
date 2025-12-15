@@ -12,4 +12,5 @@ public interface UserMapper {
     UserResponse toUserResponse(Users users);
     UserCommentResponse toUserCommentResponse(Users users);
 //    Users toUsers2(Users users,CapNhatUserRequest request);
+
 }

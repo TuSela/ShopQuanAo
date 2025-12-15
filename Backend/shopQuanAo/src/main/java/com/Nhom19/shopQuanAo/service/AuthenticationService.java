@@ -46,6 +46,7 @@ public class AuthenticationService {
         authenticationResponse.setSuccess(true);
         return authenticationResponse;
     }
+
     @Autowired
     CartItemRepo  cartItemRepo;
     public String generateToken(Users user) {
@@ -78,7 +79,6 @@ public class AuthenticationService {
             throw new AppException(ErrorCode.UNUATHENTICATION);
         }
     }
-
 
 //    private String buildScope(Users user) {
 //        StringJoiner stringJoiner =new StringJoiner(" ");

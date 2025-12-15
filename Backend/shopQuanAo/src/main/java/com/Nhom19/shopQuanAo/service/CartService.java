@@ -56,17 +56,22 @@ public class CartService {
             cartRepository.save(cart);
         }
         Cart cart1 = cartRepository.findByUsers(user).orElseThrow(()->new AppException(ErrorCode.CART_NOT_EXISTED));
+
+
         CartItems cartItems = new CartItems();
 
         cartItems.setCart(cart1);
-        cartItems.setSoluong(request.getSoLuong());
+        cartItems.setSoluong(cartItems.getSoluong() + request.getSoLuong());
         Products products =productRepo.findById(request.getMaSp()).orElseThrow(() -> new RuntimeException("người dùng không tồn tại"));
 
         BigDecimal thanhTien = products.getGia().multiply(BigDecimal.valueOf(request.getSoLuong()));
 
         cartItems.setTongTien(thanhTien);
         ProductVariants productVariants = productVariantRepo.findByProductAndColorAndSize(request.getMaSp(),  request.getMaMs(), request.getMaKc()).orElseThrow(() -> new RuntimeException("Sản phẩm biến thể không tồn tại"));
-
+        CartItems cartItemsX = cartItemRepo.findByCartAndProductVariants(cart1, productVariants);
+        if ( cartItemsX != null) {
+            cartItems.setSoluong(cartItemsX.getSoluong() + request.getSoLuong());
+        }
         cartItems.setProductVariants(productVariants);
         CartItemId id = new CartItemId(
                 cart1.getMaGh(),
@@ -87,6 +92,7 @@ public class CartService {
        response.setToken(authenticationService.generateToken(user));
        return response;
     }
+
     public MyCartResponse getAllMyCart() {
         var context = SecurityContextHolder.getContext();
         String sdt = context.getAuthentication().getName();
