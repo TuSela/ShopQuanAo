@@ -61,10 +61,7 @@ public class CartService {
         CartItems cartItems = new CartItems();
 
         cartItems.setCart(cart1);
-        cartItems.setSoluong(cartItems.getSoluong() + request.getSoLuong());
-        Products products =productRepo.findById(request.getMaSp()).orElseThrow(() -> new RuntimeException("người dùng không tồn tại"));
-
-
+        cartItems.setSoluong(request.getSoLuong());
         ProductVariants productVariants = productVariantRepo.findByProductAndColorAndSize(request.getMaSp(),  request.getMaMs(), request.getMaKc()).orElseThrow(() -> new RuntimeException("Sản phẩm biến thể không tồn tại"));
 
         cartItems.setProductVariants(productVariants);
@@ -72,22 +69,21 @@ public class CartService {
                 cart1.getMaGh(),
                 productVariants.getMaBienThe()
         );
+        cartItems.setId(id);
+
+        Products products =productRepo.findById(request.getMaSp()).orElseThrow(() -> new RuntimeException("sản phẩm không tồn tại"));
 
         boolean cartItemsX = cartItemRepo.existsByCartAndProductVariants(cart1, productVariants);
-        cartItems.setId(id);
         if (cartItemsX) {
             CartItems cartItems2 = cartItemRepo.findByCartAndProductVariants(cart1, productVariants);
             cartItems.setSoluong(cartItems2.getSoluong() + request.getSoLuong());
             BigDecimal thanhTien = products.getGia().multiply(BigDecimal.valueOf(cartItems.getSoluong()));
             cartItems.setTongTien(thanhTien);
-
         }else {
             BigDecimal thanhTien = products.getGia().multiply(BigDecimal.valueOf(request.getSoLuong()));
             cartItems.setTongTien(thanhTien);
         }
-
         cartItemRepo.save(cartItems);
-
 
        List<CartItems> cartItemsList= cartItemRepo.findByCart(cart1);
        cartItemsList.forEach(cartItems1 -> {
@@ -122,6 +118,8 @@ public class CartService {
             commentVariantResponse.setTenKc(cartItems1.getProductVariants().getSizes().getTenKc());
             commentVariantResponse.setTenMs(cartItems1.getProductVariants().getColors().getTenMs());
             commentVariantResponse.setSoLuongDat(cartItems1.getSoluong());
+            commentVariantResponse.setTongTien(cartItems1.getTongTien());
+
             cartItemResponse.setVariant(commentVariantResponse);
 
             ProductBestSellerResponse productBestSellerResponse = productMapper.toDTO5(cartItems1.getProductVariants().getProducts());

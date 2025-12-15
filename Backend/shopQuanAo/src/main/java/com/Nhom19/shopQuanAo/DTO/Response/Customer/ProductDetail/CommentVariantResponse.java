@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
 @Setter
@@ -16,4 +18,5 @@ public class CommentVariantResponse {
     private int soLuongDat;
     private String tenKc;
     private String tenMs;
+    private BigDecimal tongTien;
 }

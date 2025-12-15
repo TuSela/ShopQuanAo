@@ -1,19 +1,25 @@
 package com.Nhom19.shopQuanAo.service;
 
+import com.Nhom19.shopQuanAo.DTO.Request.Customer.OrderRequest.CreatOrderRequest;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyCart.CreatCartResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyOrder.*;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.OrderDetailRes.AddressResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.OrderDetailRes.OrderDetailResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.OrderDetailRes.PaymentResponse;
 import com.Nhom19.shopQuanAo.entity.*;
+import com.Nhom19.shopQuanAo.entityCompositeKey.CartItemId;
+import com.Nhom19.shopQuanAo.entityCompositeKey.OrderItemId;
 import com.Nhom19.shopQuanAo.mapper.AddressMapper;
 import com.Nhom19.shopQuanAo.mapper.PaymentMapper;
 import com.Nhom19.shopQuanAo.repository.*;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -43,7 +49,7 @@ public class OrderService {
             return new OrderResponseDTO(
                     order.getMaDdh(),
                     order.getUsers().getHoten(),
-                    (double) order.getTongTien(),
+                    order.getTongTien(),
                     productDTOS
             );
         }).toList();
@@ -59,7 +65,7 @@ public class OrderService {
             MyOrderResponse orderRes = new MyOrderResponse();
             orderRes.setMaDonHang(order.getMaDdh());
             orderRes.setNgayDat(order.getNgayThanhToan());
-            orderRes.setTongTien(BigDecimal.valueOf(order.getTongTien()));
+            orderRes.setTongTien(order.getTongTien());
             orderRes.setTrangThai(order.getOrderStatus());
 
             List<MyOrderItemResponse> items =
@@ -130,7 +136,7 @@ public class OrderService {
 
         response.setItems(orderItemRepo.findOrderItems(order.getMaDdh()));
 
-        response.setTotalAmount(BigDecimal.valueOf(order.getTongTien()));
+        response.setTotalAmount(order.getTongTien());
 
         return response;
     }
@@ -166,5 +172,59 @@ public class OrderService {
 
         return creatOrderResponse;
     }
+    @Autowired
+    private CartRepository cartRepository;
+    @Autowired
+    private CartItemRepo cartItemRepo;
+    @Autowired
+    AuthenticationService authenticationService;
+    @Transactional
+    public CreatCartResponse createOrder(CreatOrderRequest request) {
 
+        Orders order = new Orders();
+        addresses addresses = addressRepository.findById(request.getMaDiaChi()).orElseThrow(() -> new RuntimeException("Address not found"));
+        PaymentMethods paymentMethods = paymentMethodRepo.findById(request.getMaPt()).orElseThrow(() -> new RuntimeException("Payment method not found"));
+
+        Cart cart= cartRepository.findById(request.getMaGh()).orElseThrow(() -> new RuntimeException("Cart not found"));
+
+        order.setAddresses(addresses);
+        order.setPaymentMethods(paymentMethods);
+        order.setOrderStatus("Đang xử lý");
+        order.setPaymentStatus("Thanh toán khi nhận hàng");
+        if (order.getPaymentMethods().getMaPt()!= 1){
+            order.setPaymentStatus("Đã thanh toán");
+            order.setNgayThanhToan(LocalDateTime.now());
+        }
+
+
+        order.setNgayThanhToan(LocalDateTime.now());
+        order.setTongTien(cart.getTongTien());
+        var context = SecurityContextHolder.getContext();
+        String sdt = context.getAuthentication().getName();
+        Users users = userRepository.findBySdt(sdt);
+        order.setUsers(users);
+        orderRepository.save(order);
+
+        List<CartItems> cartItemsList = cart.getCartItems();
+        cartItemsList.forEach(cartItem -> {
+            OrderItems orderItems = new OrderItems();
+            orderItems.setSoLuong(cartItem.getSoluong());
+            orderItems.setProductVariants(cartItem.getProductVariants());
+            orderItems.setTongTien(cartItem.getTongTien());
+            OrderItemId id = new OrderItemId(
+                    cart.getMaGh(),
+                    cartItem.getProductVariants().getMaBienThe()
+            );
+            orderItems.setId(id);
+            orderRepository.save(order);
+            cartItemRepo.deleteByCartAndProductVariants(cart,cartItem.getProductVariants());
+        });
+
+        cartRepository.delete(cart);
+
+        CreatCartResponse creatCartResponse = new CreatCartResponse();
+        creatCartResponse.setToken(authenticationService.generateToken(users));
+        creatCartResponse.setSuccess(Boolean.TRUE);
+        return creatCartResponse;
+    }
 }

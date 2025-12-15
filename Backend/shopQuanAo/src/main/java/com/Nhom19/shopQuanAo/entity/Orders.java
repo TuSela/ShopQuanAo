@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.Set;
     @Setter
     public class Orders {
         @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
         private int maDdh;
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "ma_pt")
@@ -40,7 +42,7 @@ import java.util.Set;
         @JoinColumn(name = "ma_dia_chi")
         private addresses addresses;
 
-        private float tongTien;
+        private BigDecimal tongTien;
 
         @OneToMany(mappedBy = "orders", cascade = CascadeType.ALL, orphanRemoval = true)
         private List<OrderItems> items ;

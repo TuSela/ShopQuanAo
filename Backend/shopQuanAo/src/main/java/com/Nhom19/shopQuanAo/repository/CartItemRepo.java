@@ -21,4 +21,6 @@ public interface CartItemRepo extends JpaRepository<CartItems, CartItems> {
 """, nativeQuery = true)
     Integer countCartItemByUser(@Param("maTk") Integer maTk);
 
+    void deleteByCartAndProductVariants(Cart cart, ProductVariants productVariants);
+
 }
