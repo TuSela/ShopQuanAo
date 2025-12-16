@@ -84,15 +84,21 @@ public class OrderService {
                                 item.setMau(pv.getColors().getTenMs());
                                 item.setSize(pv.getSizes().getTenKc());
 
-                                // ảnh đại diện
-                                item.setAnh(
-                                        p.getImages()
-                                                .stream()
-                                                .filter(ProductImages::getDaiDien)
-                                                .findFirst()
-                                                .map(ProductImages::getUrlImage)
-                                                .orElse(null)
-                                );
+                                String anh = p.getImages()
+                                        .stream()
+                                        .filter(ProductImages::getDaiDienMau)
+                                        .findFirst()
+                                        .map(ProductImages::getUrlImage)
+                                        .orElseGet(() ->
+                                                p.getImages()
+                                                        .stream()
+                                                        .filter(ProductImages::getDaiDien)
+                                                        .findFirst()
+                                                        .map(ProductImages::getUrlImage)
+                                                        .orElse(null)
+                                        );
+
+                                item.setAnh(anh);
 
                                 return item;
                             }).toList();
@@ -159,6 +165,7 @@ public class OrderService {
             AddressResponse addressRes = addressMapper.ToDTO(address);
             addressResponseList.add(addressRes);
         });
+
         List<PaymentMethods> paymentMethodsList = paymentMethodRepository.findAll();
         List<PaymentResponse> paymentResponseList = new ArrayList<>();
         paymentMethodsList.forEach(paymentMethod -> {

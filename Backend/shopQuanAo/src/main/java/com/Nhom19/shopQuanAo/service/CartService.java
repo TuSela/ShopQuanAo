@@ -102,7 +102,8 @@ public class CartService {
        response.setToken(authenticationService.generateToken(user));
        return response;
     }
-
+    @Autowired
+    private ProductImagesRepo productImagesRepo;
     public MyCartResponse getAllMyCart() {
         var context = SecurityContextHolder.getContext();
         String sdt = context.getAuthentication().getName();
@@ -128,21 +129,34 @@ public class CartService {
             cartItemResponse.setVariant(commentVariantResponse);
 
             ProductBestSellerResponse productBestSellerResponse = productMapper.toDTO5(cartItems1.getProductVariants().getProducts());
-            List<ProductImages> images =
-                    cartItems1.getProductVariants()
-                            .getProducts()
-                            .getImages();
+//            List<ProductImages> images =
+//                    cartItems1.getProductVariants()
+//                            .getProducts()
+//                            .getImages();
             ProductImages firstImage = new ProductImages();
+//            if (images != null && !images.isEmpty()) {
+//                for (ProductImages image : images) {
+//                    if (image.getDaiDienMau() == true) {
+//                        firstImage.setUrlImage(image.getUrlImage());
+//                        break;
+//                    }
+//                    else if (image.getDaiDien() == true)  {
+//                        firstImage.setUrlImage(image.getUrlImage());
+//                    }
+//                }
+//            }
+            List<ProductImages> images=
+                    productImagesRepo.getImagesByProductAndColor(cartItems1.getProductVariants()
+                            .getProducts().getMaSp(), cartItems1.getProductVariants().getColors().getMaMs());
 
-            if (images != null && !images.isEmpty()) {
-                for (ProductImages image : images) {
-                    if (image.getDaiDien() == true) {
-                        firstImage.setUrlImage(image.getUrlImage());
-                        break;
-                    }
-                }
-            }
+            String url = images.stream()
+                    .filter(img -> Boolean.TRUE.equals(img.getDaiDienMau()))
+                    .map(ProductImages::getUrlImage)
+                    .findFirst()
+                    .orElse(images.isEmpty() ? null : images.get(0).getUrlImage());
 
+            firstImage.setUrlImage(url);
+            
             productBestSellerResponse.setUrlImage(firstImage.getUrlImage());
             cartItemResponse.setProduct(productBestSellerResponse);
 
