@@ -6,63 +6,8 @@
         <h1 class="text-3xl font-extrabold">
           Admin • Thêm / Chỉnh sửa Sản phẩm
         </h1>
-        <p class="text-sm text-gray-500 mt-1">
-          Giao diện được cải tiến — trực quan, responsive và dễ dùng hơn.
-        </p>
-      </div>
-      <div class="flex items-center gap-3">
-        <button
-          @click="preview"
-          class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg shadow hover:shadow-md"
-        >
-          <!-- eye icon -->
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-            />
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-            />
-          </svg>
-          Xem nhanh
-        </button>
-        <button
-          form="productForm"
-          type="submit"
-          class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700"
-        >
-          <!-- save icon -->
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M5 13l4 4L19 7"
-            />
-          </svg>
-          Lưu
-        </button>
       </div>
     </div>
-
     <form
       id="productForm"
       @submit.prevent="onSubmit"
@@ -138,7 +83,7 @@
           </div>
         </div>
 
-        <div class="bg-white rounded-2xl p-4 shadow-sm">
+        <!-- <div class="bg-white rounded-2xl p-4 shadow-sm">
           <label class="text-sm font-medium text-gray-700">Gallery</label>
           <div class="mt-3 grid grid-cols-3 gap-2">
             <div
@@ -179,7 +124,7 @@
               + Thêm ảnh
             </label>
           </div>
-        </div>
+        </div> -->
 
         <div class="bg-white rounded-2xl p-4 shadow-sm">
           <label class="text-sm font-medium text-gray-700"
@@ -316,14 +261,20 @@
                 </label>
               </div>
 
-              <div
+              <!-- <div
                 ref="editor"
                 contenteditable
                 class="min-h-[220px] p-4 bg-white rounded shadow-inner overflow-auto"
                 @input="syncEditor"
+              > -->
+              <div
+                ref="editor"
+                contenteditable
+                class="editor-content min-h-[220px] p-4 bg-white rounded shadow-inner overflow-auto"
+                @input="syncEditor"
               >
-                <h2><b>MÔ TẢ SẢN PHẨM</b></h2>
-                <p>ĐẶC ĐIỂM SẢN PHẨM</p>
+                <h2><b>ĐẶC ĐIỂM SẢN PHẨM</b></h2>
+                <br><br></br>
               </div>
             </div>
           </div>
@@ -382,41 +333,47 @@
                   </button>
                 </div>
               </div>
+              <div class="mt-3 grid grid-cols-3 gap-3">
+              <div
+                v-for="(img, i) in color.urlImages"
+                :key="i"
+                class="relative aspect-square rounded-lg overflow-hidden border border-gray-200 bg-gray-50"
+              >
+                <img
+                  :src="img.url"
+                  class="absolute inset-0 w-full h-full object-cover"
+                  loading="lazy"
+                />
 
-              <div class="mt-3 grid grid-cols-3 gap-2">
+                <!-- Badge đại diện -->
                 <div
-                  v-for="(img, i) in color.urlImages"
-                  :key="i"
-                  class="relative rounded overflow-hidden border"
+                  v-if="img.daiDien"
+                  class="absolute top-1 left-1 bg-amber-400 text-xs px-2 py-0.5 rounded text-white font-semibold shadow"
                 >
-                  ///
-                  <img :src="img.url" class="w-full h-24 object-cover" />
-                  ///
-                  <div class="absolute left-1 bottom-1 flex gap-1">
-                    <button
-                      type="button"
-                      @click="setDaiDien(idx, i)"
-                      class="px-2 py-1 text-xs border rounded bg-white/90"
-                    >
-                      Đại diện
-                    </button>
-                    <button
-                      type="button"
-                      @click="color.urlImages.splice(i, 1)"
-                      class="px-2 py-1 text-xs border rounded bg-white/90"
-                    >
-                      Xóa
-                    </button>
-                  </div>
-                  <div
-                    v-if="img.daiDien"
-                    class="absolute top-1 left-1 bg-amber-400 text-xs px-2 py-0.5 rounded"
+                  Đã xét đại diện
+                </div>
+
+                <!-- Action buttons -->
+                <div
+                  class="absolute bottom-1 left-1 right-1 flex gap-1"
+                >
+                  <button
+                    type="button"
+                    @click="setDaiDien(idx, i)"
+                    class="flex-1 px-2 py-1 text-xs rounded bg-white/90 hover:bg-white border shadow-sm"
                   >
-                    Đ
-                  </div>
+                    Đại diện
+                  </button>
+                  <button
+                    type="button"
+                    @click="color.urlImages.splice(i, 1)"
+                    class="flex-1 px-2 py-1 text-xs rounded bg-white/90 hover:bg-red-50 border shadow-sm text-red-600"
+                  >
+                    Xóa
+                  </button>
                 </div>
               </div>
-
+            </div>
               <div class="mt-3">
                 <label class="text-sm text-gray-600">Sizes</label>
                 <div class="mt-2 space-y-2">
@@ -625,6 +582,7 @@ async function insertImageToEditor(e) {
   insertNodeAtCaret(img);
   syncEditor();
 }
+
 function insertNodeAtCaret(node) {
   const sel = window.getSelection();
   if (!sel || sel.rangeCount === 0) return;
@@ -664,60 +622,12 @@ async function onMainImagesChange(e) {
     mainImagesPreview.value = [url];
   }
 }
-
-// gallery
-function formColorsAllImages() {
-  // compile all color images + main image into gallery (used for display)
-  const imgs = [];
-  if (form.daiDien) imgs.push(form.daiDien);
-  form.colors.forEach((c) => {
-    if (Array.isArray(c.urlImages)) imgs.push(...c.urlImages);
-  });
-  return imgs;
-}
-
-const formColorsAllImagesRef = computed(() => formColorsAllImages());
-
-async function onGalleryChange(e) {
-  const files = Array.from(e.target.files || []);
-  for (const f of files) {
-    const url = await uploadImage(f);
-    if (url) {
-      // push into a pseudo-gallery by adding to first color if exists, otherwise set as main
-      if (form.colors.length > 0) form.colors[0].urlImages.push(url);
-      else {
-        form.daiDien = url;
-        mainImagesPreview.value = [url];
-      }
-    }
-  }
-}
-
-function removeGalleryImage(i) {
-  const imgs = formColorsAllImagesRef.value;
-  const url = imgs[i];
-  // try remove from main
-  if (form.daiDien === url) {
-    form.daiDien = "";
-    mainImagesPreview.value = [];
-    return;
-  }
-  // else remove from colors
-  for (const c of form.colors) {
-    const idx = c.urlImages.indexOf(url);
-    if (idx !== -1) {
-      c.urlImages.splice(idx, 1);
-      return;
-    }
-  }
-}
-
-function downloadImage(url) {
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "image";
-  a.click();
-}
+// function downloadImage(url) {
+//   const a = document.createElement("a");
+//   a.href = url;
+//   a.download = "image";
+//   a.click();
+// }
 
 // color images
 async function onColorImagesChange(e, idx) {
@@ -813,5 +723,13 @@ onMounted(() => {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+.editor-content :deep(img) {
+  max-width: 400px;     /* KÍCH THƯỚC CHUẨN */
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 12px auto;
+  border-radius: 8px;
 }
 </style>

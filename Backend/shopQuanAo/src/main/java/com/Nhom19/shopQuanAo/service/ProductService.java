@@ -7,7 +7,6 @@ import com.Nhom19.shopQuanAo.DTO.Request.SizeRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.ProductBestSellerResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductDetail.*;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.SPNamResponse;
-import com.Nhom19.shopQuanAo.DTO.Response.Admin.ProductResponse;
 import com.Nhom19.shopQuanAo.entity.*;
 import com.Nhom19.shopQuanAo.mapper.ProductMapper;
 import com.Nhom19.shopQuanAo.mapper.UserMapper;
@@ -46,7 +45,7 @@ public class ProductService {
     private OrderItemRepo orderItemRepo;
     @Autowired
     private VariantMapper variantMapper;
-    public List<ProductResponse> getProducts(){
+    public List<com.Nhom19.shopQuanAo.DTO.Response.Admin.ProductResponse> getProducts(){
        return   productRepository.findAll().stream().map(productMapper::toDTO).collect(Collectors.toList());
     }
 
@@ -98,7 +97,7 @@ public class ProductService {
                             Users users = pc.getUsers();
                             UserCommentResponse userResponse = userMapper.toUserCommentResponse(users);
 
-                            ProductCommentResponse res = new ProductCommentResponse();
+                            ProductResponse res = new ProductResponse();
                             res.setMaBl(pc.getMaBl());
                             res.setNgayTao(pc.getNgayTao());
                             res.setNoiDung(pc.getNoiDung());

@@ -21,6 +21,6 @@ public class ProductDetailResponse {
     private Set<ColorResponse> Variants;
     private List<String> listAnhSP;
     private String chiTiet;
-    private Set<ProductCommentResponse> productComments = new HashSet<>();
+    private Set<ProductResponse> productComments = new HashSet<>();
 
 }

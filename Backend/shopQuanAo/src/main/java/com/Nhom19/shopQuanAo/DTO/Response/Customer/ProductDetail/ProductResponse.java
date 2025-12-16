@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @Setter
 
-public class ProductCommentResponse {
+public class ProductResponse {
     private int maBl;
     private UserCommentResponse users;
     private List<CommentVariantResponse> productVariants = new ArrayList<>();
