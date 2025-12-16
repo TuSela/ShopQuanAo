@@ -28,7 +28,6 @@ public class FileController {
 
         try {
             String url = fileService.uploadFileImg(file);
-
             return ResponseEntity.ok(
                     Map.of(
                             "message", "Upload thành công",

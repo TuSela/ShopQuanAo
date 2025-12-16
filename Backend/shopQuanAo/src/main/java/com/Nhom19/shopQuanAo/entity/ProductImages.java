@@ -15,6 +15,7 @@ public class ProductImages {
     private String urlImage;
 
     private Boolean daiDien;
+    private Boolean daiDienMau;
     @ManyToOne
     @JoinColumn(name = "ma_sp")
     private Products products;

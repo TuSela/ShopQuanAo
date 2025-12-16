@@ -13,10 +13,7 @@ import java.util.Set;
 @Setter
 public class ProductRequest {
         private int MaSp;
-
         private ProductTypes types;
-
-
         private String tenSp;
         private int soLuong;
         private BigDecimal gia;

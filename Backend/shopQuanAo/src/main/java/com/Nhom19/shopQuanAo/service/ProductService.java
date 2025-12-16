@@ -2,6 +2,7 @@ package com.Nhom19.shopQuanAo.service;
 
 import com.Nhom19.shopQuanAo.DTO.Request.Admin.CreationProductRequest;
 import com.Nhom19.shopQuanAo.DTO.Request.ColorRequest;
+import com.Nhom19.shopQuanAo.DTO.Request.ImageRequest;
 import com.Nhom19.shopQuanAo.DTO.Request.SizeRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.ProductBestSellerResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductDetail.*;
@@ -69,14 +70,20 @@ public class ProductService {
         Set<ProductVariants> productVariant = productVariantsRepo.findByProducts(products);
         Set<ProductImages> listAnhSP = productImagesRepo.findByProducts(products);
 
+
         ProductDetailResponse productDetailResponse = productMapper.toDTO2(products);
 
         List<String> images = listAnhSP.stream()
                 .map(ProductImages::getUrlImage)
                 .toList();
-
         productDetailResponse.setListAnhSP(images);
 
+        for (ProductImages productImages : listAnhSP) {
+            if (productImages.getDaiDien() == true) {
+                productDetailResponse.setAnhDaiDien(productImages.getUrlImage());
+                break;
+            }
+        }
 
         // Lấy danh sách comment
         Set<ProductComments> productComments = productCommentRepo.getByMaBl(id);
@@ -149,10 +156,16 @@ public class ProductService {
         res.setTenMs(color.getTenMs());
 
         // Lấy 1 ảnh đầu tiên
-        List<ProductImages> images = productImagesRepo.getImagesByProductAndColor(maSp, maMs);
-        if (!images.isEmpty()) {
-            res.setUrlImages(images.get(0).getUrlImage());
-        }
+        List<ProductImages> images =
+                productImagesRepo.getImagesByProductAndColor(maSp, maMs);
+
+        String url = images.stream()
+                .filter(img -> Boolean.TRUE.equals(img.getDaiDienMau()))
+                .map(ProductImages::getUrlImage)
+                .findFirst()
+                .orElse(images.isEmpty() ? null : images.get(0).getUrlImage());
+
+        res.setUrlImages(url);
 
         // Lấy size theo màu
         List<ProductVariants> variants = productVariantsRepo.getSizesByProductAndColor(maSp, maMs);
@@ -187,13 +200,14 @@ public class ProductService {
 
         colors.forEach(color -> {
             ProductColors colorsX = productColorRepo.findById(color.getMaMs()).orElseThrow(() -> new RuntimeException("Không tìm thấy màu"));
-            List<String> urlImages = color.getUrlImages();
-            urlImages.forEach(url -> {
+            List<ImageRequest> imageRequests = color.getUrlImages();
+            imageRequests.forEach(imageRequest -> {
                 ProductImages productImages2 = new ProductImages();
-                productImages2.setUrlImage(url);
+                productImages2.setUrlImage(imageRequest.getUrl());
                 productImages2.setProducts(products);
                 productImages2.setProductColor(colorsX);
                 productImages2.setDaiDien(false);
+                productImages2.setDaiDienMau(imageRequest.getDaiDien());
                 productImagesRepo.save(productImages2);
             });
 

@@ -6,6 +6,6 @@ import java.util.List;
 @Data
 public class ColorRequest {
     private Integer maMs;
-    private List<String> urlImages;
+    private List<ImageRequest> urlImages;
     private List<SizeRequest> sizes;
 }
