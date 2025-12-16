@@ -52,6 +52,7 @@ public class SizeController {
         return apiResponse;
     }
 
+    @DeleteMapping("{maKc}")
     public ApiResponse deleteSize(@PathVariable("maKc") int maKc){
         ApiResponse apiResponse = new ApiResponse();
         var result = productSizeService.deleteSize(maKc);
