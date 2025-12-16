@@ -14,6 +14,7 @@ import com.Nhom19.shopQuanAo.mapper.PaymentMapper;
 import com.Nhom19.shopQuanAo.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -209,21 +210,25 @@ public class OrderService {
         String sdt = context.getAuthentication().getName();
         Users users = userRepository.findBySdt(sdt);
         order.setUsers(users);
-        orderRepository.save(order);
-
+        Orders order1 = orderRepository.save(order);
         List<CartItems> cartItemsList = cart.getCartItems();
+        System.out.println("đây là danh sách giỏ hàng lấy ra: " +cartItemsList.toString());
         cartItemsList.forEach(cartItem -> {
             OrderItems orderItems = new OrderItems();
             orderItems.setSoLuong(cartItem.getSoluong());
             orderItems.setProductVariants(cartItem.getProductVariants());
             orderItems.setTongTien(cartItem.getTongTien());
             OrderItemId id = new OrderItemId(
-                    cart.getMaGh(),
-                    cartItem.getProductVariants().getMaBienThe()
+//                    cart.getMaGh(),
+//                    cartItem.getProductVariants().getMaBienThe()
+                    order1.getMaDdh(),
+                    orderItems.getProductVariants().getMaBienThe()
             );
+            orderItems.setOrders(order1);
+
             orderItems.setId(id);
-            orderRepository.save(order);
-            cartItemRepo.deleteByCartAndProductVariants(cart,cartItem.getProductVariants());
+            orderItemRepo.save(orderItems);
+//            cartItemRepo.deleteByCartAndProductVariants(cart,cartItem.getProductVariants());
         });
 
         cartRepository.delete(cart);

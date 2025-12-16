@@ -156,7 +156,7 @@ public class CartService {
                     .orElse(images.isEmpty() ? null : images.get(0).getUrlImage());
 
             firstImage.setUrlImage(url);
-            
+
             productBestSellerResponse.setUrlImage(firstImage.getUrlImage());
             cartItemResponse.setProduct(productBestSellerResponse);
 
