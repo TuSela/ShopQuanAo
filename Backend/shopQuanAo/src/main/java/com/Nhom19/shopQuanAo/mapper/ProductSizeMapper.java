@@ -9,6 +9,6 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface ProductSizeMapper {
     ProductSizeResponse toProductSizeResponse(ProductSizes productSizes);
-    ProductSizeResponse updateSize(@MappingTarget ProductSizes productSizes, CreateOrUpdateSizeRequest request);
+    void updateSize(@MappingTarget ProductSizes productSizes, CreateOrUpdateSizeRequest request);
     ProductSizes createSize(CreateOrUpdateSizeRequest request);
 }

@@ -6,10 +6,12 @@ import com.Nhom19.shopQuanAo.DTO.Response.Admin.ProductTypeResponse;
 import com.Nhom19.shopQuanAo.entity.ProductColors;
 import com.Nhom19.shopQuanAo.entity.ProductTypes;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface ProductTypeMapper {
     ProductTypes toProductTypes(TypeCreationRequest request);
     ProductTypeResponse toProductTypeResponse(ProductTypes productTypes);
     ColorResponse toColorResponse(ProductColors productColors);
+    void updateProductTypes(@MappingTarget ProductTypes productTypes, TypeCreationRequest request);
 }
