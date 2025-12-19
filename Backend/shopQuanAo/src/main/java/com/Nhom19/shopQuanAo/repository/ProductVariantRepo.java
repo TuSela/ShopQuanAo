@@ -9,11 +9,20 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Repository
 public interface ProductVariantRepo extends JpaRepository<ProductVariants, Integer> {
-    public Set<ProductVariants> findByProducts(Products products);
+    @Query("""
+    SELECT pv
+    FROM ProductVariants pv
+    JOIN pv.products p
+    JOIN p.images pi
+    WHERE p = :products
+    ORDER BY pi.daiDien DESC
+""")
+    List<ProductVariants> findByProductOrderByImageDaiDien(@Param("products") Products products);
+
+    List<ProductVariants> findByProducts(Products products);
 
     @Query("""
     SELECT pv 

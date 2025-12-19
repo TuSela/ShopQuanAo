@@ -8,4 +8,5 @@ import java.util.List;
 public class ImageRequest {
     private String url;
     private Boolean daiDien;
+    private Boolean daiDienMau;
 }

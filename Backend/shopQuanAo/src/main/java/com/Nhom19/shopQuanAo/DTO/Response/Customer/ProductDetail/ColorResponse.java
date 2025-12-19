@@ -9,6 +9,7 @@ import java.util.List;
 public class ColorResponse {
     private int maMs;
     private String tenMs;
-    private String urlImages; // lấy 1 ảnh đầu tiên
+    private String urlImages;
+    private Boolean daiDien;
     private List<ColorSizeResponse> sizes;
 }

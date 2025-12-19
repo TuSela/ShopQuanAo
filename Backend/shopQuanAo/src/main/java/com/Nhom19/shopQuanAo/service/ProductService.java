@@ -73,23 +73,21 @@ public class ProductService {
     //SHOW CHI TIẾT SẢN PHẨM
     public ProductDetailResponse getProductDetail(int id) {
         Products products = productRepository.getById(id);
-        Set<ProductVariants> productVariant = productVariantsRepo.findByProducts(products);
-        Set<ProductImages> listAnhSP = productImagesRepo.findByProducts(products);
 
+        List<ProductImages> listAnhSP = productImagesRepo.findByProductsOrderByDaiDienDesc(products);
 
         ProductDetailResponse productDetailResponse = productMapper.toDTO2(products);
 
         List<String> images = listAnhSP.stream()
                 .map(ProductImages::getUrlImage)
                 .toList();
+
         productDetailResponse.setListAnhSP(images);
 
-        for (ProductImages productImages : listAnhSP) {
-            if (productImages.getDaiDien() == true) {
-                productDetailResponse.setAnhDaiDien(productImages.getUrlImage());
-                break;
-            }
-        }
+// Ảnh đầu tiên chắc chắn là đại diện
+        productDetailResponse.setAnhDaiDien(
+                listAnhSP.isEmpty() ? null : listAnhSP.get(0).getUrlImage()
+        );
 
         // Lấy danh sách comment
         Set<ProductComments> productComments = productCommentRepo.getByMaBl(id);
@@ -135,22 +133,22 @@ public class ProductService {
                         })
                         .collect(Collectors.toSet())
         );
+
         // Map variant
+        List<ProductVariants> productVariant = productVariantsRepo.findByProductOrderByImageDaiDien(products);
         productDetailResponse.setVariants(
                 productVariant.stream()
                         .map(variant -> {
                             ProductColors productColors = variant.getColors();
-                            System.out.println("maMS: "+ productColors.getMaMs());
+
                             ColorResponse colorDetail= getColorDetail(products.getMaSp(),productColors.getMaMs());
 
                             return colorDetail;
                         })
                         .collect(Collectors.toSet())
         );
-
         return productDetailResponse;
     }
-
 
     ///LẤY RA SẢN PHẨM BIẾN THỂ
     public ColorResponse getColorDetail(Integer maSp, Integer maMs) {
@@ -198,13 +196,9 @@ public class ProductService {
         ProductTypes productTypes = productTypeRepo.findById(request.getMaLoai()).orElseThrow(() -> new RuntimeException("Không tìm thấy màu"));
         products.setTypes(productTypes);
         productRepository.save(products);
-        ProductImages productImages = new ProductImages();
-        productImages.setProducts(products);
-        productImages.setUrlImage(request.getDaiDien());
-        productImages.setDaiDien(true);
-        productImagesRepo.save(productImages);
-        List<ColorRequest> colors = request.getColors();
 
+
+        List<ColorRequest> colors = request.getColors();
         colors.forEach(color -> {
             ProductColors colorsX = productColorRepo.findById(color.getMaMs()).orElseThrow(() -> new RuntimeException("Không tìm thấy màu"));
             List<ImageRequest> imageRequests = color.getUrlImages();
@@ -213,8 +207,8 @@ public class ProductService {
                 productImages2.setUrlImage(imageRequest.getUrl());
                 productImages2.setProducts(products);
                 productImages2.setProductColor(colorsX);
-                productImages2.setDaiDien(false);
-                productImages2.setDaiDienMau(imageRequest.getDaiDien());
+                productImages2.setDaiDien(imageRequest.getDaiDien());
+                productImages2.setDaiDienMau(imageRequest.getDaiDienMau());
                 productImagesRepo.save(productImages2);
             });
 

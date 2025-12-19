@@ -14,17 +14,16 @@ import java.util.Set;
 
 public interface ProductImagesRepo extends JpaRepository<ProductImages, Integer> {
 //    Optional<ProductImages> findByVariants(ProductVariants variants);
-@Query("""
-    SELECT pi 
+    @Query("""
+    SELECT pi
     FROM ProductImages pi
-    WHERE pi.products.maSp = :maSp 
+    WHERE pi.products.maSp = :maSp
       AND pi.productColor.maMs = :maMs
-    ORDER BY pi.maHa ASC
+    ORDER BY pi.daiDienMau DESC
 """)
 List<ProductImages> getImagesByProductAndColor(Integer maSp, Integer maMs);
 
 Set<ProductImages> findByProducts(Products products);
-
     @Query("""
     SELECT pi
     FROM ProductImages pi
@@ -32,4 +31,6 @@ Set<ProductImages> findByProducts(Products products);
       AND pi.daiDien = true
 """)
     List<ProductImages> findDaiDienByProducts(@Param("products") List<Products> products);
+
+    List<ProductImages> findByProductsOrderByDaiDienDesc(Products products);
 }
