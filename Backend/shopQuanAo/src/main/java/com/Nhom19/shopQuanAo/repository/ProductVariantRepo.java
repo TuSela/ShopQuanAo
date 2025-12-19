@@ -22,6 +22,7 @@ public interface ProductVariantRepo extends JpaRepository<ProductVariants, Integ
       AND pv.colors.maMs = :maMs
 """)
     List<ProductVariants> getSizesByProductAndColor(Integer maSp, Integer maMs);
+
     @Query(value = """
     SELECT pv.*
     FROM product_variants pv

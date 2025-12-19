@@ -35,9 +35,9 @@ public class ProductTypeService {
 
     public List<NavMenuDTO> buildNavMenu() {
 
-        List<ProductTypes> list = productTypeRepo.findAllForMenu();
+        List<ProductTypes> list = productTypeRepo.findAllForMenuSorted();
 
-        // Group theo doi_tuong → ten_loai → chi_tiet_loai
+        // Group dữ liệu
         Map<String, Map<String, List<String>>> grouped =
                 list.stream()
                         .collect(Collectors.groupingBy(
@@ -51,18 +51,33 @@ public class ProductTypeService {
                                 )
                         ));
 
-        // Build DTO
+        // Build DTO + SORT
         return grouped.entrySet().stream()
+
+                // 1️⃣ Sort doiTuong A-Z
+                .sorted(Map.Entry.comparingByKey())
+
                 .map(doiTuongEntry -> {
                     NavMenuDTO nav = new NavMenuDTO();
                     nav.setDoiTuong(doiTuongEntry.getKey());
 
                     List<CategoryDTO> categories =
                             doiTuongEntry.getValue().entrySet().stream()
+
+                                    // 2️⃣ Sort tenLoai A-Z
+                                    .sorted(Map.Entry.comparingByKey())
+
                                     .map(catEntry -> {
                                         CategoryDTO cat = new CategoryDTO();
                                         cat.setTenLoai(catEntry.getKey());
-                                        cat.setChiTietLoai(catEntry.getValue());
+
+                                        // 3️⃣ Sort chiTietLoai A-Z
+                                        List<String> chiTietLoai =
+                                                catEntry.getValue().stream()
+                                                        .sorted()
+                                                        .toList();
+
+                                        cat.setChiTietLoai(chiTietLoai);
                                         return cat;
                                     })
                                     .toList();
