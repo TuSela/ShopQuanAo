@@ -2,6 +2,7 @@ package com.Nhom19.shopQuanAo.Controller;
 
 import com.Nhom19.shopQuanAo.DTO.Response.ApiResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Admin.ProductTypeResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.NAV.NavMenuDTO;
 import com.Nhom19.shopQuanAo.service.ProductTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,4 +22,14 @@ public class TypeController {
         listProductTypes.setResult(productTypeService.getTypes());
        return listProductTypes;
     }
+
+    @GetMapping("/nav-menu")
+    public ApiResponse<List<NavMenuDTO>> getNavMenu() {
+
+        ApiResponse<List<NavMenuDTO>> response = new ApiResponse<>();
+        response.setResult(productTypeService.buildNavMenu());
+
+        return response;
+    }
 }
+

@@ -41,4 +41,34 @@ public class ProductController {
         apiResponse.setResult(productService.createProduct(request));
         return apiResponse;
     }
+    @GetMapping("/search")
+    public ApiResponse<List<ProductBestSellerResponse>> searchProducts(
+            @RequestParam String keyword){
+
+        ApiResponse<List<ProductBestSellerResponse>> response = new ApiResponse<>();
+
+        if (keyword == null || keyword.trim().isEmpty()) {
+            response.setResult(List.of());
+            response.setMessage("Keyword is empty");
+            return response;
+        }
+
+        response.setResult(productService.searchByKeyword(keyword));
+        return response;
+    }
+
+    @GetMapping("/by-doi-tuong")
+    public ApiResponse<List<ProductBestSellerResponse>> getByDoiTuong(
+            @RequestParam("doiTuong") String doiTuong) {
+
+        ApiResponse<List<ProductBestSellerResponse>> response =
+                new ApiResponse<>();
+
+        response.setResult(
+                productService.findByDoiTuong(doiTuong)
+        );
+
+        return response;
+    }
+
 }

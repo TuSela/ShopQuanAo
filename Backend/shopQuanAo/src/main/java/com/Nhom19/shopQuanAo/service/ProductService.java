@@ -15,7 +15,9 @@ import com.Nhom19.shopQuanAo.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -226,5 +228,79 @@ public class ProductService {
         return true;
     }
 
+
+    public List<ProductBestSellerResponse> searchByKeyword(String keyword) {
+
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return List.of();
+        }
+
+        List<Products> products =
+                productRepository.searchByKeyword(keyword.trim());
+
+        if (products.isEmpty()) {
+            return List.of();
+        }
+
+        // 1 query lấy toàn bộ ảnh đại diện
+        List<ProductImages> daiDienImages =
+                productImagesRepo.findDaiDienByProducts(products);
+
+        // Map productId -> urlImage
+        Map<Integer, String> imageMap = daiDienImages.stream()
+                .collect(Collectors.toMap(
+                        pi -> pi.getProducts().getMaSp(),
+                        ProductImages::getUrlImage
+                ));
+
+        return products.stream()
+                .map(product -> {
+                    ProductBestSellerResponse dto =
+                            productMapper.toDTO5(product);
+
+                    dto.setUrlImage(
+                            imageMap.get(product.getMaSp())
+                    );
+
+                    return dto;
+                })
+                .toList();
+    }
+    public List<ProductBestSellerResponse> findByDoiTuong(String doiTuong) {
+
+        if (doiTuong == null || doiTuong.trim().isEmpty()) {
+            return List.of();
+        }
+
+        List<Products> products =
+                productRepository.findByDoiTuong(doiTuong.trim());
+
+        if (products.isEmpty()) {
+            return List.of();
+        }
+        // 1 query lấy toàn bộ ảnh đại diện
+        List<ProductImages> daiDienImages =
+                productImagesRepo.findDaiDienByProducts(products);
+
+        // Map productId -> urlImage
+        Map<Integer, String> imageMap = daiDienImages.stream()
+                .collect(Collectors.toMap(
+                        pi -> pi.getProducts().getMaSp(),
+                        ProductImages::getUrlImage
+                ));
+
+        return products.stream()
+                .map(product -> {
+                    ProductBestSellerResponse dto =
+                            productMapper.toDTO5(product);
+
+                    dto.setUrlImage(
+                            imageMap.get(product.getMaSp())
+                    );
+
+                    return dto;
+                })
+                .toList();
+    }
 
 }

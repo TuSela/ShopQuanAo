@@ -81,28 +81,21 @@ public class OrderService {
                                 item.setTenSanPham(p.getTenSp());
                                 item.setSoLuong(oi.getSoLuong());
                                 item.setGia(oi.getTongTien());
-
                                 item.setMau(pv.getColors().getTenMs());
                                 item.setSize(pv.getSizes().getTenKc());
 
-                                String anh = p.getImages()
-                                        .stream()
-                                        .filter(ProductImages::getDaiDienMau)
-                                        .findFirst()
+                                String anh = p.getImages().stream()
+                                        .filter(img -> Boolean.TRUE.equals(img.getDaiDienMau()))
                                         .map(ProductImages::getUrlImage)
-                                        .orElseGet(() ->
-                                                p.getImages()
-                                                        .stream()
-                                                        .filter(ProductImages::getDaiDien)
-                                                        .findFirst()
-                                                        .map(ProductImages::getUrlImage)
-                                                        .orElse(null)
-                                        );
+                                        .findFirst()
+                                        .orElse(p.getImages().isEmpty()
+                                                ? null
+                                                : p.getImages().get(0).getUrlImage());
 
                                 item.setAnh(anh);
-
                                 return item;
-                            }).toList();
+                            })
+                            .toList();
 
             orderRes.setItems(items);
             return orderRes;

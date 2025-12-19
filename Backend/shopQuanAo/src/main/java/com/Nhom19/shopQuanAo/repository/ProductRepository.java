@@ -2,6 +2,7 @@ package com.Nhom19.shopQuanAo.repository;
 
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.SPNamResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.ProductBestSellerResponse;
+import com.Nhom19.shopQuanAo.entity.ProductImages;
 import com.Nhom19.shopQuanAo.entity.Products;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -128,11 +129,19 @@ List<ProductBestSellerResponse> getTopBestSeller();
     """)
     List<ProductBestSellerResponse> getProductsForHome();
 
-//    @Query("""
-//        SELECT p FROM Products p
-//        WHERE LOWER(p.tenSanPham) LIKE LOWER(CONCAT('%', :keyword, '%'))
-//           OR LOWER(p.moTa) LIKE LOWER(CONCAT('%', :keyword, '%'))
-//    """)
-//    List<Products> searchByKeyword(@Param("keyword") String keyword);
+    @Query("""
+        SELECT p FROM Products p
+        WHERE LOWER(p.tenSp) LIKE LOWER(CONCAT('%', :keyword, '%'))
+           OR LOWER(p.chiTiet) LIKE LOWER(CONCAT('%', :keyword, '%'))
+    """)
+    List<Products> searchByKeyword(@Param("keyword") String keyword);
+
+    @Query("""
+    SELECT p
+    FROM Products p
+    JOIN p.types pt
+    WHERE pt.doiTuong = :doiTuong
+""")
+    List<Products> findByDoiTuong(@Param("doiTuong") String doiTuong);
 }
 

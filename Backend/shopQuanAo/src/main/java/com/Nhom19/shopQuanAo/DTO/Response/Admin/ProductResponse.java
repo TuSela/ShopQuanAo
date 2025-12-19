@@ -16,7 +16,6 @@ public class ProductResponse {
         private BigDecimal gia;
         private String chiTiet;
         private float danhGia;
-
         private Set<ProductVariants> mabienthe;
 //        private Set<ProductComments> ProductComments;
 }
