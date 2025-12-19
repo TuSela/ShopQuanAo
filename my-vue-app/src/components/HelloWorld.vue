@@ -1,43 +1,812 @@
-<script setup>
-import { ref, reactive } from "vue";
-
-defineProps({
-  msg: String,
-});
-
-const count = ref(0);
-</script>
-
 <template>
-  <h1>{{ msg }}</h1>
+  <div class="p-6 max-w-6xl mx-auto font-sans">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h1 class="text-3xl font-extrabold">
+          Admin • Thêm / Chỉnh sửa Sản phẩm
+        </h1>
+        <p class="text-sm text-gray-500 mt-1">
+          Giao diện được cải tiến — trực quan, responsive và dễ dùng hơn.
+        </p>
+      </div>
+      <div class="flex items-center gap-3">
+        <button
+          @click="preview"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg shadow hover:shadow-md"
+        >
+          <!-- eye icon -->
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+            />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+            />
+          </svg>
+          Xem nhanh
+        </button>
+        <button
+          form="productForm"
+          type="submit"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700"
+        >
+          <!-- save icon -->
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+          Lưu
+        </button>
+      </div>
+    </div>
 
-  <div class="card">
-    <button type="button" @click="count++">count is {{ count }}</button>
-    <p>
-      Edit
-      <code>components/HelloWorld.vue</code> to test HMR
-    </p>
+    <form
+      id="productForm"
+      @submit.prevent="onSubmit"
+      class="grid grid-cols-1 lg:grid-cols-3 gap-6"
+    >
+      <!-- Left column: images / gallery -->
+      <aside class="col-span-1 space-y-4">
+        <div class="bg-white rounded-2xl p-4 shadow-sm">
+          <label class="text-sm font-medium text-gray-700">Ảnh đại diện</label>
+          <div class="mt-3">
+            <div
+              class="relative border-2 border-dashed rounded-xl p-4 hover:border-gray-300"
+            >
+              <input
+                type="file"
+                accept="image/*"
+                @change="onMainImagesChange"
+                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              />
+              <div
+                class="min-h-[200px] flex items-center justify-center flex-col gap-3"
+              >
+                <div
+                  v-if="mainImagesPreview.length === 0"
+                  class="text-center text-gray-400"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-12 w-12 mx-auto"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7M3 7l9 6 9-6"
+                    />
+                  </svg>
+                  <p class="text-sm">Kéo thả hoặc nhấp để chọn ảnh</p>
+                </div>
+
+                <div v-else class="grid grid-cols-1 gap-2 w-full">
+                  <div class="w-full h-48 rounded-lg overflow-hidden">
+                    <img
+                      :src="mainImagesPreview[0]"
+                      class="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div class="flex gap-2">
+                    <button
+                      type="button"
+                      @click="
+                        mainImagesPreview = [];
+                        form.daiDien = '';
+                      "
+                      class="px-3 py-1 text-sm border rounded"
+                    >
+                      Xóa
+                    </button>
+                    <button
+                      type="button"
+                      class="px-3 py-1 text-sm border rounded"
+                      @click="downloadImage(mainImagesPreview[0])"
+                    >
+                      Tải xuống
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-4 shadow-sm">
+          <label class="text-sm font-medium text-gray-700">Gallery</label>
+          <div class="mt-3 grid grid-cols-3 gap-2">
+            <div
+              v-for="(img, i) in formColorsAllImages"
+              :key="i"
+              class="relative rounded-lg overflow-hidden border"
+            >
+              <img :src="img" class="w-full h-24 object-cover" />
+              <button
+                @click="removeGalleryImage(i)"
+                type="button"
+                class="absolute top-2 right-2 bg-white/80 rounded-full p-1 shadow"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4 text-red-600"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M6.293 6.293a1 1 0 011.414 0L10 8.586l2.293-2.293a1 1 0 111.414 1.414L11.414 10l2.293 2.293a1 1 0 01-1.414 1.414L10 11.414l-2.293 2.293a1 1 0 01-1.414-1.414L8.586 10 6.293 7.707a1 1 0 010-1.414z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </button>
+            </div>
+            <label
+              class="flex items-center justify-center border border-dashed rounded-lg p-2 text-sm text-gray-400 cursor-pointer"
+            >
+              <input
+                type="file"
+                multiple
+                accept="image/*"
+                @change="onGalleryChange"
+                class="hidden"
+              />
+              + Thêm ảnh
+            </label>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-4 shadow-sm">
+          <label class="text-sm font-medium text-gray-700"
+            >Trạng thái & Giá</label
+          >
+          <div class="mt-3 space-y-3">
+            <div>
+              <label class="text-xs text-gray-500">Giá (VND)</label>
+              <input
+                v-model.number="form.gia"
+                type="number"
+                min="0"
+                class="w-full mt-1 px-3 py-2 rounded-lg border focus:ring-1 focus:ring-blue-300"
+              />
+            </div>
+            <div>
+              <label class="text-xs text-gray-500">Trạng thái</label>
+              <select
+                v-model="form.trangThai"
+                class="w-full mt-1 px-3 py-2 rounded-lg border"
+              >
+                <option value="">-- Chọn trạng thái --</option>
+                <option value="ACTIVE">Hoạt động</option>
+                <option value="INACTIVE">Ngưng bán</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Middle column: main product fields -->
+      <main class="col-span-1 lg:col-span-2 space-y-4">
+        <div class="bg-white rounded-2xl p-6 shadow-sm">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700"
+                >Tên sản phẩm</label
+              >
+              <input
+                v-model="form.tenSp"
+                required
+                class="mt-2 w-full px-3 py-2 rounded-lg border focus:outline-none focus:ring-1 focus:ring-indigo-200"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700"
+                >Đối tượng</label
+              >
+              <select
+                v-model="selectedDoiTuong"
+                class="mt-2 w-full px-3 py-2 rounded-lg border"
+              >
+                <option value="">-- Chọn đối tượng --</option>
+                <option v-for="dt in doiTuongOptions" :key="dt" :value="dt">
+                  {{ dt }}
+                </option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700"
+                >Tên loại</label
+              >
+              <select
+                v-model="selectedTenLoai"
+                :disabled="!selectedDoiTuong"
+                class="mt-2 w-full px-3 py-2 rounded-lg border"
+              >
+                <option value="">-- Chọn tên loại --</option>
+                <option v-for="ten in tenLoaiOptions" :key="ten" :value="ten">
+                  {{ ten }}
+                </option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700"
+                >Chi tiết loại</label
+              >
+              <select
+                v-model="form.maLoai"
+                :disabled="!selectedTenLoai"
+                class="mt-2 w-full px-3 py-2 rounded-lg border"
+              >
+                <option value="">-- Chọn chi tiết --</option>
+                <option
+                  v-for="t in chiTietLoaiOptions"
+                  :key="t.maLoai"
+                  :value="t.maLoai"
+                >
+                  {{ t.chiTietLoai }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Rich editor -->
+          <div class="mt-6">
+            <label class="block text-sm font-medium text-gray-700"
+              >Mô tả sản phẩm</label
+            >
+            <div class="mt-2 bg-gray-50 rounded-lg border p-3">
+              <div class="flex gap-2 mb-3">
+                <button
+                  type="button"
+                  @click="execCmd('bold')"
+                  class="px-3 py-1 border rounded"
+                >
+                  B
+                </button>
+                <button
+                  type="button"
+                  @click="execCmd('italic')"
+                  class="px-3 py-1 border rounded"
+                >
+                  I
+                </button>
+                <button
+                  type="button"
+                  @click="insertHeading"
+                  class="px-3 py-1 border rounded"
+                >
+                  H2
+                </button>
+                <label class="px-3 py-1 border rounded cursor-pointer">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    @change="insertImageToEditor"
+                    class="hidden"
+                  />
+                  Ảnh
+                </label>
+              </div>
+
+              <div
+                ref="editor"
+                contenteditable
+                class="min-h-[220px] p-4 bg-white rounded shadow-inner overflow-auto"
+                @input="syncEditor"
+              >
+                <h2><b>MÔ TẢ SẢN PHẨM</b></h2>
+                <p>ĐẶC ĐIỂM SẢN PHẨM</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Variants (Colors & Sizes) -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold">Biến thể (Màu & Size)</h3>
+            <button
+              type="button"
+              @click="addColor"
+              class="px-3 py-1 border rounded bg-gray-50"
+            >
+              Thêm màu
+            </button>
+          </div>
+
+          <div class="space-y-4">
+            <div
+              v-for="(color, idx) in form.colors"
+              :key="idx"
+              class="border rounded-lg p-4"
+            >
+              <div class="flex items-start justify-between gap-4">
+                <div class="flex-1">
+                  <label class="text-sm text-gray-600">Màu</label>
+                  <select
+                    v-model="color.maMs"
+                    class="mt-2 w-full px-3 py-2 rounded-lg border"
+                  >
+                    <option value="">Chọn màu</option>
+                    <option v-for="t in Colors" :key="t.maMs" :value="t.maMs">
+                      {{ t.tenMs }}
+                    </option>
+                  </select>
+                </div>
+
+                <div class="w-48">
+                  <label class="text-sm text-gray-600">Ảnh màu</label>
+                  <input
+                    type="file"
+                    multiple
+                    @change="(e) => onColorImagesChange(e, idx)"
+                    class="mt-2"
+                  />
+                </div>
+
+                <div class="flex-shrink-0 flex flex-col items-end gap-2">
+                  <button
+                    type="button"
+                    @click="removeColor(idx)"
+                    class="px-2 py-1 text-sm border rounded text-red-600"
+                  >
+                    Xóa
+                  </button>
+                </div>
+              </div>
+
+              <div class="mt-3 grid grid-cols-3 gap-2">
+                <div
+                  v-for="(img, i) in color.urlImages"
+                  :key="i"
+                  class="relative rounded overflow-hidden border"
+                >
+                  <img :src="img" class="w-full h-24 object-cover" />
+                  <div class="absolute left-1 bottom-1 flex gap-1">
+                    <button
+                      type="button"
+                      @click="setDaiDien(idx, i)"
+                      class="px-2 py-1 text-xs border rounded bg-white/90"
+                    >
+                      Đại diện
+                    </button>
+                    <button
+                      type="button"
+                      @click="color.urlImages.splice(i, 1)"
+                      class="px-2 py-1 text-xs border rounded bg-white/90"
+                    >
+                      Xóa
+                    </button>
+                  </div>
+                  <div
+                    v-if="img.daiDien"
+                    class="absolute top-1 left-1 bg-amber-400 text-xs px-2 py-0.5 rounded"
+                  >
+                    Đ
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-3">
+                <label class="text-sm text-gray-600">Sizes</label>
+                <div class="mt-2 space-y-2">
+                  <div
+                    v-for="(s, sidx) in color.sizes"
+                    :key="sidx"
+                    class="flex items-center gap-3"
+                  >
+                    <select
+                      v-model="s.maKc"
+                      class="px-3 py-2 rounded-lg border w-full md:w-72"
+                    >
+                      <option value="">Chọn size</option>
+                      <option v-for="t in Sizes" :key="t.maKc" :value="t.maKc">
+                        {{ t.tenKc }}
+                      </option>
+                    </select>
+                    <input
+                      v-model.number="s.soluong"
+                      type="number"
+                      min="0"
+                      placeholder="Số lượng"
+                      class="w-28 px-2 py-2 rounded-lg border"
+                    />
+                    <button
+                      type="button"
+                      @click="removeSize(idx, sidx)"
+                      class="px-3 py-1 border rounded text-red-600"
+                    >
+                      Xóa
+                    </button>
+                  </div>
+                  <button
+                    type="button"
+                    @click="addSize(idx)"
+                    class="mt-2 px-3 py-1 border rounded"
+                  >
+                    Thêm size
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions (mobile) -->
+        <div class="flex items-center gap-3 lg:hidden">
+          <button
+            @click="preview"
+            class="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg"
+          >
+            Xem trước
+          </button>
+          <button
+            form="productForm"
+            type="submit"
+            class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg"
+          >
+            Lưu
+          </button>
+        </div>
+      </main>
+    </form>
+
+    <!-- Preview modal -->
+    <transition name="fade">
+      <div
+        v-if="showPreview"
+        class="fixed inset-0 bg-black/60 flex items-start justify-center p-6 z-50"
+      >
+        <div
+          class="bg-white rounded-2xl w-full max-w-4xl p-6 overflow-auto max-h-[90vh]"
+        >
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold">Xem trước sản phẩm</h3>
+            <div class="flex gap-2">
+              <button
+                @click="downloadPreviewJson"
+                class="px-3 py-1 border rounded"
+              >
+                Tải JSON
+              </button>
+              <button
+                @click="showPreview = false"
+                class="px-3 py-1 border rounded"
+              >
+                Đóng
+              </button>
+            </div>
+          </div>
+          <pre class="whitespace-pre-wrap mt-2 bg-gray-50 p-3 rounded">{{
+            previewData
+          }}</pre>
+        </div>
+      </div>
+    </transition>
   </div>
-
-  <p>
-    Check out
-    <a href="https://vuejs.org/guide/quick-start.html#local" target="_blank"
-      >create-vue</a
-    >, the official Vue + Vite starter
-  </p>
-  <p>
-    Learn more about IDE Support for Vue in the
-    <a
-      href="https://vuejs.org/guide/scaling-up/tooling.html#ide-support"
-      target="_blank"
-      >Vue Docs Scaling up Guide</a
-    >.
-  </p>
-  <p class="read-the-docs">Click on the Vite and Vue logos to learn more</p>
 </template>
 
+<script setup>
+import { ref, reactive, onMounted, computed, watch } from "vue";
+import axios from "axios";
+
+// Data sources
+const allTypes = ref([]);
+const Colors = ref([]);
+const Sizes = ref([]);
+
+onMounted(() => {
+  loadAll();
+});
+
+async function loadAll() {
+  await Promise.all([loadTypes(), loadColors(), loadSizes()]);
+}
+
+const loadTypes = async () => {
+  try {
+    const res = await axios.get("http://localhost:8081/nhom19/types");
+    allTypes.value = res.data.result || [];
+  } catch (e) {
+    console.error("loadTypes", e);
+  }
+};
+const loadColors = async () => {
+  try {
+    const res = await axios.get("http://localhost:8081/nhom19/colors");
+    Colors.value = res.data.result || [];
+  } catch (e) {
+    console.error("loadColors", e);
+  }
+};
+const loadSizes = async () => {
+  try {
+    const res = await axios.get("http://localhost:8081/nhom19/sizes");
+    Sizes.value = res.data.result || [];
+  } catch (e) {
+    console.error("loadSizes", e);
+  }
+};
+
+// selects for types
+const selectedDoiTuong = ref("");
+const selectedTenLoai = ref("");
+
+const doiTuongOptions = computed(() => [
+  ...new Set(allTypes.value.map((x) => x.doiTuong?.trim())),
+]);
+const tenLoaiOptions = computed(() => {
+  if (!selectedDoiTuong.value) return [];
+  return [
+    ...new Set(
+      allTypes.value
+        .filter((x) => x.doiTuong?.trim() === selectedDoiTuong.value.trim())
+        .map((x) => x.tenLoai?.trim())
+    ),
+  ];
+});
+const chiTietLoaiOptions = computed(() => {
+  if (!selectedTenLoai.value) return [];
+  return allTypes.value.filter(
+    (x) =>
+      x.tenLoai?.trim() === selectedTenLoai.value.trim() &&
+      x.doiTuong?.trim() === selectedDoiTuong.value.trim()
+  );
+});
+
+watch(selectedDoiTuong, () => {
+  selectedTenLoai.value = "";
+  form.maLoai = "";
+});
+watch(selectedTenLoai, () => {
+  form.maLoai = "";
+});
+
+// form
+const form = reactive({
+  tenSp: "",
+  maLoai: "",
+  gia: 0,
+  chiTiet: "",
+  colors: [],
+  daiDien: "",
+  trangThai: "ACTIVE",
+});
+
+const mainImagesPreview = ref([]);
+
+// editor
+const editor = ref(null);
+function execCmd(cmd) {
+  document.execCommand(cmd);
+}
+function insertHeading() {
+  document.execCommand("formatBlock", false, "h2");
+}
+async function insertImageToEditor(e) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  const url = await uploadImage(file);
+  if (!url) return;
+  const img = document.createElement("img");
+  img.src = url;
+  img.style.maxWidth = "100%";
+  img.style.height = "auto";
+  insertNodeAtCaret(img);
+  syncEditor();
+}
+function insertNodeAtCaret(node) {
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount === 0) return;
+  const range = sel.getRangeAt(0);
+  range.insertNode(node);
+  range.collapse(false);
+}
+function syncEditor() {
+  form.chiTiet = editor.value?.innerHTML || "";
+}
+
+async function uploadImage(file) {
+  try {
+    const fd = new FormData();
+    fd.append("file", file);
+    const res = await axios.post(
+      "http://localhost:8081/nhom19/files/images",
+      fd,
+      { headers: { "Content-Type": "multipart/form-data" } }
+    );
+    return res.data.url;
+  } catch (err) {
+    console.error("Lỗi upload ảnh:", err);
+    alert("Không thể upload ảnh!");
+    return null;
+  }
+}
+
+// main image change: keep only last selected image
+async function onMainImagesChange(e) {
+  const files = Array.from(e.target.files || []);
+  if (!files.length) return;
+  const last = files[files.length - 1];
+  const url = await uploadImage(last);
+  if (url) {
+    form.daiDien = url;
+    mainImagesPreview.value = [url];
+  }
+}
+
+// gallery
+function formColorsAllImages() {
+  // compile all color images + main image into gallery (used for display)
+  const imgs = [];
+  if (form.daiDien) imgs.push(form.daiDien);
+  form.colors.forEach((c) => {
+    if (Array.isArray(c.urlImages)) imgs.push(...c.urlImages);
+  });
+  return imgs;
+}
+
+const formColorsAllImagesRef = computed(() => formColorsAllImages());
+
+async function onGalleryChange(e) {
+  const files = Array.from(e.target.files || []);
+  for (const f of files) {
+    const url = await uploadImage(f);
+    if (url) {
+      // push into a pseudo-gallery by adding to first color if exists, otherwise set as main
+      if (form.colors.length > 0) form.colors[0].urlImages.push(url);
+      else {
+        form.daiDien = url;
+        mainImagesPreview.value = [url];
+      }
+    }
+  }
+}
+
+function removeGalleryImage(i) {
+  const imgs = formColorsAllImagesRef.value;
+  const url = imgs[i];
+  // try remove from main
+  if (form.daiDien === url) {
+    form.daiDien = "";
+    mainImagesPreview.value = [];
+    return;
+  }
+  // else remove from colors
+  for (const c of form.colors) {
+    const idx = c.urlImages.indexOf(url);
+    if (idx !== -1) {
+      c.urlImages.splice(idx, 1);
+      return;
+    }
+  }
+}
+
+function downloadImage(url) {
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "image";
+  a.click();
+}
+
+// color images
+async function onColorImagesChange(e, idx) {
+  const files = Array.from(e.target.files || []);
+  for (const f of files) {
+    const fd = new FormData();
+    fd.append("file", f);
+    const res = await axios.post(
+      "http://localhost:8081/nhom19/files/images",
+      fd,
+      { headers: { "Content-Type": "multipart/form-data" } }
+    );
+    const url = res.data.url;
+    form.colors[idx].urlImages.push(url);
+  }
+}
+
+function setDaiDien(colorIndex, imgIndex) {
+  const imgs = form.colors[colorIndex].urlImages;
+  // remove previous daiDien flag
+  imgs.forEach((im, i) => {
+    if (typeof im === "object") im.daiDien = false;
+  });
+  // store as object so flag can be kept
+  const url = imgs[imgIndex];
+  imgs[imgIndex] =
+    typeof url === "string"
+      ? { url, daiDien: true }
+      : { ...url, daiDien: true };
+}
+
+function addColor() {
+  form.colors.push({ maMs: "", urlImages: [], sizes: [] });
+}
+function removeColor(i) {
+  form.colors.splice(i, 1);
+}
+function addSize(i) {
+  form.colors[i].sizes.push({ maKc: "", soluong: 0 });
+}
+function removeSize(i, si) {
+  form.colors[i].sizes.splice(si, 1);
+}
+
+async function onSubmit() {
+  const payload = JSON.parse(JSON.stringify(form));
+  try {
+    const res = await axios.post(
+      "http://localhost:8081/nhom19/products",
+      payload
+    );
+    alert("Lưu sản phẩm thành công!");
+  } catch (err) {
+    console.error(err);
+    alert("Lỗi khi lưu sản phẩm!");
+  }
+}
+
+// preview
+const showPreview = ref(false);
+const previewData = ref("");
+function preview() {
+  previewData.value = JSON.stringify(JSON.parse(JSON.stringify(form)), null, 2);
+  showPreview.value = true;
+}
+function downloadPreviewJson() {
+  const blob = new Blob([previewData.value], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "product-preview.json";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+onMounted(() => {
+  if (editor.value) form.chiTiet = editor.value.innerHTML;
+});
+</script>
+
 <style scoped>
-.read-the-docs {
-  color: #888;
+.font-sans {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial;
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
