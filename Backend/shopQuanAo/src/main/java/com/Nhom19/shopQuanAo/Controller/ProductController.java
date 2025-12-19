@@ -2,10 +2,12 @@ package com.Nhom19.shopQuanAo.Controller;
 
 import com.Nhom19.shopQuanAo.DTO.Request.Admin.CreationProductRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.ApiResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.Categories.PageResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductDetail.ProductDetailResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.ProductBestSellerResponse;
 import com.Nhom19.shopQuanAo.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -70,5 +72,29 @@ public class ProductController {
 
         return response;
     }
+    @GetMapping("/categories")
+    public ApiResponse<PageResponse<ProductBestSellerResponse>> getProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "gia") String sort,
+            @RequestParam(defaultValue = "desc") String direction,
 
+            @RequestParam(required = false) String doiTuong,
+            @RequestParam(required = false) String tenLoai,
+            @RequestParam(required = false) String chiTietLoai
+    ) {
+        
+        ApiResponse<PageResponse<ProductBestSellerResponse>> response = new ApiResponse<>();
+        Page<ProductBestSellerResponse> page1 = productService.getProductsByTypes(
+                page, size, sort, direction,
+                doiTuong, tenLoai, chiTietLoai
+        );
+        response.setResult( new PageResponse<>(
+                page1.getContent(),
+                page1.getNumber(),
+                page1.getSize(),
+                page1.getTotalElements(),
+                page1.getTotalPages()));
+        return response;
+    }
 }

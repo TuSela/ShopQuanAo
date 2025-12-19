@@ -12,7 +12,12 @@ import com.Nhom19.shopQuanAo.mapper.ProductMapper;
 import com.Nhom19.shopQuanAo.mapper.UserMapper;
 import com.Nhom19.shopQuanAo.mapper.VariantMapper;
 import com.Nhom19.shopQuanAo.repository.*;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -186,6 +191,7 @@ public class ProductService {
 
 
 // THÊM SẢN PHẨM MỚI
+    @Transactional
     public Boolean createProduct(CreationProductRequest request) {
         Products products = productMapper.toEntity(request);
 
@@ -302,5 +308,88 @@ public class ProductService {
                 })
                 .toList();
     }
+    public Page<ProductBestSellerResponse> getProductsByTypes(
+            int page,
+            int size,
+            String sortBy,
+            String direction,
+            String doiTuong,
+            String tenLoai,
+            String chiTietLoai
+    ) {
 
+    /* ===============================
+       1. Chuẩn hóa filter rỗng
+       =============================== */
+        if (doiTuong != null && doiTuong.isBlank()) doiTuong = null;
+        if (tenLoai != null && tenLoai.isBlank()) tenLoai = null;
+        if (chiTietLoai != null && chiTietLoai.isBlank()) chiTietLoai = null;
+
+    /* ===============================
+       2. Validate sort
+       =============================== */
+        List<String> allowedSorts =
+                List.of("gia", "tenSp", "createdAt");
+
+        if (!allowedSorts.contains(sortBy)) {
+            sortBy = "createdAt";
+        }
+
+        Sort.Direction sortDirection =
+                direction.equalsIgnoreCase("asc")
+                        ? Sort.Direction.ASC
+                        : Sort.Direction.DESC;
+
+        Pageable pageable =
+                PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
+
+    /* ===============================
+       3. Tìm types
+       =============================== */
+        List<ProductTypes> types =
+                productTypeRepo.search(doiTuong, tenLoai, chiTietLoai);
+
+        if (types.isEmpty()) {
+            return Page.empty(pageable);
+        }
+
+    /* ===============================
+       4. Tìm products theo types
+       =============================== */
+        Page<Products> productsPage =
+                productRepository.findByTypesIn(types, pageable);
+
+        List<Products> products = productsPage.getContent();
+
+        if (products.isEmpty()) {
+            return productsPage.map(p -> null);
+        }
+
+    /* ===============================
+       5. Lấy ảnh đại diện
+       =============================== */
+        List<ProductImages> daiDienImages =
+                productImagesRepo.findDaiDienByProducts(products);
+
+        Map<Integer, String> imageMap =
+                daiDienImages.stream()
+                        .collect(Collectors.toMap(
+                                pi -> pi.getProducts().getMaSp(),
+                                ProductImages::getUrlImage
+                        ));
+
+    /* ===============================
+       6. Map sang DTO
+       =============================== */
+        return productsPage.map(product -> {
+            ProductBestSellerResponse dto =
+                    productMapper.toDTO5(product);
+
+            dto.setUrlImage(
+                    imageMap.get(product.getMaSp())
+            );
+
+            return dto;
+        });
+    }
 }

@@ -3,7 +3,10 @@ package com.Nhom19.shopQuanAo.repository;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.SPNamResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.ProductBestSellerResponse;
 import com.Nhom19.shopQuanAo.entity.ProductImages;
+import com.Nhom19.shopQuanAo.entity.ProductTypes;
 import com.Nhom19.shopQuanAo.entity.Products;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -143,5 +146,9 @@ List<ProductBestSellerResponse> getTopBestSeller();
     WHERE pt.doiTuong = :doiTuong
 """)
     List<Products> findByDoiTuong(@Param("doiTuong") String doiTuong);
+    Page<Products> findByTypesIn(
+            List<ProductTypes> types,
+            Pageable pageable
+    );
 }
 
