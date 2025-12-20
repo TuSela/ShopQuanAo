@@ -123,7 +123,7 @@ public class CustomerController {
             Integer Id = claims.getIntegerClaim("id");
             ApiResponse<List<MyOrderResponse>> apiResponse = new ApiResponse<>();
 
-            apiResponse.setResult(orderService.getMyOrders(Id));
+            apiResponse.setResult(orderService.getALLMyOrders(Id));
             return apiResponse;
         } catch (ParseException e) {
             throw new RuntimeException(e);

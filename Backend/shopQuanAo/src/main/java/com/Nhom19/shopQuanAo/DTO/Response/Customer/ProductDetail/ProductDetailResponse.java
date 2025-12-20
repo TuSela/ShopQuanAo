@@ -18,7 +18,7 @@ public class ProductDetailResponse {
     private BigDecimal gia;
     private float danhGia;
     private Integer soLuongDanhGia;
-    private Set<ColorResponse> Variants;
+    private List<ColorResponse> Variants;
     private List<String> listAnhSP;
     private String chiTiet;
     private Set<ProductResponse> productComments = new HashSet<>();

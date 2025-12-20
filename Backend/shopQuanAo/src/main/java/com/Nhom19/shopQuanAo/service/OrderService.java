@@ -5,21 +5,19 @@ import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyCart.CreatCartResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyOrder.*;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.OrderDetailRes.AddressResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.OrderDetailRes.OrderDetailResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.OrderDetailRes.OrderItemResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.OrderDetailRes.PaymentResponse;
 import com.Nhom19.shopQuanAo.entity.*;
-import com.Nhom19.shopQuanAo.entityCompositeKey.CartItemId;
 import com.Nhom19.shopQuanAo.entityCompositeKey.OrderItemId;
 import com.Nhom19.shopQuanAo.mapper.AddressMapper;
 import com.Nhom19.shopQuanAo.mapper.PaymentMapper;
 import com.Nhom19.shopQuanAo.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +54,9 @@ public class OrderService {
         }).toList();
     }
 
-    public List<MyOrderResponse> getMyOrders(Integer maTk) {
+    @Autowired
+    ProductImagesRepo productImagesRepo;
+    public List<MyOrderResponse> getALLMyOrders(Integer maTk) {
 
         List<Orders> ordersList =
                 orderRepository.findByUsers_MaTkOrderByNgayThanhToanDesc(maTk);
@@ -84,15 +84,18 @@ public class OrderService {
                                 item.setMau(pv.getColors().getTenMs());
                                 item.setSize(pv.getSizes().getTenKc());
 
-                                String anh = p.getImages().stream()
+                                List<ProductImages> images=
+                                        productImagesRepo.getImagesByProductAndColor(oi.getProductVariants()
+                                                .getProducts().getMaSp(), oi.getProductVariants().getColors().getMaMs());
+
+                                String url = images.stream()
                                         .filter(img -> Boolean.TRUE.equals(img.getDaiDienMau()))
                                         .map(ProductImages::getUrlImage)
                                         .findFirst()
-                                        .orElse(p.getImages().isEmpty()
-                                                ? null
-                                                : p.getImages().get(0).getUrlImage());
+                                        .orElse(images.isEmpty() ? null : images.get(0).getUrlImage());
 
-                                item.setAnh(anh);
+                                item.setAnh(url);
+
                                 return item;
                             })
                             .toList();
@@ -134,10 +137,44 @@ public class OrderService {
 
         // Items
 
-        response.setItems(orderItemRepo.findOrderItems(order.getMaDdh()));
+        response.setItems(
+                orderItemRepo.findOrderItems(order.getMaDdh())
 
+        );
+        List<OrderItemResponse> items =
+                orderItemRepo.findByOrders(order)
+                        .stream()
+                        .map(oi -> {
+
+                            ProductVariants pv = oi.getProductVariants();
+                            Products p = pv.getProducts();
+
+                            OrderItemResponse item = new OrderItemResponse();
+                            item.setTenSp(p.getTenSp());
+                            item.setSoLuong(oi.getSoLuong());
+                            item.setGia(oi.getTongTien());
+                            item.setTenMau(pv.getColors().getTenMs());
+                            item.setTenKc(pv.getSizes().getTenKc());
+                            item.setTongTien(oi.getTongTien());
+                            item.setMaDdh(order.getMaDdh());
+                            List<ProductImages> images=
+                                    productImagesRepo.getImagesByProductAndColor(oi.getProductVariants()
+                                            .getProducts().getMaSp(), oi.getProductVariants().getColors().getMaMs());
+
+                            String url = images.stream()
+                                    .filter(img -> Boolean.TRUE.equals(img.getDaiDienMau()))
+                                    .map(ProductImages::getUrlImage)
+                                    .findFirst()
+                                    .orElse(images.isEmpty() ? null : images.get(0).getUrlImage());
+
+                            item.setUrlImage(url);
+
+                            return item;
+                        })
+                        .toList();
+
+        response.setItems(items);
         response.setTotalAmount(order.getTongTien());
-
         return response;
     }
     @Autowired

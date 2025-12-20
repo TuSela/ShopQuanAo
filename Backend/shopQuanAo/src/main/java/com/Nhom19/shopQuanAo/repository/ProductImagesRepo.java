@@ -33,4 +33,16 @@ Set<ProductImages> findByProducts(Products products);
     List<ProductImages> findDaiDienByProducts(@Param("products") List<Products> products);
 
     List<ProductImages> findByProductsOrderByDaiDienDesc(Products products);
+
+    @Query("""
+        SELECT pi
+        FROM ProductImages pi
+        WHERE pi.products.maSp = :maSp
+          AND pi.productColor.maMs = :maMs
+        ORDER BY pi.daiDienMau DESC
+    """)
+    List<ProductImages> getImagesByProductAndColorOrderByDaiDien(
+            @Param("maSp") Integer maSp,
+            @Param("maMs") Integer maMs
+    );
 }

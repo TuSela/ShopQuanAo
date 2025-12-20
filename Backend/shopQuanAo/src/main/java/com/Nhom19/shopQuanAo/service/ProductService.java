@@ -20,10 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.stream;
@@ -135,52 +132,58 @@ public class ProductService {
         );
 
         // Map variant
-        List<ProductVariants> productVariant = productVariantsRepo.findByProductOrderByImageDaiDien(products);
-        productDetailResponse.setVariants(
-                productVariant.stream()
-                        .map(variant -> {
-                            ProductColors productColors = variant.getColors();
+        List<ProductVariants> variants =
+                productVariantsRepo.findByProductOrderByImageDaiDien(products);
 
-                            ColorResponse colorDetail= getColorDetail(products.getMaSp(),productColors.getMaMs());
+        Map<Integer, ProductVariants> uniqueColorMap = new LinkedHashMap<>();
 
-                            return colorDetail;
-                        })
-                        .collect(Collectors.toSet())
-        );
+        for (ProductVariants v : variants) {
+            Integer maMs = v.getColors().getMaMs();
+
+            // chỉ giữ bản ghi đầu tiên (đã đúng thứ tự đại diện)
+            uniqueColorMap.putIfAbsent(maMs, v);
+        }
+
+        List<ColorResponse> colors = uniqueColorMap.values().stream()
+                .map(v -> getColorDetail(products.getMaSp(), v.getColors().getMaMs()))
+                .toList();
+
+        productDetailResponse.setVariants(colors);
         return productDetailResponse;
     }
 
     ///LẤY RA SẢN PHẨM BIẾN THỂ
+    @Transactional()
     public ColorResponse getColorDetail(Integer maSp, Integer maMs) {
-        ColorResponse res = new ColorResponse();
+
         ProductColors color = productColorRepo.findById(maMs)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy màu"));
 
+        ColorResponse res = new ColorResponse();
         res.setMaMs(color.getMaMs());
         res.setTenMs(color.getTenMs());
 
-        // Lấy 1 ảnh đầu tiên
+        // Ảnh đã được sắp xếp: đại diện đứng đầu
         List<ProductImages> images =
-                productImagesRepo.getImagesByProductAndColor(maSp, maMs);
+                productImagesRepo.getImagesByProductAndColorOrderByDaiDien(maSp, maMs);
 
-        String url = images.stream()
-                .filter(img -> Boolean.TRUE.equals(img.getDaiDienMau()))
-                .map(ProductImages::getUrlImage)
-                .findFirst()
-                .orElse(images.isEmpty() ? null : images.get(0).getUrlImage());
+        res.setUrlImages(
+                images.isEmpty() ? null : images.get(0).getUrlImage()
+        );
 
-        res.setUrlImages(url);
+        // Size theo màu
+        List<ProductVariants> variants =
+                productVariantsRepo.getSizesByProductAndColor(maSp, maMs);
 
-        // Lấy size theo màu
-        List<ProductVariants> variants = productVariantsRepo.getSizesByProductAndColor(maSp, maMs);
-
-        List<ColorSizeResponse> sizeList = variants.stream().map(v -> {
-            ColorSizeResponse s = new ColorSizeResponse();
-            s.setMaKc(v.getSizes().getMaKc());
-            s.setTenKc(v.getSizes().getTenKc());
-            s.setSoluong(v.getSoluong());
-            return s;
-        }).toList();
+        List<ColorSizeResponse> sizeList = variants.stream()
+                .map(v -> {
+                    ColorSizeResponse s = new ColorSizeResponse();
+                    s.setMaKc(v.getSizes().getMaKc());
+                    s.setTenKc(v.getSizes().getTenKc());
+                    s.setSoluong(v.getSoluong());
+                    return s;
+                })
+                .toList();
 
         res.setSizes(sizeList);
 
@@ -310,7 +313,6 @@ public class ProductService {
             String tenLoai,
             String chiTietLoai
     ) {
-
     /* ===============================
        1. Chuẩn hóa filter rỗng
        =============================== */

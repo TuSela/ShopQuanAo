@@ -25,7 +25,7 @@ public interface ProductVariantRepo extends JpaRepository<ProductVariants, Integ
     List<ProductVariants> findByProducts(Products products);
 
     @Query("""
-    SELECT pv 
+    SELECT pv
     FROM ProductVariants pv
     WHERE pv.products.maSp = :maSp
       AND pv.colors.maMs = :maMs
