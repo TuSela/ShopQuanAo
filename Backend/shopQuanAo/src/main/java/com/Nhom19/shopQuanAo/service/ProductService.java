@@ -230,7 +230,6 @@ public class ProductService {
         return true;
     }
 
-
     public List<ProductBestSellerResponse> searchByKeyword(String keyword) {
 
         if (keyword == null || keyword.trim().isEmpty()) {
@@ -318,8 +317,7 @@ public class ProductService {
        =============================== */
         if (doiTuong != null && doiTuong.isBlank()) doiTuong = null;
         if (tenLoai != null && tenLoai.isBlank()) tenLoai = null;
-        if (chiTietLoai != null) chiTietLoai = null;
-
+        
     /* ===============================
        2. Validate sort
        =============================== */
