@@ -1,14 +1,18 @@
 package com.Nhom19.shopQuanAo.Controller;
 
+import com.Nhom19.shopQuanAo.DTO.Request.Admin.CreateOrUpdateColorRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.ApiResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductDetail.ColorResponse;
+import com.Nhom19.shopQuanAo.exception.ColorNotFoundException;
+import com.Nhom19.shopQuanAo.exception.DuplicateColorException;
 import com.Nhom19.shopQuanAo.service.ProductColorService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
+import java.util.Map;
 
 @RequestMapping("/colors")
 @RestController
@@ -21,5 +25,58 @@ public class ProductColorController {
         ApiResponse<List<ColorResponse>> productColors = new ApiResponse<>();
         productColors.setResult(productColorService.getAllProductColors());
         return productColors;
+    }
+
+    @GetMapping("/{maMs}")
+    public ApiResponse<ColorResponse> getColor(@PathVariable("maMs") int maMs) {
+        ApiResponse<ColorResponse> apiResponse = new ApiResponse<>();
+        apiResponse.setResult(productColorService.getProductColor(maMs));
+        return apiResponse;
+    }
+
+    @PostMapping
+    public ResponseEntity<ApiResponse<ColorResponse>> createColor(
+            @RequestBody CreateOrUpdateColorRequest colorRequest,
+            UriComponentsBuilder uriBuilder) {
+        ApiResponse<ColorResponse> apiResponse = new ApiResponse<>();
+        var color = productColorService.createProductColor(colorRequest);
+
+        apiResponse.setResult(color);
+        var uri =  uriBuilder.path("/colors/{maMs}").buildAndExpand(color.getMaMs()).toUri();
+        return ResponseEntity.created(uri).body(apiResponse);
+    }
+
+    @PutMapping("/{maMs}")
+    public ApiResponse<ColorResponse> updateColor(
+            @RequestBody CreateOrUpdateColorRequest colorRequest
+            ,@PathVariable("maMs") int maMs) {
+        ApiResponse<ColorResponse> apiResponse = new ApiResponse<>();
+        apiResponse.setResult(productColorService.updateProductColor(maMs,  colorRequest));
+        return apiResponse;
+    }
+
+    @DeleteMapping("/{maMs}")
+    public ApiResponse deleteColor (@PathVariable int maMs) {
+        ApiResponse apiResponse = new ApiResponse<>();
+        var result = productColorService.deleteColor(maMs);
+
+        if (result) {
+            apiResponse.setResult(true);
+        } else {
+            apiResponse.setResult(false);
+        }
+        return apiResponse;
+    }
+
+    @ExceptionHandler(ColorNotFoundException.class)
+    public ResponseEntity<Void> handleColorNotFound() {
+        return ResponseEntity.notFound().build();
+    }
+
+    @ExceptionHandler(DuplicateColorException.class)
+    public ResponseEntity<Map<String, String>> handleDuplicateColorName() {
+        return ResponseEntity.badRequest().body(
+                Map.of("tenMs", "There is already a product color with the same name!")
+        );
     }
 }
