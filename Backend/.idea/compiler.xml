@@ -24,7 +24,7 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="shopQuanAo" options="-parameters -parameters" />
+      <module name="shopQuanAo" options="-parameters -parameters --add-exports java.security.jgss/sun.security.krb5.internal.ktab=ALL-UNNAMED" />
     </option>
   </component>
 </project>

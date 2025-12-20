@@ -24,10 +24,23 @@ public interface ProductTypeRepo extends JpaRepository<ProductTypes, Integer> {
     SELECT p FROM ProductTypes p
     WHERE (:doiTuong IS NULL OR p.doiTuong = :doiTuong)
       AND (:tenLoai IS NULL OR p.tenLoai = :tenLoai)
-      AND (:chiTietLoai IS NULL OR p.chiTietLoai = :chiTietLoai)
+      AND (:maLoai IS NULL OR p.maLoai = :maLoai)
 """)
     List<ProductTypes> search(
             @Param("doiTuong") String doiTuong,
             @Param("tenLoai") String tenLoai,
-            @Param("chiTietLoai") String chiTietLoai
-    );}
+            @Param("maLoai") Integer maLoai
+    );
+    //lấy type theo doituong và tenloai
+    @Query("""
+        SELECT pt
+        FROM ProductTypes pt
+        WHERE (:doiTuong IS NULL OR pt.doiTuong = :doiTuong)
+          AND (:tenLoai IS NULL OR pt.tenLoai = :tenLoai)
+        ORDER BY pt.tenLoai, pt.chiTietLoai
+    """)
+    List<ProductTypes> findByDoiTuongAndTenLoai(
+            @Param("doiTuong") String doiTuong,
+            @Param("tenLoai") String tenLoai
+    );
+}

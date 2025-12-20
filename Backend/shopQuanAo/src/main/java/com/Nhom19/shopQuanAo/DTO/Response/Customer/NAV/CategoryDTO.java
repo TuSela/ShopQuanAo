@@ -6,5 +6,5 @@ import java.util.List;
 @Data
 public class CategoryDTO {
     private String tenLoai;
-    private List<String> chiTietLoai;
+    private List<ChiTietLoaiResponse> DanhMuc;
 }

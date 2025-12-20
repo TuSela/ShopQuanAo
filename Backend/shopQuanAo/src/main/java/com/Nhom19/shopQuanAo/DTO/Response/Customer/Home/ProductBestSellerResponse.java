@@ -16,4 +16,5 @@ public class ProductBestSellerResponse {
     private String tenSp;
     private BigDecimal gia;
     private String urlImage;
+    private Float danhGia;
 }

@@ -1,6 +1,7 @@
 package com.Nhom19.shopQuanAo.mapper;
 
 import com.Nhom19.shopQuanAo.DTO.Request.Admin.TypeCreationRequest;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.NAV.ChiTietLoaiResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductDetail.ColorResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Admin.ProductSizeResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Admin.ProductTypeResponse;
@@ -15,4 +16,5 @@ public interface ProductTypeMapper {
     ProductTypeResponse toProductTypeResponse(ProductTypes productTypes);
     ColorResponse toColorResponse(ProductColors productColors);
     ProductSizeResponse toProductSizeResponse(ProductSizes productSizes);
+    ChiTietLoaiResponse toChiTietLoaiResponse(ProductTypes productTypes);
 }

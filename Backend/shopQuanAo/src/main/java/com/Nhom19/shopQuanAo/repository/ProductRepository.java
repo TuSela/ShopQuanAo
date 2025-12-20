@@ -62,6 +62,7 @@ SELECT TOP (10)
     p.ten_sp AS tenSp,
     p.gia AS gia,
     pi.url_hinh_anh AS urlImage
+    p.danh_gia AS danhGia
 FROM products p
 JOIN product_variants pv ON pv.ma_sp = p.ma_sp
 JOIN order_items oi ON oi.ma_bien_the = pv.ma_bien_the
@@ -95,7 +96,7 @@ List<ProductBestSellerResponse> getTopBestSeller();
 
         @Query(value = """
         SELECT p.ma_sp AS maSp, p.ten_sp AS tenSp, p.gia AS gia, 
-               MAX(pi.url_hinh_anh) AS urlImage
+               MAX(pi.url_hinh_anh) AS urlImage,p.danh_gia AS danhGia
         FROM products p
         LEFT JOIN product_variants pv ON pv.ma_sp = p.ma_sp
         LEFT JOIN product_images pi ON pi.ma_bien_the = pv.ma_bien_the AND pi.dai_dien = 1
@@ -124,7 +125,8 @@ List<ProductBestSellerResponse> getTopBestSeller();
         p.maSp,
         p.tenSp,
         p.gia,
-        img.urlImage
+        img.urlImage,
+        p.danhGia
     )
     FROM Products p
     LEFT JOIN p.images img

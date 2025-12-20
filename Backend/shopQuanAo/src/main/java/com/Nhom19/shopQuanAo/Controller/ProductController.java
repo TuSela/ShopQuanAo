@@ -3,9 +3,11 @@ package com.Nhom19.shopQuanAo.Controller;
 import com.Nhom19.shopQuanAo.DTO.Request.Admin.CreationProductRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.ApiResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.Categories.PageResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.NAV.ChiTietLoaiResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductDetail.ProductDetailResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.ProductBestSellerResponse;
 import com.Nhom19.shopQuanAo.service.ProductService;
+import com.Nhom19.shopQuanAo.service.ProductTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,8 @@ import java.util.List;
 public class ProductController {
     @Autowired
     private ProductService productService;
+    @Autowired
+    private ProductTypeService productTypeService;
 //    @GetMapping()
 //    public ApiResponse<List<ProductResponse>> showHomePage(){
 //        Products Product =new Products();
@@ -81,20 +85,28 @@ public class ProductController {
 
             @RequestParam(required = false) String doiTuong,
             @RequestParam(required = false) String tenLoai,
-            @RequestParam(required = false) String chiTietLoai
+            @RequestParam(required = false) Integer maLoai
     ) {
-        
+        //lấy ra danh mục liên quan
         ApiResponse<PageResponse<ProductBestSellerResponse>> response = new ApiResponse<>();
+        List<ChiTietLoaiResponse> chiTietLoaiResponses =productTypeService.getChiTietLoai(doiTuong, tenLoai, maLoai);
+        // lấy ra sản phẩm
         Page<ProductBestSellerResponse> page1 = productService.getProductsByTypes(
                 page, size, sort, direction,
-                doiTuong, tenLoai, chiTietLoai
+                doiTuong, tenLoai, maLoai
         );
+        // lấy ra tiêu đề danh mục
+
+        String TenDanhMuc= productTypeService.getTenPageDanhMuc(doiTuong, tenLoai, maLoai);
         response.setResult( new PageResponse<>(
+                TenDanhMuc,
                 page1.getContent(),
+                chiTietLoaiResponses,
                 page1.getNumber(),
                 page1.getSize(),
                 page1.getTotalElements(),
-                page1.getTotalPages()));
+                page1.getTotalPages()
+        ));
         return response;
     }
 }

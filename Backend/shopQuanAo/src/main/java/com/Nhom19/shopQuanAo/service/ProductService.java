@@ -311,23 +311,23 @@ public class ProductService {
             String direction,
             String doiTuong,
             String tenLoai,
-            String chiTietLoai
+            Integer chiTietLoai
     ) {
     /* ===============================
        1. Chuẩn hóa filter rỗng
        =============================== */
         if (doiTuong != null && doiTuong.isBlank()) doiTuong = null;
         if (tenLoai != null && tenLoai.isBlank()) tenLoai = null;
-        if (chiTietLoai != null && chiTietLoai.isBlank()) chiTietLoai = null;
+        if (chiTietLoai != null) chiTietLoai = null;
 
     /* ===============================
        2. Validate sort
        =============================== */
         List<String> allowedSorts =
-                List.of("gia", "tenSp", "createdAt");
+                List.of("gia", "tenSp", "danhGia");
 
         if (!allowedSorts.contains(sortBy)) {
-            sortBy = "createdAt";
+            sortBy = "danhGia";
         }
 
         Sort.Direction sortDirection =

@@ -3,6 +3,7 @@ package com.Nhom19.shopQuanAo.service;
 import com.Nhom19.shopQuanAo.DTO.Request.Admin.TypeCreationRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.Admin.ProductTypeResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.NAV.CategoryDTO;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.NAV.ChiTietLoaiResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.NAV.NavMenuDTO;
 import com.Nhom19.shopQuanAo.entity.ProductTypes;
 import com.Nhom19.shopQuanAo.mapper.ProductTypeMapper;
@@ -10,9 +11,14 @@ import com.Nhom19.shopQuanAo.repository.ProductTypeRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import java.text.Normalizer;
+
 
 @Service
 public class ProductTypeService {
@@ -33,31 +39,32 @@ public class ProductTypeService {
                  .collect(Collectors.toList());
     }
 
+
+    private String normalize(String input) {
+        if (input == null) return "";
+        return Normalizer.normalize(input, Normalizer.Form.NFD)
+                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
+                .toLowerCase();
+    }
     public List<NavMenuDTO> buildNavMenu() {
 
         List<ProductTypes> list = productTypeRepo.findAllForMenuSorted();
 
-        // Group dữ liệu
-        Map<String, Map<String, List<String>>> grouped =
+        // Group theo doiTuong -> tenLoai -> List<ProductTypes>
+        Map<String, Map<String, List<ProductTypes>>> grouped =
                 list.stream()
                         .collect(Collectors.groupingBy(
                                 ProductTypes::getDoiTuong,
-                                Collectors.groupingBy(
-                                        ProductTypes::getTenLoai,
-                                        Collectors.mapping(
-                                                ProductTypes::getChiTietLoai,
-                                                Collectors.toList()
-                                        )
-                                )
+                                Collectors.groupingBy(ProductTypes::getTenLoai)
                         ));
 
-        // Build DTO + SORT
         return grouped.entrySet().stream()
 
                 // 1️⃣ Sort doiTuong A-Z
-                .sorted(Map.Entry.comparingByKey())
+                .sorted(Comparator.comparing(e -> normalize(e.getKey())))
 
                 .map(doiTuongEntry -> {
+
                     NavMenuDTO nav = new NavMenuDTO();
                     nav.setDoiTuong(doiTuongEntry.getKey());
 
@@ -65,26 +72,66 @@ public class ProductTypeService {
                             doiTuongEntry.getValue().entrySet().stream()
 
                                     // 2️⃣ Sort tenLoai A-Z
-                                    .sorted(Map.Entry.comparingByKey())
+                                    .sorted(Comparator.comparing(e -> normalize(e.getKey())))
 
                                     .map(catEntry -> {
+
                                         CategoryDTO cat = new CategoryDTO();
                                         cat.setTenLoai(catEntry.getKey());
 
-                                        // 3️⃣ Sort chiTietLoai A-Z
-                                        List<String> chiTietLoai =
+                                        // 3️⃣ Map chiTietLoai + maLoai
+                                        List<ChiTietLoaiResponse> chiTietLoai =
                                                 catEntry.getValue().stream()
-                                                        .sorted()
-                                                        .toList();
 
-                                        cat.setChiTietLoai(chiTietLoai);
+                                                        // tránh trùng maLoai
+                                                        .collect(Collectors.toMap(
+                                                                ProductTypes::getMaLoai,
+                                                                pt -> {
+                                                                    ChiTietLoaiResponse dto =
+                                                                            new ChiTietLoaiResponse();
+                                                                    dto.setMaLoai(pt.getMaLoai());
+                                                                    dto.setChiTietLoai(pt.getChiTietLoai());
+                                                                    return dto;
+                                                                },
+                                                                (a, b) -> a
+                                                        ))
+                                                        .values().stream()
+
+                                                        // 4️⃣ Sort chiTietLoai A-Z
+                                                        .sorted(Comparator.comparing(
+                                                                dto -> normalize(dto.getChiTietLoai())
+                                                        ))
+                                                        .collect(Collectors.toList());
+
+                                        cat.setDanhMuc(chiTietLoai);
                                         return cat;
                                     })
-                                    .toList();
+                                    .collect(Collectors.toList());
 
                     nav.setCategories(categories);
                     return nav;
                 })
-                .toList();
+                .collect(Collectors.toList());
+    }
+    public List<ChiTietLoaiResponse> getChiTietLoai(String doiTuong, String tenLoai, Integer chiTietLoai) {
+        if (doiTuong != null && doiTuong.isBlank()) doiTuong = null;
+        if (tenLoai != null && tenLoai.isBlank()) tenLoai = null;
+        if (chiTietLoai != null){
+            ProductTypes productTypes = productTypeRepo.findById(chiTietLoai).orElseThrow(()-> new RuntimeException("không tìm thấy loại"));
+            doiTuong = productTypes.getDoiTuong();
+            tenLoai = productTypes.getTenLoai();
+        }
+        List<ProductTypes> productTypes = productTypeRepo.findByDoiTuongAndTenLoai(doiTuong,tenLoai);
+        return productTypes.stream().map(productTypeMapper::toChiTietLoaiResponse).collect(Collectors.toList());
+    }
+    public String getTenPageDanhMuc(String doiTuong, String tenLoai, Integer chiTietLoai){
+        if (doiTuong != null && doiTuong.isBlank()) doiTuong = null;
+        if (tenLoai != null && tenLoai.isBlank()) tenLoai = null;
+        String TenPageDanhMuc =tenLoai +" " + doiTuong;
+        if (chiTietLoai != null){
+            ProductTypes productTypes = productTypeRepo.findById(chiTietLoai).orElseThrow(()-> new RuntimeException("không tìm thấy loại"));
+            TenPageDanhMuc = productTypes.getChiTietLoai()+" " + productTypes.getDoiTuong();
+        }
+        return TenPageDanhMuc;
     }
 }
