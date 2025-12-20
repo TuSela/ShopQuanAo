@@ -22,7 +22,7 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
     private final String[] PUBLIC_ENDPOINTS = {"/auth/login","users","users/{userId}","products"
-            ,"products/type","home","products/{maSp}","home/{maSp}","/types","/colors","/sizes"
+            ,"products/type","home","products/{maSp}","home/{maSp}","/types/**","/colors/**","/sizes/**"
             ,"files","files/images","/orders"
     };
     private final String[] PUBLIC_Img = {"/avatar/**","/image/**","/public/**"
