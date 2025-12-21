@@ -1,245 +1,352 @@
 <template>
-  <div class="p-6 max-w-7xl mx-auto space-y-8">
-    <!-- HEADER -->
-    <div class="flex items-center justify-between">
-      <h1 class="text-3xl font-bold">✏ Chỉnh sửa sản phẩm</h1>
-      <button class="px-5 py-2 bg-blue-600 text-white rounded-lg">
-        💾 Lưu sản phẩm
-      </button>
-    </div>
-
-    <!-- ===== THÔNG TIN SẢN PHẨM ===== -->
-    <section class="bg-white rounded-xl shadow p-6 space-y-4">
-      <h2 class="text-lg font-semibold">📦 Thông tin sản phẩm</h2>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <div class="page">
+    <h1>🛠 Cập nhật sản phẩm</h1>
+    <!-- ===== BASIC INFO ===== -->
+    <section class="card">
+      <h2>Thông tin cơ bản</h2>
+      <div class="grid">
         <div>
-          <label class="block text-sm font-medium mb-1">Tên sản phẩm</label>
-          <input class="w-full border rounded px-3 py-2" />
+          <label>Mã sản phẩm</label>
+          <input disabled :value="productForm.maSp" />
         </div>
-
         <div>
-          <label class="label">Giá</label>
-          <input type="number" v-model.number="product.gia" class="input" />
+          <label>Tên sản phẩm</label> <input v-model="productForm.tenSp" />
         </div>
-
+        <!-- ĐỐI TƯỢNG -->
         <div>
-          <label class="label">Trạng thái</label>
-          <select v-model="product.trangThai" class="input">
-            <option value="ACTIVE">Đang bán</option>
-            <option value="INACTIVE">Ngừng bán</option>
+          <label>Đối tượng</label>
+          <select v-model="selectedDoiTuong">
+            <option disabled value="">-- Chọn đối tượng --</option>
+            <option v-for="dt in doiTuongOptions" :key="dt" :value="dt">
+              {{ dt }}
+            </option>
           </select>
         </div>
-
+        <!-- TÊN LOẠI -->
         <div>
-          <label class="label">Loại sản phẩm</label>
-          <select v-model="product.maLoai" class="input">
-            <option value="L01">Áo nam</option>
-            <option value="L02">Quần nữ</option>
+          <label>Tên loại</label>
+          <select v-model="selectedTenLoai" :disabled="!selectedDoiTuong">
+            <option disabled value="">-- Chọn tên loại --</option>
+            <option v-for="t in tenLoaiOptions" :key="t" :value="t">
+              {{ t }}
+            </option>
           </select>
         </div>
-      </div>
-
-      <div>
-        <label class="label">Mô tả</label>
-        <textarea v-model="product.moTa" class="input h-28"></textarea>
+        <!-- CHI TIẾT LOẠI -->
+        <div>
+          <label>Chi tiết loại</label>
+          <select v-model="productForm.maLoai" :disabled="!selectedTenLoai">
+            <option disabled value="">-- Chọn chi tiết --</option>
+            <option
+              v-for="t in chiTietLoaiOptions"
+              :key="t.maLoai"
+              :value="t.maLoai"
+            >
+              {{ t.chiTietLoai }}
+            </option>
+          </select>
+        </div>
+        <div>
+          <label>Giá</label> <input type="number" v-model="productForm.gia" />
+        </div>
       </div>
     </section>
-
-    <!-- ===== MÀU + ẢNH ===== -->
-    <section class="bg-white rounded-xl shadow p-6 space-y-6">
-      <div class="flex justify-between items-center">
-        <h2 class="text-lg font-semibold">🎨 Màu & Hình ảnh</h2>
-        <button class="px-3 py-2 border rounded" @click="addColor">
-          ➕ Thêm màu
-        </button>
+    <!-- ===== MÔ TẢ ===== -->
+    <section class="card">
+      <h2>Chi tiết sản phẩm</h2>
+      <textarea rows="5" v-model="productForm.moTa"></textarea>
+    </section>
+    <!-- ===== VARIANT LIST ===== -->
+    <section class="card">
+      <div class="row-between">
+        <h2>Danh sách biến thể</h2>
+        <button @click="openCreate">➕ Thêm biến thể</button>
       </div>
-
-      <div
-        v-for="(color, cIdx) in product.colors"
-        :key="cIdx"
-        class="border rounded-lg p-4 space-y-4"
-      >
-        <!-- MÀU -->
-        <div class="flex justify-between items-center">
-          <div class="flex gap-4">
-            <input
-              v-model="color.tenMau"
-              placeholder="Tên màu"
-              class="input w-40"
-            />
-          </div>
-          <button class="text-red-600" @click="removeColor(cIdx)">
-            🗑 Xóa màu
-          </button>
-        </div>
-
-        <!-- ẢNH -->
-        <div class="flex gap-4 overflow-x-auto">
-          <div
-            v-for="(img, iIdx) in color.images"
-            :key="iIdx"
-            class="relative w-36 border rounded-lg p-2 shrink-0"
-          >
-            <img :src="img.url" class="w-full h-24 object-cover rounded" />
-
-            <!-- BADGE -->
-            <span
-              v-if="img.daiDien"
-              class="absolute top-1 left-1 text-xs bg-emerald-600 text-white px-2 rounded"
-            >
-              SP
-            </span>
-            <span
-              v-if="img.daiDienMau"
-              class="absolute top-1 right-1 text-xs bg-amber-500 text-white px-2 rounded"
-            >
-              Màu
-            </span>
-
-            <!-- ACTION -->
-            <div class="mt-2 space-y-1 text-xs">
-              <button
-                class="w-full border rounded"
-                @click="setDaiDienSP(cIdx, iIdx)"
-              >
-                Đại diện SP
-              </button>
-              <button
-                class="w-full border rounded"
-                @click="setDaiDienMau(cIdx, iIdx)"
-              >
-                Đại diện màu
-              </button>
-              <button
-                class="w-full border text-red-600 rounded"
-                @click="color.images.splice(iIdx, 1)"
-              >
-                Xóa
-              </button>
-            </div>
-          </div>
-
-          <!-- ADD IMAGE -->
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Mã</th>
+              <th>Ảnh</th>
+              <th>Màu</th>
+              <th>Size</th>
+              <th>Số lượng</th>
+              <th>Trạng thái</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="v in variants" :key="v.maPv" @click="openEdit(v)">
+              <td>{{ v.maPv }}</td>
+              <td><img :src="v.image" /></td>
+              <td>{{ v.mau }}</td>
+              <td>{{ v.size }}</td>
+              <td>{{ v.soLuong }}</td>
+              <td>{{ v.trangThai ? "Hoạt động" : "Ngừng" }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+    <!-- ===== VARIANT OVERLAY ===== -->
+    <div v-if="showModal" class="overlay">
+      <div class="modal">
+        <h3>{{ modalMode === "edit" ? "Sửa biến thể" : "Thêm biến thể" }}</h3>
+        <label>Màu sắc</label> <input v-model="currentVariant.mau" />
+        <label>Kích cỡ</label> <input v-model="currentVariant.size" />
+        <label>Số lượng</label>
+        <input type="number" v-model="currentVariant.soLuong" />
+        <label>Trạng thái</label>
+        <select v-model="currentVariant.trangThai">
+          <option :value="true">Hoạt động</option>
+          <option :value="false">Ngừng</option>
+        </select>
+        <div class="actions">
+          <button @click="closeModal">Huỷ</button>
           <button
-            class="w-36 h-36 border-dashed border rounded-lg flex items-center justify-center text-gray-400"
-            @click="addImage(cIdx)"
+            v-if="modalMode === 'edit'"
+            @click="deleteVariant"
+            class="danger"
           >
-            ➕
+            Xoá
           </button>
-        </div>
-
-        <!-- SIZE -->
-        <div class="space-y-2">
-          <h4 class="font-medium">Size</h4>
-
-          <div
-            v-for="(s, sIdx) in color.sizes"
-            :key="sIdx"
-            class="flex gap-3 items-center"
-          >
-            <input v-model="s.tenSize" placeholder="Size" class="input w-20" />
-            <input
-              type="number"
-              v-model.number="s.soLuong"
-              placeholder="SL"
-              class="input w-24"
-            />
-            <button class="text-red-600" @click="color.sizes.splice(sIdx, 1)">
-              Xóa
-            </button>
-          </div>
-
-          <button class="px-3 py-1 border rounded" @click="addSize(cIdx)">
-            ➕ Thêm size
-          </button>
+          <button @click="saveVariant" class="primary">Lưu</button>
         </div>
       </div>
-    </section>
-
-    <!-- PREVIEW JSON -->
-    <section class="bg-gray-50 rounded-xl p-6">
-      <h2 class="font-semibold mb-2">🔍 Preview dữ liệu</h2>
-      <pre class="text-sm bg-white p-4 rounded overflow-auto max-h-96">{{
-        product
-      }}</pre>
-    </section>
+    </div>
   </div>
 </template>
-
 <script setup>
-import { reactive } from "vue";
+import { ref, reactive, computed, onMounted, watch } from "vue";
+import axios from "axios";
+/* ===== STATE ===== */
 
-/* ===== MOCK PRODUCT ===== */
-const product = reactive({
-  maSp: 1,
-  tenSp: "Áo thun basic",
+const allTypes = ref([]);
+const selectedDoiTuong = ref("");
+const selectedTenLoai = ref("");
+
+const isInitializing = ref(true);
+
+/* ===== MOCK PRODUCT (SAU NÀY LẤY API) ===== */
+
+const productForm = reactive({
+  maSp: "1",
+  tenSp: "Áo thun nam basic",
   gia: 199000,
-  trangThai: "ACTIVE",
-  maLoai: "L01",
-  moTa: "Áo thun cotton mềm mịn",
-
-  colors: [
-    {
-      tenMau: "Đen",
-      images: [
-        {
-          url: "https://picsum.photos/200?1",
-          daiDien: true,
-          daiDienMau: true,
-        },
-        {
-          url: "https://picsum.photos/200?2",
-          daiDien: false,
-          daiDienMau: false,
-        },
-      ],
-      sizes: [
-        { tenSize: "M", soLuong: 10 },
-        { tenSize: "L", soLuong: 5 },
-      ],
-    },
-  ],
+  moTa: "Áo thun cotton 100%",
+  maLoai: 2,
 });
+/* ===== API ===== */
+async function loadTypes() {
+  const res = await axios.get("http://localhost:8081/nhom19/types");
+  allTypes.value = res.data.result || [];
+}
+/* ===== MAP PRODUCT → SELECT ===== */
+import { nextTick } from "vue";
+
+async function mapTypeToSelect() {
+  if (!productForm.maLoai || !allTypes.value.length) return;
+
+  const found = allTypes.value.find((x) => x.maLoai === productForm.maLoai);
+  if (!found) return;
+
+  // 1. Set đối tượng
+  selectedDoiTuong.value = found.doiTuong;
+  await nextTick();
+
+  // 2. Set tên loại
+  selectedTenLoai.value = found.tenLoai;
+  await nextTick();
+
+  // 3. Set chi tiết loại (maLoai)
+  productForm.maLoai = found.maLoai;
+}
+/* ===== COMPUTED OPTIONS ===== */
+const doiTuongOptions = computed(() => [
+  ...new Set(allTypes.value.map((x) => x.doiTuong)),
+]);
+
+const tenLoaiOptions = computed(() => {
+  if (!selectedDoiTuong.value) return [];
+  return [
+    ...new Set(
+      allTypes.value
+        .filter((x) => x.doiTuong === selectedDoiTuong.value)
+        .map((x) => x.tenLoai)
+    ),
+  ];
+});
+const chiTietLoaiOptions = computed(() => {
+  if (!selectedDoiTuong.value || !selectedTenLoai.value) return [];
+  return allTypes.value.filter(
+    (x) =>
+      x.doiTuong === selectedDoiTuong.value &&
+      x.tenLoai === selectedTenLoai.value
+  );
+});
+/* ===== WATCH (CHỈ RESET KHI USER ĐỔI) ===== */
+watch(selectedDoiTuong, () => {
+  if (isInitializing.value) return;
+  selectedTenLoai.value = "";
+  productForm.maLoai = "";
+});
+watch(selectedTenLoai, () => {
+  if (isInitializing.value) return;
+  productForm.maLoai = "";
+});
+/* ===== LIFECYCLE ===== */
+onMounted(async () => {
+  await loadTypes();
+  mapTypeToSelect();
+  isInitializing.value = false;
+});
+/* ===== MOCK VARIANTS ===== */
+const variants = ref([
+  {
+    maPv: "PV01",
+    image: "",
+    mau: "Đen",
+    size: "M",
+    soLuong: 20,
+    trangThai: true,
+  },
+  {
+    maPv: "PV02",
+    image: "",
+    mau: "Trắng",
+    size: "L",
+    soLuong: 10,
+    trangThai: false,
+  },
+]);
+/* ===== MODAL STATE ===== */
+const showModal = ref(false);
+const modalMode = ref("create");
+// create | edit;
+const currentVariant = ref({});
 
 /* ===== ACTIONS ===== */
-function addColor() {
-  product.colors.push({
-    tenMau: "",
-    images: [],
-    sizes: [],
-  });
-}
-
-function removeColor(idx) {
-  product.colors.splice(idx, 1);
-}
-
-function addImage(cIdx) {
-  product.colors[cIdx].images.push({
-    url: "https://picsum.photos/200?" + Math.random(),
-    daiDien: false,
-    daiDienMau: false,
-  });
-}
-
-function setDaiDienSP(cIdx, iIdx) {
-  product.colors.forEach((c) =>
-    c.images.forEach((img) => (img.daiDien = false))
-  );
-  product.colors[cIdx].images[iIdx].daiDien = true;
-}
-
-function setDaiDienMau(cIdx, iIdx) {
-  product.colors[cIdx].images.forEach(
-    (img, i) => (img.daiDienMau = i === iIdx)
-  );
-}
-
-function addSize(cIdx) {
-  product.colors[cIdx].sizes.push({
-    tenSize: "",
+const openEdit = (v) => {
+  modalMode.value = "edit";
+  currentVariant.value = { ...v };
+  showModal.value = true;
+};
+const openCreate = () => {
+  modalMode.value = "create";
+  currentVariant.value = {
+    maPv: "NEW",
+    mau: "",
+    size: "",
     soLuong: 0,
-  });
-}
+    trangThai: true,
+  };
+  showModal.value = true;
+};
+const closeModal = () => {
+  showModal.value = false;
+};
+const saveVariant = () => {
+  if (modalMode.value === "create") {
+    variants.value.push({ ...currentVariant.value });
+  } else {
+    const index = variants.value.findIndex(
+      (v) => v.maPv === currentVariant.value.maPv
+    );
+    variants.value[index] = { ...currentVariant.value };
+  }
+  closeModal();
+};
+const deleteVariant = () => {
+  variants.value = variants.value.filter(
+    (v) => v.maPv !== currentVariant.value.maPv
+  );
+  closeModal();
+};
 </script>
+<style scoped>
+.page {
+  max-width: 1000px;
+  margin: auto;
+  padding: 24px;
+  font-family: Arial, sans-serif;
+}
+h1 {
+  margin-bottom: 20px;
+}
+.card {
+  background: #fff;
+  padding: 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+label {
+  font-size: 13px;
+  color: #555;
+}
+input,
+textarea,
+select {
+  width: 100%;
+  padding: 6px;
+  margin-top: 4px;
+}
+.row-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.table-wrapper {
+  max-height: 300px;
+  overflow: auto;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 6px;
+  text-align: center;
+}
+tbody tr:hover {
+  background: #f5f5f5;
+  cursor: pointer;
+}
+img {
+  width: 40px;
+  height: 40px;
+}
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal {
+  background: white;
+  padding: 20px;
+  width: 320px;
+  border-radius: 8px;
+}
+.actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+.primary {
+  background: #2563eb;
+  color: white;
+}
+.danger {
+  background: #dc2626;
+  color: white;
+}
+</style>

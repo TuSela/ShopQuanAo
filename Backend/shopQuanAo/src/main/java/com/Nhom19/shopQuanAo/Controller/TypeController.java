@@ -22,7 +22,6 @@ public class TypeController {
         listProductTypes.setResult(productTypeService.getTypes());
        return listProductTypes;
     }
-
     @GetMapping("/nav-menu")
     public ApiResponse<List<NavMenuDTO>> getNavMenu() {
 
