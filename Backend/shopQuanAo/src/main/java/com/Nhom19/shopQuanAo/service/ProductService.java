@@ -4,6 +4,7 @@ import com.Nhom19.shopQuanAo.DTO.Request.Admin.CreationProductRequest;
 import com.Nhom19.shopQuanAo.DTO.Request.ColorRequest;
 import com.Nhom19.shopQuanAo.DTO.Request.ImageRequest;
 import com.Nhom19.shopQuanAo.DTO.Request.SizeRequest;
+import com.Nhom19.shopQuanAo.DTO.Response.Admin.ProductResponse2;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.ProductBestSellerResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductDetail.*;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.SPNamResponse;
@@ -49,8 +50,21 @@ public class ProductService {
     private OrderItemRepo orderItemRepo;
     @Autowired
     private VariantMapper variantMapper;
-    public List<com.Nhom19.shopQuanAo.DTO.Response.Admin.ProductResponse> getProducts(){
-       return   productRepository.findAll().stream().map(productMapper::toDTO).collect(Collectors.toList());
+
+    public List<ProductResponse2> getProducts() {
+        return productRepository.findAll()
+                .stream()
+                .map(product -> {
+                    ProductResponse2 productResponse = productMapper.toDTO(product);
+
+                    productImagesRepo.getDaiDienByProducts(product.getMaSp())
+                            .ifPresent(img ->
+                                    productResponse.setAnhDaiDien(img.getUrlImage())
+                            );
+
+                    return productResponse;
+                })
+                .toList();
     }
 
     public List<ProductBestSellerResponse>getTopBestSeller(){
@@ -228,7 +242,7 @@ public class ProductService {
 
         return true;
     }
-    
+
 
 // tìm kiếm sản phẩm theo keyword
     public List<ProductBestSellerResponse> searchByKeyword(String keyword) {

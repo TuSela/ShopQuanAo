@@ -45,4 +45,13 @@ Set<ProductImages> findByProducts(Products products);
             @Param("maSp") Integer maSp,
             @Param("maMs") Integer maMs
     );
+
+    @Query("""
+    SELECT pi
+    FROM ProductImages pi
+    WHERE pi.products.maSp = :maSp
+      AND pi.daiDien = true
+    ORDER BY pi.daiDienMau DESC
+""")
+    Optional<ProductImages> getDaiDienByProducts(@Param("maSp") Integer maSp);
 }

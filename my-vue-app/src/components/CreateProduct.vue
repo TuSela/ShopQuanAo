@@ -16,117 +16,6 @@
       <!-- Left column: images / gallery -->
       <aside class="col-span-1 space-y-4">
         <div class="bg-white rounded-2xl p-4 shadow-sm">
-          <label class="text-sm font-medium text-gray-700">Ảnh đại diện</label>
-          <div class="mt-3">
-            <div
-              class="relative border-2 border-dashed rounded-xl p-4 hover:border-gray-300"
-            >
-              <input
-                type="file"
-                accept="image/*"
-                @change="onMainImagesChange"
-                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-              />
-              <div
-                class="min-h-[200px] flex items-center justify-center flex-col gap-3"
-              >
-                <div
-                  v-if="mainImagesPreview.length === 0"
-                  class="text-center text-gray-400"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-12 w-12 mx-auto"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7M3 7l9 6 9-6"
-                    />
-                  </svg>
-                  <p class="text-sm">Kéo thả hoặc nhấp để chọn ảnh</p>
-                </div>
-
-                <div v-else class="grid grid-cols-1 gap-2 w-full">
-                  <div class="w-full h-48 rounded-lg overflow-hidden">
-                    <img
-                      :src="mainImagesPreview[0]"
-                      class="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div class="flex gap-2">
-                    <button
-                      type="button"
-                      @click="
-                        mainImagesPreview = [];
-                        form.daiDien = '';
-                      "
-                      class="px-3 py-1 text-sm border rounded"
-                    >
-                      Xóa
-                    </button>
-                    <button
-                      type="button"
-                      class="px-3 py-1 text-sm border rounded"
-                      @click="downloadImage(mainImagesPreview[0])"
-                    >
-                      Tải xuống
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- <div class="bg-white rounded-2xl p-4 shadow-sm">
-          <label class="text-sm font-medium text-gray-700">Gallery</label>
-          <div class="mt-3 grid grid-cols-3 gap-2">
-            <div
-              v-for="(img, i) in formColorsAllImages"
-              :key="i"
-              class="relative rounded-lg overflow-hidden border"
-            >
-              <img :src="img" class="w-full h-24 object-cover" />
-              <button
-                @click="removeGalleryImage(i)"
-                type="button"
-                class="absolute top-2 right-2 bg-white/80 rounded-full p-1 shadow"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-4 w-4 text-red-600"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M6.293 6.293a1 1 0 011.414 0L10 8.586l2.293-2.293a1 1 0 111.414 1.414L11.414 10l2.293 2.293a1 1 0 01-1.414 1.414L10 11.414l-2.293 2.293a1 1 0 01-1.414-1.414L8.586 10 6.293 7.707a1 1 0 010-1.414z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
-              </button>
-            </div>
-            <label
-              class="flex items-center justify-center border border-dashed rounded-lg p-2 text-sm text-gray-400 cursor-pointer"
-            >
-              <input
-                type="file"
-                multiple
-                accept="image/*"
-                @change="onGalleryChange"
-                class="hidden"
-              />
-              + Thêm ảnh
-            </label>
-          </div>
-        </div> -->
-
-        <div class="bg-white rounded-2xl p-4 shadow-sm">
           <label class="text-sm font-medium text-gray-700"
             >Trạng thái & Giá</label
           >
@@ -270,7 +159,7 @@
               <div
                 ref="editor"
                 contenteditable
-                class="editor-content min-h-[220px] p-4 bg-white rounded shadow-inner overflow-auto"
+                class="editor-content min-h-55 p-4 bg-white rounded shadow-inner overflow-auto"
                 @input="syncEditor"
               >
                 <h2><b>ĐẶC ĐIỂM SẢN PHẨM</b></h2>
@@ -323,7 +212,7 @@
                   />
                 </div>
 
-                <div class="flex-shrink-0 flex flex-col items-end gap-2">
+                <div class="shrink-0 flex flex-col items-end gap-2">
                   <button
                     type="button"
                     @click="removeColor(idx)"
@@ -346,32 +235,60 @@
                 />
 
                 <!-- Badge đại diện -->
-                <div
-                  v-if="img.daiDien"
-                  class="absolute top-1 left-1 bg-amber-400 text-xs px-2 py-0.5 rounded text-white font-semibold shadow"
-                >
-                  Đã xét đại diện
-                </div>
+<!-- Ảnh đại diện SP -->
+<div
+  v-if="img.daiDien"
+  class="absolute top-1 left-1 bg-emerald-500
+         text-xs px-2 py-0.5 rounded text-white font-semibold shadow"
+>
+  SP
+</div>
+
+<!-- Ảnh đại diện màu -->
+<div
+  v-if="img.daiDienMau"
+  class="absolute top-1 right-1 bg-amber-400
+         text-xs px-2 py-0.5 rounded text-white font-semibold shadow"
+>
+  Màu
+</div>
+
 
                 <!-- Action buttons -->
-                <div
-                  class="absolute bottom-1 left-1 right-1 flex gap-1"
-                >
-                  <button
-                    type="button"
-                    @click="setDaiDien(idx, i)"
-                    class="flex-1 px-2 py-1 text-xs rounded bg-white/90 hover:bg-white border shadow-sm"
-                  >
-                    Đại diện
-                  </button>
-                  <button
-                    type="button"
-                    @click="color.urlImages.splice(i, 1)"
-                    class="flex-1 px-2 py-1 text-xs rounded bg-white/90 hover:bg-red-50 border shadow-sm text-red-600"
-                  >
-                    Xóa
-                  </button>
-                </div>
+                <div class="absolute bottom-1 left-1 right-1 flex gap-1">
+  <!-- Ảnh đại diện SP -->
+  <button
+    type="button"
+    @click="setDaiDienSanPham(idx, i)"
+    class="flex-1 px-2 py-1 text-xs rounded
+           bg-emerald-50 hover:bg-emerald-100
+           border shadow-sm text-emerald-700"
+  >
+    Đại diện SP
+  </button>
+
+  <!-- Ảnh đại diện màu -->
+  <button
+    type="button"
+    @click="setDaiDienMau(idx, i)"
+    class="flex-1 px-2 py-1 text-xs rounded
+           bg-amber-50 hover:bg-amber-100
+           border shadow-sm text-amber-700"
+  >
+    Đại diện màu
+  </button>
+
+  <!-- Xóa -->
+  <button
+    type="button"
+    @click="color.urlImages.splice(i, 1)"
+    class="flex-1 px-2 py-1 text-xs rounded
+           bg-white hover:bg-red-50
+           border shadow-sm text-red-600"
+  >
+    Xóa
+  </button>
+</div>
               </div>
             </div>
               <div class="mt-3">
@@ -420,17 +337,17 @@
         </div>
 
         <!-- Actions (mobile) -->
-        <div class="flex items-center gap-3 lg:hidden">
+        <div class="hidden lg:flex items-center gap-3">
           <button
             @click="preview"
-            class="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg"
+            class="flex-1 px-4 py-2 bg-emerald-600 text-black rounded-lg"
           >
             Xem trước
           </button>
           <button
             form="productForm"
             type="submit"
-            class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg"
+            class="flex-1 px-4 py-2 bg-blue-600 text-black rounded-lg"
           >
             Lưu
           </button>
@@ -481,6 +398,9 @@ import axios from "axios";
 const allTypes = ref([]);
 const Colors = ref([]);
 const Sizes = ref([]);
+
+
+
 
 onMounted(() => {
   loadAll();
@@ -555,10 +475,22 @@ const form = reactive({
   maLoai: "",
   gia: 0,
   chiTiet: "",
-  colors: [],
-  daiDien: "",
-  trangThai: "ACTIVE",
+  colors: [
+    {
+      maMs: "",
+      urlImages: [
+        {
+          url: "",
+          daiDien: false,
+          daiDienMau: false
+        }
+      ],
+      sizes: []
+    }
+  ],
+  trangThai:"ACTIVE"
 });
+
 
 const mainImagesPreview = ref([]);
 
@@ -649,13 +581,25 @@ async function onColorImagesChange(e, idx) {
   }
 }
 
-function setDaiDien(colorIndex, imgIndex) {
+function setDaiDienMau(colorIndex, imgIndex) {
   const imgs = form.colors[colorIndex].urlImages;
-
   imgs.forEach((img, i) => {
-    img.daiDien = i === imgIndex; // ✅ chỉ 1 true
+    img.daiDienMau = i === imgIndex;
   });
 }
+
+function setDaiDienSanPham(colorIndex, imgIndex) {
+  // reset toàn bộ ảnh trong mọi màu
+  form.colors.forEach(color => {
+    color.urlImages.forEach(img => {
+      img.daiDien = false;
+    });
+  });
+
+  // set ảnh được chọn
+  form.colors[colorIndex].urlImages[imgIndex].daiDien = true;
+}
+
 
 function addColor() {
   form.colors.push({
@@ -675,7 +619,35 @@ function removeSize(i, si) {
   form.colors[i].sizes.splice(si, 1);
 }
 
+function validateDaiDien() {
+  let hasDaiDienSP = false;
+
+  for (const color of form.colors) {
+    let hasDaiDienMau = false;
+
+    for (const img of color.urlImages) {
+      if (img.daiDien) hasDaiDienSP = true;
+      if (img.daiDienMau) hasDaiDienMau = true;
+    }
+
+    if (!hasDaiDienMau) {
+      alert("Mỗi màu phải có 1 ảnh đại diện màu");
+      return false;
+    }
+  }
+
+  if (!hasDaiDienSP) {
+    alert("Phải chọn 1 ảnh đại diện sản phẩm");
+    return false;
+  }
+
+  return true;
+}
+
+
+
 async function onSubmit() {
+  if (!validateDaiDien()) return;
   const payload = JSON.parse(JSON.stringify(form));
   try {
     const res = await axios.post(

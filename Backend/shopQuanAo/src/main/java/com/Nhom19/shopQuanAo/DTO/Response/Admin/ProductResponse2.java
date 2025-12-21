@@ -8,7 +8,8 @@ import java.math.BigDecimal;
 import java.util.Set;
 @Getter
 @Setter
-public class ProductResponse {
+public class ProductResponse2 {
+        private String anhDaiDien;
         private int MaSp;
         private ProductTypeResponse types;
         private String tenSp;
@@ -17,5 +18,4 @@ public class ProductResponse {
         private String chiTiet;
         private float danhGia;
         private Set<ProductVariants> mabienthe;
-//        private Set<ProductComments> ProductComments;
 }

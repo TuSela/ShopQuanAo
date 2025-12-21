@@ -1,6 +1,7 @@
 package com.Nhom19.shopQuanAo.Controller;
 
 import com.Nhom19.shopQuanAo.DTO.Request.Admin.CreationProductRequest;
+import com.Nhom19.shopQuanAo.DTO.Response.Admin.ProductResponse2;
 import com.Nhom19.shopQuanAo.DTO.Response.ApiResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.Categories.PageResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.NAV.ChiTietLoaiResponse;
@@ -21,10 +22,10 @@ public class ProductController {
     @Autowired
     private ProductTypeService productTypeService;
 //    @GetMapping()
-//    public ApiResponse<List<ProductResponse>> showHomePage(){
+//    public ApiResponse<List<ProductResponse2>> showHomePage(){
 //        Products Product =new Products();
 //
-//        ApiResponse<List<ProductResponse>> apiResponse =new ApiResponse();
+//        ApiResponse<List<ProductResponse2>> apiResponse =new ApiResponse();
 //        apiResponse.setResult(productService.getProducts());
 //        return apiResponse;
 //    }
@@ -107,6 +108,12 @@ public class ProductController {
                 page1.getTotalElements(),
                 page1.getTotalPages()
         ));
+        return response;
+    }
+    @GetMapping("/product-list")
+    public ApiResponse<List<ProductResponse2>> getProductsByType(){
+        ApiResponse<List<ProductResponse2>> response = new ApiResponse<>();
+        response.setResult(productService.getProducts());
         return response;
     }
 }
