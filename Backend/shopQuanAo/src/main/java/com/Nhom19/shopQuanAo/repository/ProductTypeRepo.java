@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface ProductTypeRepo extends JpaRepository<ProductTypes, Integer> {
+    //menu
     @Query(value = """
     SELECT *
     FROM product_types

@@ -199,7 +199,6 @@ public class ProductService {
         products.setTypes(productTypes);
         productRepository.save(products);
 
-
         List<ColorRequest> colors = request.getColors();
         colors.forEach(color -> {
             ProductColors colorsX = productColorRepo.findById(color.getMaMs()).orElseThrow(() -> new RuntimeException("Không tìm thấy màu"));
@@ -229,7 +228,9 @@ public class ProductService {
 
         return true;
     }
+    
 
+// tìm kiếm sản phẩm theo keyword
     public List<ProductBestSellerResponse> searchByKeyword(String keyword) {
 
         if (keyword == null || keyword.trim().isEmpty()) {
@@ -267,6 +268,7 @@ public class ProductService {
                 })
                 .toList();
     }
+    // tìm theo đối tượng
     public List<ProductBestSellerResponse> findByDoiTuong(String doiTuong) {
 
         if (doiTuong == null || doiTuong.trim().isEmpty()) {
@@ -303,6 +305,8 @@ public class ProductService {
                 })
                 .toList();
     }
+
+    //danh mục sản phẩm
     public Page<ProductBestSellerResponse> getProductsByTypes(
             int page,
             int size,
@@ -317,7 +321,7 @@ public class ProductService {
        =============================== */
         if (doiTuong != null && doiTuong.isBlank()) doiTuong = null;
         if (tenLoai != null && tenLoai.isBlank()) tenLoai = null;
-        
+
     /* ===============================
        2. Validate sort
        =============================== */
