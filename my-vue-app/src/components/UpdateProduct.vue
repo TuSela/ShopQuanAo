@@ -54,7 +54,13 @@
     <!-- ===== MÔ TẢ ===== -->
     <section class="card">
       <h2>Chi tiết sản phẩm</h2>
-      <textarea rows="5" v-model="productForm.moTa"></textarea>
+
+      <!-- Editor -->
+      <textarea rows="6" v-model="productForm.moTa"></textarea>
+
+      <!-- Preview -->
+      <h3 style="margin-top: 12px">Xem trước</h3>
+      <div class="preview" v-html="productForm.moTa"></div>
     </section>
     <!-- ===== VARIANT LIST ===== -->
     <section class="card">
@@ -66,22 +72,20 @@
         <table>
           <thead>
             <tr>
-              <th>Mã</th>
               <th>Ảnh</th>
               <th>Màu</th>
-              <th>Size</th>
-              <th>Số lượng</th>
-              <th>Trạng thái</th>
+              <th>Số size</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="v in variants" :key="v.maPv" @click="openEdit(v)">
-              <td>{{ v.maPv }}</td>
-              <td><img :src="v.image" /></td>
-              <td>{{ v.mau }}</td>
-              <td>{{ v.size }}</td>
-              <td>{{ v.soLuong }}</td>
-              <td>{{ v.trangThai ? "Hoạt động" : "Ngừng" }}</td>
+            <tr
+              v-for="c in variantsByColor"
+              :key="c.mau"
+              @click="openEditColor(c)"
+            >
+              <td><img :src="c.image" /></td>
+              <td>{{ c.mau }}</td>
+              <td>{{ c.sizes.length }}</td>
             </tr>
           </tbody>
         </table>
@@ -89,27 +93,27 @@
     </section>
     <!-- ===== VARIANT OVERLAY ===== -->
     <div v-if="showModal" class="overlay">
-      <div class="modal">
-        <h3>{{ modalMode === "edit" ? "Sửa biến thể" : "Thêm biến thể" }}</h3>
-        <label>Màu sắc</label> <input v-model="currentVariant.mau" />
-        <label>Kích cỡ</label> <input v-model="currentVariant.size" />
-        <label>Số lượng</label>
-        <input type="number" v-model="currentVariant.soLuong" />
-        <label>Trạng thái</label>
-        <select v-model="currentVariant.trangThai">
-          <option :value="true">Hoạt động</option>
-          <option :value="false">Ngừng</option>
-        </select>
-        <div class="actions">
-          <button @click="closeModal">Huỷ</button>
-          <button
-            v-if="modalMode === 'edit'"
-            @click="deleteVariant"
-            class="danger"
-          >
-            Xoá
+      <div v-if="showModal" class="overlay">
+        <div class="modal">
+          <h3>Quản lý size - {{ currentColor.mau }}</h3>
+
+          <div v-for="(s, i) in currentColor.sizes" :key="i">
+            <label>Size</label>
+            <input v-model="s.size" />
+
+            <label>Số lượng</label>
+            <input type="number" v-model="s.soLuong" />
+            <hr />
+          </div>
+
+          <button @click="currentColor.sizes.push({ size: '', soLuong: 0 })">
+            ➕ Thêm size
           </button>
-          <button @click="saveVariant" class="primary">Lưu</button>
+
+          <div class="actions">
+            <button @click="closeModal">Huỷ</button>
+            <button class="primary" @click="saveColorSizes">Lưu</button>
+          </div>
         </div>
       </div>
     </div>
@@ -126,6 +130,12 @@ const selectedTenLoai = ref("");
 
 const isInitializing = ref(true);
 
+const currentColor = ref(null);
+
+const openEditColor = (color) => {
+  currentColor.value = JSON.parse(JSON.stringify(color));
+  showModal.value = true;
+};
 /* ===== MOCK PRODUCT (SAU NÀY LẤY API) ===== */
 
 const productForm = reactive({
@@ -134,6 +144,40 @@ const productForm = reactive({
   gia: 199000,
   moTa: "Áo thun cotton 100%",
   maLoai: 2,
+});
+async function loadProduct(id) {
+  const res = await axios.get(`http://localhost:8081/nhom19/products/${id}`);
+
+  const p = res.data.result;
+
+  // ===== BASIC INFO =====
+  productForm.maSp = p.maSp;
+  productForm.tenSp = p.tenSp;
+  productForm.gia = p.gia;
+  productForm.moTa = p.chiTiet; // HTML
+  productForm.maLoai = p.maLoai;
+
+  // ===== MAP VARIANTS =====
+  variants.value = [];
+
+  p.variants.forEach((color) => {
+    color.sizes.forEach((s) => {
+      variants.value.push({
+        maPv: `${color.maMs}-${s.maKc}`,
+        image: color.urlImages,
+        mau: color.tenMs,
+        size: s.tenKc,
+        soLuong: s.soluong,
+        trangThai: true,
+      });
+    });
+  });
+}
+onMounted(async () => {
+  await loadTypes(); // load danh sách loại
+  await loadProduct(12); // load sản phẩm
+  await mapTypeToSelect(); // map maLoai → select
+  isInitializing.value = false;
 });
 /* ===== API ===== */
 async function loadTypes() {
@@ -175,6 +219,7 @@ const tenLoaiOptions = computed(() => {
     ),
   ];
 });
+
 const chiTietLoaiOptions = computed(() => {
   if (!selectedDoiTuong.value || !selectedTenLoai.value) return [];
   return allTypes.value.filter(
@@ -218,6 +263,45 @@ const variants = ref([
     trangThai: false,
   },
 ]);
+const variantsByColor = computed(() => {
+  const map = {};
+
+  variants.value.forEach((v) => {
+    if (!map[v.mau]) {
+      map[v.mau] = {
+        mau: v.mau,
+        image: v.image,
+        sizes: [],
+      };
+    }
+    map[v.mau].sizes.push({
+      size: v.size,
+      soLuong: v.soLuong,
+    });
+  });
+  const saveColorSizes = () => {
+    // Xoá variants cũ của màu này
+    variants.value = variants.value.filter(
+      (v) => v.mau !== currentColor.value.mau
+    );
+
+    // Add lại
+    currentColor.value.sizes.forEach((s) => {
+      variants.value.push({
+        maPv: `${currentColor.value.mau}-${s.size}`,
+        image: currentColor.value.image,
+        mau: currentColor.value.mau,
+        size: s.size,
+        soLuong: s.soLuong,
+        trangThai: true,
+      });
+    });
+
+    closeModal();
+  };
+  return Object.values(map);
+});
+
 /* ===== MODAL STATE ===== */
 const showModal = ref(false);
 const modalMode = ref("create");
@@ -348,5 +432,15 @@ img {
 .danger {
   background: #dc2626;
   color: white;
+}
+.preview {
+  border: 1px solid #ddd;
+  padding: 12px;
+  border-radius: 6px;
+  max-height: 400px;
+  overflow: auto;
+}
+.preview img {
+  max-width: 100%;
 }
 </style>

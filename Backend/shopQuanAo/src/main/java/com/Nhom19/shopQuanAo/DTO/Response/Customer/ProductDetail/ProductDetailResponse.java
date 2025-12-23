@@ -12,6 +12,7 @@ import java.util.Set;
 @Setter
 public class ProductDetailResponse {
     private int maSp;
+    private Integer maLoai;
     private String anhDaiDien;
     private String tenSp;
     private int soLuong;

@@ -94,12 +94,11 @@ public class ProductService {
                 .toList();
 
         productDetailResponse.setListAnhSP(images);
-
-// Ảnh đầu tiên chắc chắn là đại diện
+        productDetailResponse.setMaLoai(products.getTypes().getMaLoai());
+        // Ảnh đầu tiên chắc chắn là đại diện
         productDetailResponse.setAnhDaiDien(
                 listAnhSP.isEmpty() ? null : listAnhSP.get(0).getUrlImage()
         );
-
         // Lấy danh sách comment
         Set<ProductComments> productComments = productCommentRepo.getByMaBl(id);
 

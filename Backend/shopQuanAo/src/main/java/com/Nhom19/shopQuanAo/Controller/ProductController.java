@@ -116,4 +116,9 @@ public class ProductController {
         response.setResult(productService.getProducts());
         return response;
     }
+//    @GetMapping("/product-list/{maSp}")
+//    public ApiResponse<ProductResponse2> getProductsByType(@PathVariable("maSp") int maSp){
+//        ApiResponse<ProductResponse2> response = new ApiResponse<>();
+//        return response;
+//    }
 }
