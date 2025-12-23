@@ -27,9 +27,14 @@ public class ProductTypeService {
     @Autowired
     ProductTypeMapper productTypeMapper;
 
-    public ProductTypes addProductType(TypeCreationRequest request){
+    public ProductTypeResponse addProductType(TypeCreationRequest request){
+        if (!productTypeRepo.existsByTenLoai(request.getTenLoai())){
+            throw new RuntimeException();
+        }
+
         ProductTypes productType = productTypeMapper.toProductTypes(request);
-        return productTypeRepo.save(productType);
+        productTypeRepo.save(productType);
+        return productTypeMapper.toProductTypeResponse(productType);
     }
 
     public List<ProductTypeResponse> getTypes (){
@@ -38,7 +43,6 @@ public class ProductTypeService {
                  .map(productTypeMapper::toProductTypeResponse)
                  .collect(Collectors.toList());
     }
-
 
     private String normalize(String input) {
         if (input == null) return "";
@@ -124,14 +128,36 @@ public class ProductTypeService {
         List<ProductTypes> productTypes = productTypeRepo.findByDoiTuongAndTenLoai(doiTuong,tenLoai);
         return productTypes.stream().map(productTypeMapper::toChiTietLoaiResponse).collect(Collectors.toList());
     }
-    public String getTenPageDanhMuc(String doiTuong, String tenLoai, Integer chiTietLoai){
+    public String getTenPageDanhMuc(String doiTuong, String tenLoai, Integer chiTietLoai) {
         if (doiTuong != null && doiTuong.isBlank()) doiTuong = null;
         if (tenLoai != null && tenLoai.isBlank()) tenLoai = null;
-        String TenPageDanhMuc =tenLoai +" " + doiTuong;
-        if (chiTietLoai != null){
-            ProductTypes productTypes = productTypeRepo.findById(chiTietLoai).orElseThrow(()-> new RuntimeException("không tìm thấy loại"));
-            TenPageDanhMuc = productTypes.getChiTietLoai()+" " + productTypes.getDoiTuong();
+        String TenPageDanhMuc = tenLoai + " " + doiTuong;
+        if (chiTietLoai != null) {
+            ProductTypes productTypes = productTypeRepo.findById(chiTietLoai).orElseThrow(() -> new RuntimeException("không tìm thấy loại"));
+            TenPageDanhMuc = productTypes.getChiTietLoai() + " " + productTypes.getDoiTuong();
         }
         return TenPageDanhMuc;
+    }
+    public ProductTypeResponse getProductType (int maLoai){
+        var  productType = productTypeRepo.findById(maLoai).orElseThrow(()-> new RuntimeException("không tìm thấy loại"));
+        return productTypeMapper.toProductTypeResponse(productType);
+    }
+
+    public ProductTypeResponse updateProductType (int maLoai, TypeCreationRequest request){
+        var productType = productTypeRepo.findById(maLoai).orElseThrow(()-> new RuntimeException("không tìm thấy loại"));
+
+        productTypeMapper.updateProductTypes(productType, request);
+        productTypeRepo.save(productType);
+
+        return productTypeMapper.toProductTypeResponse(productType);
+    }
+
+    public boolean deleteProductType (int maLoai){
+        if (!productTypeRepo.existsById(maLoai)){
+            return false;
+        }
+
+        productTypeRepo.deleteById(maLoai);
+        return true;
     }
 }

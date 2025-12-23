@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ProductColorRepo extends JpaRepository<ProductColors, Integer> {
+   boolean existsByTenMs(String tenMs);
 }

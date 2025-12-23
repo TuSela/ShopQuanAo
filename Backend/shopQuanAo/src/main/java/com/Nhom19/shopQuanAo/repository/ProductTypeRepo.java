@@ -2,11 +2,14 @@ package com.Nhom19.shopQuanAo.repository;
 
 import com.Nhom19.shopQuanAo.entity.ProductTypes;
 import org.springframework.data.jpa.repository.JpaRepository;
+
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
+import org.springframework.stereotype.Repository;
+@Repository
 public interface ProductTypeRepo extends JpaRepository<ProductTypes, Integer> {
     //menu
     @Query(value = """
@@ -44,4 +47,5 @@ public interface ProductTypeRepo extends JpaRepository<ProductTypes, Integer> {
             @Param("doiTuong") String doiTuong,
             @Param("tenLoai") String tenLoai
     );
+    boolean existsByTenLoai(String tenLoai);
 }

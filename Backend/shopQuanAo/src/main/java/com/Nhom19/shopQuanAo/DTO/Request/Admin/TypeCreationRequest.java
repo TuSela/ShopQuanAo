@@ -8,4 +8,7 @@ import lombok.Setter;
 public class TypeCreationRequest {
     private String tenLoai;
     private String tinhTrang;
+    private String chiTietLoai;
+    private String doiTuong;
+    private String anhLoai;
 }
