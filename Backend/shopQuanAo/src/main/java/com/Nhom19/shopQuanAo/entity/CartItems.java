@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 @Entity
 public class CartItems {
     @EmbeddedId
+
     private CartItemId id;
 
     @ManyToOne(fetch = FetchType.LAZY)

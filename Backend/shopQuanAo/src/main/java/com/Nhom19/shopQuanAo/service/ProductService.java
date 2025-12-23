@@ -96,7 +96,7 @@ public class ProductService {
         Products products = productRepository.getById(id);
 
         List<ProductImages> listAnhSP = productImagesRepo.findByProductsOrderByDaiDienDesc(products);
-
+        System.out.println("listAnhSP: " + listAnhSP.toString());
         ProductDetailResponse productDetailResponse = productMapper.toDTO2(products);
 
         List<String> images = listAnhSP.stream()
@@ -110,11 +110,10 @@ public class ProductService {
                 listAnhSP.isEmpty() ? null : listAnhSP.get(0).getUrlImage()
         );
         // Lấy danh sách comment
-        Set<ProductComments> productComments = productCommentRepo.getByMaBl(id);
-
+        List<ProductComments> productComments = productCommentRepo.findByProducts(products);
+        System.out.println("productComments: " + productComments.toString());
         // Set số lượng đánh giá
         productDetailResponse.setSoLuongDanhGia(productComments.size());
-
         // Map comments
         productDetailResponse.setProductComments(
                 productComments.stream()
