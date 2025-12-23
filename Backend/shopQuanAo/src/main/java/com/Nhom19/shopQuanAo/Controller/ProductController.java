@@ -1,6 +1,7 @@
 package com.Nhom19.shopQuanAo.Controller;
 
 import com.Nhom19.shopQuanAo.DTO.Request.Admin.CreationProductRequest;
+import com.Nhom19.shopQuanAo.DTO.Request.Admin.UpdateProductRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.Admin.ProductResponse2;
 import com.Nhom19.shopQuanAo.DTO.Response.ApiResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.Categories.PageResponse;
@@ -121,4 +122,10 @@ public class ProductController {
 //        ApiResponse<ProductResponse2> response = new ApiResponse<>();
 //        return response;
 //    }
+    @PutMapping("/{maSp}")
+    public ApiResponse<Boolean> updateProduct(@RequestBody UpdateProductRequest request, @PathVariable("maSp") int maSp){
+        ApiResponse<Boolean> response = new ApiResponse<>();
+        response.setResult(productService.UpdateProduct(request, maSp));
+        return response;
+    }
 }

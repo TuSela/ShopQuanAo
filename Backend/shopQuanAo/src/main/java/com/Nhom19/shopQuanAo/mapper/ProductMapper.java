@@ -1,6 +1,7 @@
 package com.Nhom19.shopQuanAo.mapper;
 
 import com.Nhom19.shopQuanAo.DTO.Request.Admin.CreationProductRequest;
+import com.Nhom19.shopQuanAo.DTO.Request.Admin.UpdateProductRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.Admin.ProductResponse2;
 
 import com.Nhom19.shopQuanAo.DTO.Response.Admin.ProductVariantResponse;
@@ -20,4 +21,6 @@ public interface ProductMapper {
     Products toEntity(CreationProductRequest request);
     ProductBestSellerResponse toDTO5(Products products);
     CommentVariantResponse toDTO6(ProductVariants productVariants);
+
+    Products ToEntity2(UpdateProductRequest request);
 }

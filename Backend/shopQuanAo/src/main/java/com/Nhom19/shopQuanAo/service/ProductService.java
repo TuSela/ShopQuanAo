@@ -1,6 +1,7 @@
 package com.Nhom19.shopQuanAo.service;
 
 import com.Nhom19.shopQuanAo.DTO.Request.Admin.CreationProductRequest;
+import com.Nhom19.shopQuanAo.DTO.Request.Admin.UpdateProductRequest;
 import com.Nhom19.shopQuanAo.DTO.Request.ColorRequest;
 import com.Nhom19.shopQuanAo.DTO.Request.ImageRequest;
 import com.Nhom19.shopQuanAo.DTO.Request.SizeRequest;
@@ -80,6 +81,15 @@ public class ProductService {
         return productRepository.findAnyTenProductsNative();
     }
 
+    public Boolean UpdateProduct(UpdateProductRequest request, Integer maSp){
+        Products products = productRepository.findById(maSp).orElseThrow(()-> new RuntimeException("không tìm thấy sản phẩm"));
+        products.setGia(products.getGia());
+        products.setTenSp(request.getTenSp());
+        products.setTypes(productTypeRepo.findById(request.getMaLoai()).orElse(products.getTypes()));
+        products.setChiTiet(request.getChiTiet());
+        productRepository.save(products);
+        return true;
+    }
 
     //SHOW CHI TIẾT SẢN PHẨM
     public ProductDetailResponse getProductDetail(int id) {
@@ -402,4 +412,5 @@ public class ProductService {
             return dto;
         });
     }
+
 }

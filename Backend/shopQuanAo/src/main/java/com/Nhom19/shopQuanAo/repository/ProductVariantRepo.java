@@ -45,4 +45,13 @@ public interface ProductVariantRepo extends JpaRepository<ProductVariants, Integ
             @Param("maKc") Integer maKc
     );
 
+    @Query("""
+        SELECT pv
+        FROM ProductVariants pv
+        JOIN FETCH pv.products p
+        JOIN FETCH pv.colors c
+        JOIN FETCH pv.sizes s
+        WHERE p.maSp = :maSp
+    """)
+    List<ProductVariants> findByMaSp(@Param("maSp") Integer maSp);
 }
