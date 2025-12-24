@@ -4,13 +4,11 @@ import com.Nhom19.shopQuanAo.DTO.Request.Admin.CapNhatUserRequest;
 import com.Nhom19.shopQuanAo.DTO.Request.Customer.AddressRequest;
 import com.Nhom19.shopQuanAo.DTO.Request.Customer.UpdatePassRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.ApiResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyCommentResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyOrder.MyOrderResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.OrderDetailRes.AddressResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.UserResponse;
-import com.Nhom19.shopQuanAo.service.AddressSevice;
-import com.Nhom19.shopQuanAo.service.JwtUtils;
-import com.Nhom19.shopQuanAo.service.OrderService;
-import com.Nhom19.shopQuanAo.service.UserService;
+import com.Nhom19.shopQuanAo.service.*;
 import com.nimbusds.jwt.JWTClaimsSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -139,6 +137,25 @@ public class CustomerController {
         try {
             Integer Id = claims.getIntegerClaim("id");
             response.setResult(orderService.getOrdersNotReviewed(Id));
+            return  response;
+        } catch (
+                ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    @Autowired
+    CommentService commentService;
+
+    @GetMapping("/comments")
+    public ApiResponse<List<MyCommentResponse>> getMyComments(
+            @RequestHeader("Authorization") String authHeader
+    ) {
+        ApiResponse <List<MyCommentResponse>> response = new ApiResponse<>();
+        String token = authHeader.substring(7);
+        JWTClaimsSet claims = jwtUtils.parseToken(token);
+        try {
+            Integer Id = claims.getIntegerClaim("id");
+            response.setResult(commentService.getMyComments(Id));
             return  response;
         } catch (
                 ParseException e) {

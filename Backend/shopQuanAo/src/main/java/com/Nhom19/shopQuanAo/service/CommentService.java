@@ -1,10 +1,8 @@
 package com.Nhom19.shopQuanAo.service;
 
 import com.Nhom19.shopQuanAo.DTO.Request.Admin.CommentRequest;
-import com.Nhom19.shopQuanAo.entity.Orders;
-import com.Nhom19.shopQuanAo.entity.ProductComments;
-import com.Nhom19.shopQuanAo.entity.ProductVariants;
-import com.Nhom19.shopQuanAo.entity.Users;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyCommentResponse;
+import com.Nhom19.shopQuanAo.entity.*;
 import com.Nhom19.shopQuanAo.mapper.CommentMapper;
 import com.Nhom19.shopQuanAo.repository.OrderRepository;
 import com.Nhom19.shopQuanAo.repository.ProductCommentRepo;
@@ -15,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class CommentService {
@@ -52,5 +51,46 @@ public class CommentService {
         return true;
     }
 
+    public List<MyCommentResponse> getMyComments(Integer maTk) {
 
+        return productCommentRepo.findMyComments(maTk)
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    private MyCommentResponse mapToResponse(ProductComments pc) {
+
+        ProductVariants pv = pc.getProductVariants();
+        Products p = pv.getProducts();
+
+        MyCommentResponse res = new MyCommentResponse();
+
+        res.setMaDanhGia(pc.getMaBl());
+        res.setMaDonHang(pc.getOrders().getMaDdh());
+
+        res.setMaSp(p.getMaSp());
+        res.setTenSanPham(p.getTenSp());
+
+        res.setMaBienThe(pv.getMaBienThe());
+        res.setMau(pv.getColors().getTenMs());
+        res.setSize(pv.getSizes().getTenKc());
+
+        res.setNoiDung(pc.getNoiDung());
+        res.setDiemDanhGia(pc.getDiemDanhGia());
+        res.setTrangThai(pc.getTrangThai());
+        res.setNgayTao(pc.getNgayTao());
+
+        // ảnh theo màu
+        String anh = p.getImages().stream()
+                .filter(img -> Boolean.TRUE.equals(img.getDaiDienMau()))
+                .map(ProductImages::getUrlImage)
+                .findFirst()
+                .orElse(p.getImages().isEmpty() ? null : p.getImages().get(0).getUrlImage());
+
+        res.setAnh(anh);
+
+        return res;
+    }
 }
+
