@@ -6,6 +6,8 @@ import com.Nhom19.shopQuanAo.DTO.Response.Customer.NAV.CategoryDTO;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.NAV.ChiTietLoaiResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.NAV.NavMenuDTO;
 import com.Nhom19.shopQuanAo.entity.ProductTypes;
+import com.Nhom19.shopQuanAo.exception.AppException;
+import com.Nhom19.shopQuanAo.exception.ErrorCode;
 import com.Nhom19.shopQuanAo.mapper.ProductTypeMapper;
 import com.Nhom19.shopQuanAo.repository.ProductTypeRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -129,7 +131,7 @@ public class ProductTypeService {
         if (doiTuong != null && doiTuong.isBlank()) doiTuong = null;
         if (tenLoai != null && tenLoai.isBlank()) tenLoai = null;
         if (chiTietLoai != null){
-            ProductTypes productTypes = productTypeRepo.findById(chiTietLoai).orElseThrow(()-> new RuntimeException("không tìm thấy loại"));
+            ProductTypes productTypes = productTypeRepo.findById(chiTietLoai).orElseThrow(()-> new AppException(ErrorCode.PRODUCT_TYPE_NOT_FOUND));
             doiTuong = productTypes.getDoiTuong();
             tenLoai = productTypes.getTenLoai();
         }
@@ -141,18 +143,18 @@ public class ProductTypeService {
         if (tenLoai != null && tenLoai.isBlank()) tenLoai = null;
         String TenPageDanhMuc = tenLoai + " " + doiTuong;
         if (chiTietLoai != null) {
-            ProductTypes productTypes = productTypeRepo.findById(chiTietLoai).orElseThrow(() -> new RuntimeException("không tìm thấy loại"));
+            ProductTypes productTypes = productTypeRepo.findById(chiTietLoai).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_TYPE_NOT_FOUND));
             TenPageDanhMuc = productTypes.getChiTietLoai() + " " + productTypes.getDoiTuong();
         }
         return TenPageDanhMuc;
     }
     public ProductTypeResponse getProductType (int maLoai){
-        var  productType = productTypeRepo.findById(maLoai).orElseThrow(()-> new RuntimeException("không tìm thấy loại"));
+        var  productType = productTypeRepo.findById(maLoai).orElseThrow(()-> new AppException(ErrorCode.PRODUCT_TYPE_NOT_FOUND));
         return productTypeMapper.toProductTypeResponse(productType);
     }
 
     public ProductTypeResponse updateProductType (int maLoai, TypeCreationRequest request){
-        var productType = productTypeRepo.findById(maLoai).orElseThrow(()-> new RuntimeException("không tìm thấy loại"));
+        var productType = productTypeRepo.findById(maLoai).orElseThrow(()-> new AppException(ErrorCode.PRODUCT_TYPE_NOT_FOUND));
 
         productTypeMapper.updateProductTypes(productType, request);
         productTypeRepo.save(productType);
@@ -164,7 +166,6 @@ public class ProductTypeService {
         if (!productTypeRepo.existsById(maLoai)){
             return false;
         }
-
         productTypeRepo.deleteById(maLoai);
         return true;
     }

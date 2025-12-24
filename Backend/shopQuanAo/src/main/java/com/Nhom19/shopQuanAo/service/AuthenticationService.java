@@ -48,7 +48,8 @@ public class AuthenticationService {
             authenticationResponse.setToken(generateTokenUsers(user));
             authenticationResponse.setSuccess(true);
             return authenticationResponse;
-        }else {
+        }
+        else {
             boolean authentication = request.getPassword().equals(admins.getPassword());
 
             if (!authentication) {

@@ -50,7 +50,7 @@ public class UserService {
     }
     public UserResponse getUserById(Integer id)
     {
-       return userMapper.toUserResponse(userRepository.findById(id).get());
+       return userMapper.toUserResponse(userRepository.findById(id).orElseThrow(()->new AppException(ErrorCode.USER_ID_NOT_EXISTED)));
     }
 
     public boolean deleteUserById(Integer id)
@@ -143,6 +143,6 @@ public class UserService {
         }
         Users savedUser = userRepository.save(user);
 
-        return authenticationService.generateTokenUsers(savedUser);
+        return savedUser.getAvatar();
     }
 }
