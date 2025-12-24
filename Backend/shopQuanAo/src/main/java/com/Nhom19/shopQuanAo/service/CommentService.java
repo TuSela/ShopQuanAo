@@ -4,6 +4,7 @@ import com.Nhom19.shopQuanAo.DTO.Request.Admin.CommentRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyCommentResponse;
 import com.Nhom19.shopQuanAo.entity.*;
 import com.Nhom19.shopQuanAo.exception.AppException;
+import com.Nhom19.shopQuanAo.exception.ErrorCode;
 import com.Nhom19.shopQuanAo.mapper.CommentMapper;
 import com.Nhom19.shopQuanAo.repository.OrderRepository;
 import com.Nhom19.shopQuanAo.repository.ProductCommentRepo;
@@ -34,10 +35,10 @@ public class CommentService {
 
         Users users = userRepository.findById(Id).orElseThrow(()->new AppException(USER_NOT_EXISTED));
         Orders orders = orderRepository.findById(request.getMaDdh()).orElseThrow(()->new AppException(ORDER_NOT_FOUND));
-        if(!orders.getOrderStatus().equals("Hoàn thành")){
+        if(!orders.getOrderStatus().equals("Đã giao")){
             throw new AppException(ORDER_NOT_COMPLETED);
         }
-        ProductVariants productVariants = productVariantRepo.findById(request.getMaBienThe()).orElseThrow(()-> new RuntimeException("không tìm thấy biến thể"));
+        ProductVariants productVariants = productVariantRepo.findById(request.getMaBienThe()).orElseThrow(()-> new AppException(PRODUCT_VARIANT_NOT_EXISTED));
         if(productCommentRepo.existsByUsersAndOrdersAndProductVariants(users,orders,productVariants)){
             throw new AppException(COMMENT_ALREADY_EXISTS);
         }
