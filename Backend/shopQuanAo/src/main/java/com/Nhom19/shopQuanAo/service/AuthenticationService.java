@@ -2,10 +2,12 @@ package com.Nhom19.shopQuanAo.service;
 
 import com.Nhom19.shopQuanAo.DTO.Request.Customer.AuthenticaitonRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.AuthenticationResponse;
+import com.Nhom19.shopQuanAo.entity.Admins;
 import com.Nhom19.shopQuanAo.entity.Users;
 import com.Nhom19.shopQuanAo.enums.Role;
 import com.Nhom19.shopQuanAo.exception.AppException;
 import com.Nhom19.shopQuanAo.exception.ErrorCode;
+import com.Nhom19.shopQuanAo.repository.AdminRepository;
 import com.Nhom19.shopQuanAo.repository.CartItemRepo;
 import com.Nhom19.shopQuanAo.repository.UserRepository;
 import com.nimbusds.jose.*;
@@ -13,7 +15,6 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jwt.JWTClaimsSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -26,30 +27,43 @@ public class AuthenticationService {
     protected String SIGNER_KEY;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private AdminRepository adminRepository;
+
     public AuthenticationResponse authenticate (AuthenticaitonRequest request)
     {
         System.out.println("sdt: "+ request.getSdt());
-        Users user = userRepository.findBySdt(request.getSdt());
-        if (user == null)
-        {
-            throw new AppException(ErrorCode.USER_NOT_EXISTED);
-        }
+        Admins admins = adminRepository.findByUsername(request.getSdt());
+        if (admins == null) {
+            Users user = userRepository.findBySdt(request.getSdt());
+            if (user == null) {
+                throw new AppException(ErrorCode.USER_NOT_EXISTED);
+            }
+            boolean authentication = request.getPassword().equals(user.getPassword());
 
-        boolean authentication = request.getPassword().equals(user.getPassword());
+            if (!authentication) {
+                throw new AppException(ErrorCode.UNUATHENTICATION);
+            }
+            AuthenticationResponse authenticationResponse = new AuthenticationResponse();
+            authenticationResponse.setToken(generateTokenUsers(user));
+            authenticationResponse.setSuccess(true);
+            return authenticationResponse;
+        }else {
+            boolean authentication = request.getPassword().equals(admins.getPassword());
 
-        if (!authentication)
-        {
-            throw new AppException(ErrorCode.UNUATHENTICATION);
+            if (!authentication) {
+                throw new AppException(ErrorCode.UNUATHENTICATION);
+            }
+            AuthenticationResponse authenticationResponse = new AuthenticationResponse();
+            authenticationResponse.setToken(generateTokenAdmin(admins));
+            authenticationResponse.setSuccess(true);
+            return authenticationResponse;
         }
-        AuthenticationResponse authenticationResponse = new AuthenticationResponse();
-        authenticationResponse.setToken(generateToken(user));
-        authenticationResponse.setSuccess(true);
-        return authenticationResponse;
     }
 
     @Autowired
     CartItemRepo  cartItemRepo;
-    public String generateToken(Users user) {
+    public String generateTokenUsers(Users user) {
 
         Integer soluong = cartItemRepo.countCartItemByUser(user.getMaTk());
 
@@ -70,6 +84,26 @@ public class AuthenticationService {
 
         JWSObject jwsObject = new JWSObject(header,payload);
 
+        try{
+            jwsObject.sign(new MACSigner(SIGNER_KEY.getBytes()));
+            System.out.println("token= "+ jwsObject.serialize());
+            return  jwsObject.serialize();
+        }
+        catch(JOSEException e){
+            throw new AppException(ErrorCode.UNUATHENTICATION);
+        }
+    }
+    public String generateTokenAdmin(Admins admins) {
+        JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
+        JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
+                .subject(admins.getUsername())
+                .issuer("admin.shopquanao.com")
+                .issueTime(new Date())
+                .expirationTime(new Date(Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()))
+                .claim("scope", Role.ADMIN.toString())
+                .build();
+        Payload payload =new Payload(jwtClaimsSet.toJSONObject());
+        JWSObject jwsObject = new JWSObject(header,payload);
         try{
             jwsObject.sign(new MACSigner(SIGNER_KEY.getBytes()));
             System.out.println("token= "+ jwsObject.serialize());

@@ -15,7 +15,6 @@ import com.Nhom19.shopQuanAo.mapper.ProductMapper;
 import com.Nhom19.shopQuanAo.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -99,7 +98,7 @@ public class CartService {
        cartRepository.save(cart1);
        CreatCartResponse response = new CreatCartResponse();
        response.setSuccess(Boolean.TRUE);
-       response.setToken(authenticationService.generateToken(user));
+       response.setToken(authenticationService.generateTokenUsers(user));
        return response;
     }
     @Autowired
@@ -225,7 +224,7 @@ public class CartService {
         }
         
         CreatCartResponse creatCartResponse = new CreatCartResponse();
-        creatCartResponse.setToken(authenticationService.generateToken(users));
+        creatCartResponse.setToken(authenticationService.generateTokenUsers(users));
         creatCartResponse.setSuccess(Boolean.TRUE);
         return creatCartResponse;
     }

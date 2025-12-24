@@ -264,7 +264,7 @@ public class OrderService {
         cartRepository.delete(cart);
 
         CreatCartResponse creatCartResponse = new CreatCartResponse();
-        creatCartResponse.setToken(authenticationService.generateToken(users));
+        creatCartResponse.setToken(authenticationService.generateTokenUsers(users));
         creatCartResponse.setSuccess(Boolean.TRUE);
         return creatCartResponse;
 
