@@ -59,7 +59,7 @@ public class CustomerController {
     public ApiResponse<Boolean> UpdateAddress(@RequestBody AddressRequest request, @PathVariable Integer MaDiaChi) {
 
         ApiResponse<Boolean> apiResponse = new ApiResponse<>();
-        apiResponse.setResult(addressSevice.UpdateAddress(request, MaDiaChi));
+        apiResponse.setResult(addressSevice.updateAddress(request, MaDiaChi));
         return apiResponse;
     }
 

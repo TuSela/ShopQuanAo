@@ -3,57 +3,91 @@ package com.Nhom19.shopQuanAo.exception;
 import com.Nhom19.shopQuanAo.DTO.Response.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.NoSuchElementException;
 
-@ControllerAdvice
-    public class GlobalExceptionHandler {
-//        @ExceptionHandler(value = Exception.class)
-//        ResponseEntity<ApiResponse> handleAppException(Exception ex){
-//            ApiResponse apiResponse = new ApiResponse();
-//            apiResponse.setCode(ErrorCode.UNAUTHORIZED.getCode());
-//            apiResponse.setMessage(ErrorCode.UNAUTHORIZED.getMessage());
-//            return ResponseEntity.badRequest().body(apiResponse);
-//        }
+@RestControllerAdvice
+public class GlobalExceptionHandler {
 
-        @ExceptionHandler(value = AppException.class)
-        ResponseEntity<ApiResponse> handleAppException(AppException ex){
+    // AppException (chủ động throw)
+    @ExceptionHandler(AppException.class)
+    public ResponseEntity<ApiResponse> handleAppException(AppException ex) {
 
-            ErrorCode errorCode = ex.getErrorCode();
-            ApiResponse apiResponse = new ApiResponse();
+        ErrorCode errorCode = ex.getErrorCode();
 
-            apiResponse.setMessage(errorCode.getMessage());
-            apiResponse.setCode(errorCode.getCode());
+        ApiResponse response = new ApiResponse();
+        response.setCode(errorCode.getCode());
+        response.setMessage(errorCode.getMessage());
 
-            return ResponseEntity.badRequest().body(apiResponse);
-        }
-
-        @ExceptionHandler(value = MethodArgumentNotValidException.class)
-        ResponseEntity<ApiResponse> handleException(MethodArgumentNotValidException ex){
-
-            String enumkey = ex.getBindingResult().getFieldError().getDefaultMessage();
-            ErrorCode errorCode = ErrorCode.valueOf(enumkey);
-            ApiResponse apiResponse = new ApiResponse();
-            apiResponse.setMessage(errorCode.getMessage());
-            apiResponse.setCode(errorCode.getCode());
-            return ResponseEntity.badRequest().body(apiResponse);
-        }
-        @ExceptionHandler(value = NoSuchElementException.class)
-        ResponseEntity<ApiResponse> handleException(Exception ex){
-            ApiResponse apiResponse = new ApiResponse();
-            apiResponse.setCode(ErrorCode.USER_ID_NOT_EXISTED.getCode());
-            apiResponse.setMessage(ErrorCode.USER_ID_NOT_EXISTED.getMessage());
-            return ResponseEntity.badRequest().body(apiResponse);
-        }
-//        @ExceptionHandler(value = NullPointerException.class)
-//        ResponseEntity<ApiResponse> handleException(NullPointerException ex){
-//            ApiResponse apiResponse = new ApiResponse();
-//            apiResponse.setCode(ErrorCode.CART_NOT_EXISTED.getCode());
-//            apiResponse.setMessage(ErrorCode.CART_NOT_EXISTED.getMessage());
-//            apiResponse.setResult("Giỏ hàng trống");
-//            return ResponseEntity.badRequest().body(apiResponse);
-//        }
+        return ResponseEntity
+                .status(errorCode.getHttpStatus())
+                .body(response);
     }
 
+    // Lỗi validate (@Valid)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiResponse> handleValidationException(
+            MethodArgumentNotValidException ex) {
+
+        String enumKey = ex.getBindingResult()
+                .getFieldError()
+                .getDefaultMessage();
+
+        ErrorCode errorCode;
+        try {
+            errorCode = ErrorCode.valueOf(enumKey);
+        } catch (Exception e) {
+            errorCode = ErrorCode.INVALID_REQUEST;
+        }
+
+        ApiResponse response = new ApiResponse();
+        response.setCode(errorCode.getCode());
+        response.setMessage(errorCode.getMessage());
+
+        return ResponseEntity
+                .status(errorCode.getHttpStatus())
+                .body(response);
+    }
+
+    // Optional.get() nhưng không có dữ liệu
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<ApiResponse> handleNoSuchElementException() {
+
+        ErrorCode errorCode = ErrorCode.USER_ID_NOT_EXISTED;
+
+        ApiResponse response = new ApiResponse();
+        response.setCode(errorCode.getCode());
+        response.setMessage(errorCode.getMessage());
+
+        return ResponseEntity
+                .status(errorCode.getHttpStatus())
+                .body(response);
+    }
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiResponse> handleIllegalArgumentException() {
+        ErrorCode errorCode = ErrorCode.INVALID_FILE;
+        ApiResponse response = new ApiResponse();
+        response.setCode(errorCode.getCode());
+        response.setMessage(errorCode.getMessage());
+        return ResponseEntity
+                .status(errorCode.getHttpStatus())
+                .body(response);
+    }
+//    // Lỗi không xác định (fallback)
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponse> handleOtherException() {
+
+        ErrorCode errorCode = ErrorCode.UNCATEGORIZED_EXCEPTION;
+
+        ApiResponse response = new ApiResponse();
+        response.setCode(errorCode.getCode());
+        response.setMessage(errorCode.getMessage());
+
+        return ResponseEntity
+                .status(errorCode.getHttpStatus())
+                .body(response);
+    }
+
+}

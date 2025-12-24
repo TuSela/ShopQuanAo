@@ -3,8 +3,8 @@ package com.Nhom19.shopQuanAo.service;
 import com.Nhom19.shopQuanAo.DTO.Request.Admin.CreateOrUpdateColorRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductDetail.ColorResponse;
 import com.Nhom19.shopQuanAo.entity.ProductColors;
-import com.Nhom19.shopQuanAo.exception.ColorNotFoundException;
-import com.Nhom19.shopQuanAo.exception.DuplicateColorException;
+import com.Nhom19.shopQuanAo.exception.AppException;
+import com.Nhom19.shopQuanAo.exception.ErrorCode;
 import com.Nhom19.shopQuanAo.mapper.ColorMapper;
 import com.Nhom19.shopQuanAo.mapper.ProductTypeMapper;
 import com.Nhom19.shopQuanAo.repository.ProductColorRepo;
@@ -29,12 +29,12 @@ public class ProductColorService {
     }
 
     public ColorResponse getProductColor(int maMs) {
-        var productColors = productColorRepo.findById(maMs).orElseThrow(ColorNotFoundException::new);
+        var productColors = productColorRepo.findById(maMs).orElseThrow(()-> new AppException(ErrorCode.PRODUCT_COLOR_NOT_FOUND));
         return colorMapper.toDto(productColors);
     }
 
     public ColorResponse updateProductColor(int maMs, CreateOrUpdateColorRequest request){
-        var productColors = productColorRepo.findById(maMs).orElseThrow(ColorNotFoundException::new);
+        var productColors = productColorRepo.findById(maMs).orElseThrow(()-> new AppException(ErrorCode.PRODUCT_COLOR_NOT_FOUND));
         colorMapper.updateColor(productColors, request);
         productColorRepo.save(productColors);
         return colorMapper.toDto(productColors);
@@ -42,16 +42,15 @@ public class ProductColorService {
 
     public boolean deleteColor(int maMs) {
         if (!productColorRepo.existsById(maMs)) {
-            return false;
+            throw new AppException(ErrorCode.PRODUCT_COLOR_EXISTED);
         }
-
         productColorRepo.deleteById(maMs);
         return true;
     }
 
     public ColorResponse createProductColor(CreateOrUpdateColorRequest request){
         if (productColorRepo.existsByTenMs(request.getTenMs())) {
-            throw new DuplicateColorException();
+            throw new RuntimeException();
         }
 
         var productColor = colorMapper.toEntity(request);

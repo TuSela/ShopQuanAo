@@ -9,6 +9,8 @@ import com.Nhom19.shopQuanAo.DTO.Response.Customer.OrderDetailRes.OrderItemRespo
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.OrderDetailRes.PaymentResponse;
 import com.Nhom19.shopQuanAo.entity.*;
 import com.Nhom19.shopQuanAo.entityCompositeKey.OrderItemId;
+import com.Nhom19.shopQuanAo.exception.AppException;
+import com.Nhom19.shopQuanAo.exception.ErrorCode;
 import com.Nhom19.shopQuanAo.mapper.AddressMapper;
 import com.Nhom19.shopQuanAo.mapper.PaymentMapper;
 import com.Nhom19.shopQuanAo.repository.*;
@@ -116,7 +118,7 @@ public class OrderService {
     public OrderDetailResponse getOrderDetail(Integer maDdh) {
 
         Orders order = orderRepository.findById(maDdh)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+                .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
 
         OrderDetailResponse response = new OrderDetailResponse();
 
@@ -220,10 +222,9 @@ public class OrderService {
     public CreatCartResponse createOrder(CreatOrderRequest request) {
 
         Orders order = new Orders();
-        addresses addresses = addressRepository.findById(request.getMaDiaChi()).orElseThrow(() -> new RuntimeException("Address not found"));
-        PaymentMethods paymentMethods = paymentMethodRepo.findById(request.getMaPt()).orElseThrow(() -> new RuntimeException("Payment method not found"));
-
-        Cart cart= cartRepository.findById(request.getMaGh()).orElseThrow(() -> new RuntimeException("Cart not found"));
+        addresses addresses = addressRepository.findById(request.getMaDiaChi()).orElseThrow(() -> new AppException(ErrorCode.ADDRESS_NOT_EXISTED));
+        PaymentMethods paymentMethods = paymentMethodRepo.findById(request.getMaPt()).orElseThrow(() -> new AppException(ErrorCode.PAYMENT_METHOD_NOT_FOUND));
+        Cart cart= cartRepository.findById(request.getMaGh()).orElseThrow(() -> new AppException(ErrorCode.CART_NOT_EXISTED));
 
         order.setAddresses(addresses);
         order.setPaymentMethods(paymentMethods);
@@ -242,15 +243,13 @@ public class OrderService {
         order.setUsers(users);
         Orders order1 = orderRepository.save(order);
         List<CartItems> cartItemsList = cart.getCartItems();
-        System.out.println("đây là danh sách giỏ hàng lấy ra: " +cartItemsList.toString());
+
         cartItemsList.forEach(cartItem -> {
             OrderItems orderItems = new OrderItems();
             orderItems.setSoLuong(cartItem.getSoluong());
             orderItems.setProductVariants(cartItem.getProductVariants());
             orderItems.setTongTien(cartItem.getTongTien());
             OrderItemId id = new OrderItemId(
-//                    cart.getMaGh(),
-//                    cartItem.getProductVariants().getMaBienThe()
                     order1.getMaDdh(),
                     orderItems.getProductVariants().getMaBienThe()
             );
@@ -258,7 +257,6 @@ public class OrderService {
 
             orderItems.setId(id);
             orderItemRepo.save(orderItems);
-//            cartItemRepo.deleteByCartAndProductVariants(cart,cartItem.getProductVariants());
         });
 
         cartRepository.delete(cart);

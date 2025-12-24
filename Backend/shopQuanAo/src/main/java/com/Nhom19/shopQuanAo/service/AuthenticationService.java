@@ -42,7 +42,7 @@ public class AuthenticationService {
             boolean authentication = request.getPassword().equals(user.getPassword());
 
             if (!authentication) {
-                throw new AppException(ErrorCode.UNUATHENTICATION);
+                throw new AppException(ErrorCode.UNAUTHENTICATED);
             }
             AuthenticationResponse authenticationResponse = new AuthenticationResponse();
             authenticationResponse.setToken(generateTokenUsers(user));
@@ -52,7 +52,7 @@ public class AuthenticationService {
             boolean authentication = request.getPassword().equals(admins.getPassword());
 
             if (!authentication) {
-                throw new AppException(ErrorCode.UNUATHENTICATION);
+                throw new AppException(ErrorCode.UNAUTHENTICATED);
             }
             AuthenticationResponse authenticationResponse = new AuthenticationResponse();
             authenticationResponse.setToken(generateTokenAdmin(admins));
@@ -90,7 +90,7 @@ public class AuthenticationService {
             return  jwsObject.serialize();
         }
         catch(JOSEException e){
-            throw new AppException(ErrorCode.UNUATHENTICATION);
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
     }
     public String generateTokenAdmin(Admins admins) {
@@ -110,7 +110,7 @@ public class AuthenticationService {
             return  jwsObject.serialize();
         }
         catch(JOSEException e){
-            throw new AppException(ErrorCode.UNUATHENTICATION);
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
     }
 

@@ -3,8 +3,6 @@ package com.Nhom19.shopQuanAo.Controller;
 import com.Nhom19.shopQuanAo.DTO.Request.Admin.CreateOrUpdateColorRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.ApiResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductDetail.ColorResponse;
-import com.Nhom19.shopQuanAo.exception.ColorNotFoundException;
-import com.Nhom19.shopQuanAo.exception.DuplicateColorException;
 import com.Nhom19.shopQuanAo.service.ProductColorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -66,17 +64,5 @@ public class ProductColorController {
             apiResponse.setResult(false);
         }
         return apiResponse;
-    }
-
-    @ExceptionHandler(ColorNotFoundException.class)
-    public ResponseEntity<Void> handleColorNotFound() {
-        return ResponseEntity.notFound().build();
-    }
-
-    @ExceptionHandler(DuplicateColorException.class)
-    public ResponseEntity<Map<String, String>> handleDuplicateColorName() {
-        return ResponseEntity.badRequest().body(
-                Map.of("tenMs", "There is already a product color with the same name!")
-        );
     }
 }

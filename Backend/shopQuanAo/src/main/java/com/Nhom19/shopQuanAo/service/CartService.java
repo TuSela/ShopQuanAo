@@ -41,11 +41,26 @@ public class CartService {
     @Autowired
     AuthenticationService authenticationService;
 
+    private Users getCurrentUser() {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
+
+        Users user = userRepo.findBySdt(auth.getName());
+        if (user == null) {
+            throw new AppException(ErrorCode.USER_NOT_EXISTED);
+        }
+        return user;
+    }
+
+
     public CreatCartResponse createCart(CreateCartRequest request, Integer Id) {
 
         Cart cart = new Cart();
 
-        Users user = userRepo.findById(Id).get();
+        Users user = userRepo.findById(Id)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         if (!cartRepository.existsByUsers(user)) {
 
@@ -62,7 +77,7 @@ public class CartService {
 
         cartItems.setCart(cart1);
         cartItems.setSoluong(request.getSoLuong());
-        ProductVariants productVariants = productVariantRepo.findByProductAndColorAndSize(request.getMaSp(),  request.getMaMs(), request.getMaKc()).orElseThrow(() -> new RuntimeException("Sản phẩm biến thể không tồn tại"));
+        ProductVariants productVariants = productVariantRepo.findByProductAndColorAndSize(request.getMaSp(),  request.getMaMs(), request.getMaKc()).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_VARIANT_NOT_EXISTED));
 
         cartItems.setProductVariants(productVariants);
         CartItemId id = new CartItemId(
@@ -71,8 +86,8 @@ public class CartService {
         );
         cartItems.setId(id);
 
-        Products products =productRepo.findById(request.getMaSp()).orElseThrow(() -> new RuntimeException("sản phẩm không tồn tại"));
-
+        Products products = productRepo.findById(request.getMaSp())
+                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED));
         boolean cartItemsX = cartItemRepo.existsByCartAndProductVariants(cart1, productVariants);
         if (cartItemsX) {
             CartItems cartItems2 = cartItemRepo.findByCartAndProductVariants(cart1, productVariants);
@@ -172,9 +187,14 @@ public class CartService {
         Users users = userRepo.findBySdt(sdt);
         Cart cart = cartRepository.findByUsers(users).orElseThrow(()-> new AppException(ErrorCode.CART_NOT_EXISTED));
 
-        ProductVariants productVariants= productVariantRepo.findById(maBienThe).orElseThrow(()-> new RuntimeException("Không tìm thấy mã biến thể"));
+        ProductVariants productVariants = productVariantRepo.findById(maBienThe)
+                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_VARIANT_NOT_EXISTED));
 
         CartItems cartItems = cartItemRepo.findByCartAndProductVariants(cart, productVariants);
+        if (cartItems == null) {
+            throw new AppException(ErrorCode.CART_ITEM_NOT_EXISTED);
+        }
+
         cartItems.setSoluong(request.getSoLuong());
 
         BigDecimal thanhTien = productVariants.getProducts().getGia().multiply(BigDecimal.valueOf(request.getSoLuong()));
@@ -204,9 +224,14 @@ public class CartService {
         String sdt = context.getAuthentication().getName();
         Users users = userRepo.findBySdt(sdt);
         Cart cart = cartRepository.findByUsers(users).orElseThrow(()-> new AppException(ErrorCode.CART_NOT_EXISTED));
-        ProductVariants productVariants= productVariantRepo.findById(maBienThe).orElseThrow(()-> new RuntimeException("Không tìm thấy mã biến thể"));
+        ProductVariants productVariants= productVariantRepo.findById(maBienThe).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_VARIANT_NOT_EXISTED));
 
-        CartItems cartItems = cartItemRepo.findByCartAndProductVariants(cart, productVariants);
+        CartItems cartItems =
+                cartItemRepo.findByCartAndProductVariants(cart, productVariants);
+
+        if (cartItems == null) {
+            throw new AppException(ErrorCode.CART_ITEM_NOT_EXISTED);
+        }
 
         BigDecimal thanhTien2 = BigDecimal.ZERO;
 

@@ -92,6 +92,8 @@ public class UserService {
             throw new AppException(ErrorCode.PASSWORD_CONFIRM_NOT_MATCH);
         }
     }
+    @Autowired
+    AuthenticationService authenticationService;
     @PreAuthorize("hasAuthority('SCOPE_USER')")
     public UserResponse getMyInfo()
     {
@@ -112,7 +114,7 @@ public class UserService {
 
             // 2. Tạo tên file mới (tránh trùng)
             String fileName = System.currentTimeMillis() + "_" + avatar.getOriginalFilename();
-//             //3.1
+//          //3.1
             String uploadDirInServer = "http://localhost:8081/nhom19/avatar/";
 
             // 3.2 Đường dẫn lưu trong server
@@ -141,7 +143,8 @@ public class UserService {
             user.setAvatar(filePath2);
         }
         userRepository.save(user);
-        return user.getAvatar();
+        
+        return authenticationService.generateTokenUsers(user);
     }
 
 }

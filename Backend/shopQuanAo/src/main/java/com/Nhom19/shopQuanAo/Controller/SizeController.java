@@ -3,8 +3,6 @@ package com.Nhom19.shopQuanAo.Controller;
 import com.Nhom19.shopQuanAo.DTO.Request.Admin.CreateOrUpdateSizeRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.ApiResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Admin.ProductSizeResponse;
-import com.Nhom19.shopQuanAo.exception.DuplicateSizeException;
-import com.Nhom19.shopQuanAo.exception.SizeNotFoundException;
 import com.Nhom19.shopQuanAo.service.ProductSizeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -65,17 +63,5 @@ public class SizeController {
             apiResponse.setResult(false);
         }
         return apiResponse;
-    }
-
-    @ExceptionHandler(SizeNotFoundException.class)
-    public ResponseEntity<Void> handleSizeNotFound(){
-        return ResponseEntity.notFound().build();
-    }
-
-    @ExceptionHandler(DuplicateSizeException.class)
-    public ResponseEntity<Map<String, String>> handleDuplicateSize() {
-        return ResponseEntity.badRequest().body(
-                Map.of("tenMs", "There is already a product size!")
-        );
     }
 }
