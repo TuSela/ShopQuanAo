@@ -83,7 +83,7 @@ public class OrderService {
                                 item.setGia(oi.getTongTien());
                                 item.setMau(pv.getColors().getTenMs());
                                 item.setSize(pv.getSizes().getTenKc());
-
+                                item.setMaBienThe(pv.getMaBienThe());
                                 List<ProductImages> images=
                                         productImagesRepo.getImagesByProductAndColor(oi.getProductVariants()
                                                 .getProducts().getMaSp(), oi.getProductVariants().getColors().getMaMs());
@@ -269,4 +269,55 @@ public class OrderService {
         return creatCartResponse;
 
     }
+
+    //Lấy ra sản phẩm chưa đánh giá!
+    public List<MyOrderResponse> getOrdersNotReviewed(Integer maTk) {
+
+        List<Orders> orders = orderRepository.findCompletedOrdersNotReviewed(maTk);
+
+        return orders.stream().map(order -> {
+
+            MyOrderResponse res = new MyOrderResponse();
+            res.setMaDonHang(order.getMaDdh());
+            res.setNgayDat(order.getNgayThanhToan());
+            res.setTongTien(order.getTongTien());
+            res.setTrangThai(order.getOrderStatus());
+
+            List<MyOrderItemResponse> items = order.getItems()
+                    .stream()
+                    .map(this::mapItem)
+                    .toList();
+
+            res.setItems(items);
+            return res;
+
+        }).toList();
+    }
+
+    private MyOrderItemResponse mapItem(OrderItems item) {
+
+        ProductVariants pv = item.getProductVariants();
+        Products p = pv.getProducts();
+
+        MyOrderItemResponse res = new MyOrderItemResponse();
+        res.setTenSanPham(p.getTenSp());
+        res.setMaBienThe(pv.getMaBienThe());
+        res.setSoLuong(item.getSoLuong());
+        res.setGia(item.getTongTien());
+
+        res.setMau(pv.getColors().getTenMs());
+        res.setSize(pv.getSizes().getTenKc());
+
+        // Lấy ảnh đại diện theo màu
+        String anh = p.getImages().stream()
+                .filter(img -> Boolean.TRUE.equals(img.getDaiDienMau()))
+                .map(ProductImages::getUrlImage)
+                .findFirst()
+                .orElse(p.getImages().isEmpty() ? null : p.getImages().get(0).getUrlImage());
+
+        res.setAnh(anh);
+
+        return res;
+    }
 }
+

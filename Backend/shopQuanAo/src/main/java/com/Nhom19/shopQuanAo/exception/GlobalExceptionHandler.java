@@ -47,13 +47,13 @@ import java.util.NoSuchElementException;
             apiResponse.setMessage(ErrorCode.USER_ID_NOT_EXISTED.getMessage());
             return ResponseEntity.badRequest().body(apiResponse);
         }
-        @ExceptionHandler(value = NullPointerException.class)
-        ResponseEntity<ApiResponse> handleException(NullPointerException ex){
-            ApiResponse apiResponse = new ApiResponse();
-            apiResponse.setCode(ErrorCode.CART_NOT_EXISTED.getCode());
-            apiResponse.setMessage(ErrorCode.CART_NOT_EXISTED.getMessage());
-            apiResponse.setResult("Giỏ hàng trống");
-            return ResponseEntity.badRequest().body(apiResponse);
-        }
+//        @ExceptionHandler(value = NullPointerException.class)
+//        ResponseEntity<ApiResponse> handleException(NullPointerException ex){
+//            ApiResponse apiResponse = new ApiResponse();
+//            apiResponse.setCode(ErrorCode.CART_NOT_EXISTED.getCode());
+//            apiResponse.setMessage(ErrorCode.CART_NOT_EXISTED.getMessage());
+//            apiResponse.setResult("Giỏ hàng trống");
+//            return ResponseEntity.badRequest().body(apiResponse);
+//        }
     }
 

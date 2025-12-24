@@ -3,6 +3,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
@@ -17,6 +18,10 @@ public class ProductComments {
     @JoinColumn(name="ma_ddh")
     private Orders orders;
 
+    @ManyToOne
+    @JoinColumn(name="ma_bien_the")
+    private ProductVariants productVariants;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ma_tk")
     private Users users;
@@ -27,7 +32,7 @@ public class ProductComments {
 
     private LocalDateTime ngayTao;
 
-    private float diemDanhGia;
+    private BigDecimal diemDanhGia;
     private String noiDung;
     private String trangThai;
 

@@ -44,12 +44,20 @@ public class ProductTypeService {
                  .collect(Collectors.toList());
     }
 
+    public List<ProductTypeResponse> getALLTypesByNam (){
+        List<ProductTypes> productTypes = productTypeRepo.findAll();
+        return productTypes.stream()
+                .map(productTypeMapper::toProductTypeResponse)
+                .collect(Collectors.toList());
+    }
+
     private String normalize(String input) {
         if (input == null) return "";
         return Normalizer.normalize(input, Normalizer.Form.NFD)
                 .replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
                 .toLowerCase();
     }
+
     public List<NavMenuDTO> buildNavMenu() {
 
         List<ProductTypes> list = productTypeRepo.findAllForMenuSorted();
@@ -160,4 +168,5 @@ public class ProductTypeService {
         productTypeRepo.deleteById(maLoai);
         return true;
     }
+
 }

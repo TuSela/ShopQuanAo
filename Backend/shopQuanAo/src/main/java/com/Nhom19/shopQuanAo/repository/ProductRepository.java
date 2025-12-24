@@ -147,7 +147,10 @@ List<ProductBestSellerResponse> getTopBestSeller();
     JOIN p.types pt
     WHERE pt.doiTuong = :doiTuong
 """)
-    List<Products> findByDoiTuong(@Param("doiTuong") String doiTuong);
+    List<Products> findByDoiTuong(
+            @Param("doiTuong") String doiTuong,
+            Pageable pageable
+    );
     Page<Products> findByTypesIn(
             List<ProductTypes> types,
             Pageable pageable

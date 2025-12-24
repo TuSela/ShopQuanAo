@@ -4,6 +4,7 @@ import com.Nhom19.shopQuanAo.entity.Orders;
 import com.Nhom19.shopQuanAo.entity.ProductColors;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -18,4 +19,19 @@ public interface OrderRepository extends JpaRepository<Orders, Integer> {
        """)
     List<Orders> findAllOrdersWithItems();
     List<Orders> findByUsers_MaTkOrderByNgayThanhToanDesc(Integer maTk);
+
+    @Query("""
+        SELECT o
+        FROM Orders o
+        WHERE o.users.maTk = :maTk
+          AND o.orderStatus = 'Hoàn thành'
+          AND NOT EXISTS (
+              SELECT 1
+              FROM ProductComments pc
+              WHERE pc.orders.maDdh = o.maDdh
+          )
+        ORDER BY o.ngayThanhToan DESC
+    """)
+    List<Orders> findCompletedOrdersNotReviewed(@Param("maTk") Integer maTk);
 }
+

@@ -28,10 +28,10 @@ public class Products {
     private Float danhGia;
 
     @OneToMany(mappedBy = "products", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<ProductVariants> productVariants;
+    private List<ProductVariants> productVariants;
 //
     @OneToMany(mappedBy = "products", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<ProductComments> ProductComments;
+    private List<ProductComments> ProductComments;
 
     @OneToMany(mappedBy = "products", fetch = FetchType.LAZY)
     private List<ProductImages> images;

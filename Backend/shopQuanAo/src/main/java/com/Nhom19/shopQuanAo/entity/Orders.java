@@ -46,4 +46,7 @@ import java.util.Set;
 
         @OneToMany(mappedBy = "orders", cascade = CascadeType.ALL, orphanRemoval = true)
         private List<OrderItems> items ;
+
+        @OneToMany(mappedBy = "orders", cascade = CascadeType.ALL, orphanRemoval = true)
+        private List<ProductComments> productComments ;
     }

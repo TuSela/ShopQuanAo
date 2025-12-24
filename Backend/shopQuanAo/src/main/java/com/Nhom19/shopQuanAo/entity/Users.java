@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -26,11 +27,11 @@ public class Users {
     private String gioiTinh;
     private String avatar;
 
-//    @OneToMany(mappedBy = "users")
-//    private Set<Orders> orders = new HashSet<>();
+    @OneToMany(mappedBy = "users")
+    private List<Orders> orders;
 
-//    @OneToMany(mappedBy = "users")
-//    private Set<ProductComments> comments = new HashSet<>();
+    @OneToMany(mappedBy = "users")
+    private List<ProductComments> comments;
 
     // feedbacks if needed
 //    @OneToMany(mappedBy = "users")

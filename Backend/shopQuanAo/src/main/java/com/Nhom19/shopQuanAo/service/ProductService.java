@@ -128,29 +128,19 @@ public class ProductService {
                             res.setDiemDanhGia(pc.getDiemDanhGia());
                             res.setUsers(userResponse);
 
-                            List<OrderItems> orderItems = orderItemRepo.findByOrders(pc.getOrders());
+                            CommentVariantResponse productVariants = new CommentVariantResponse();
+                            productVariants.setMaBienThe(pc.getProductVariants().getMaBienThe());
+                            OrderItems orderItems = orderItemRepo.findByOrdersAndProductVariants(pc.getOrders(),pc.getProductVariants()).orElseThrow(()-> new RuntimeException("Sản phẩm trong đơn hàng không tồn tại"));
 
+                            productVariants.setSoLuongDat(orderItems.getSoLuong());
+                            productVariants.setTenMs(pc.getProductVariants().getColors().getTenMs());
+                            productVariants.setTenKc(pc.getProductVariants().getSizes().getTenKc());
 
-                            List<CommentVariantResponse> productVariants = res.getProductVariants();
-
-                            orderItems.forEach(o -> {
-                                if(o.getProductVariants().getProducts() == products) {
-                                    ProductVariants pv = o.getProductVariants();
-                                    CommentVariantResponse commentVariantResponse = variantMapper.toDTO2(pv);
-
-                                    commentVariantResponse.setTenKc(String.valueOf(pv.getSizes().getTenKc()));
-                                    commentVariantResponse.setTenMs(String.valueOf(pv.getColors().getTenMs()));
-
-                                    commentVariantResponse.setSoLuongDat(o.getSoLuong());
-                                    productVariants.add(commentVariantResponse);
-                                }
-                            });
                             res.setProductVariants(productVariants);
-
 
                             return res;
                         })
-                        .collect(Collectors.toSet())
+                        .collect(Collectors.toList())
         );
 
         // Map variant
@@ -212,6 +202,7 @@ public class ProductService {
         return res;
     }
 
+
 // THÊM SẢN PHẨM MỚI
     @Transactional
     public Boolean createProduct(CreationProductRequest request) {
@@ -247,10 +238,8 @@ public class ProductService {
                 productVariantsRepo.save(productVariants);
             });
         });
-
         return true;
     }
-
 
 // tìm kiếm sản phẩm theo keyword
     public List<ProductBestSellerResponse> searchByKeyword(String keyword) {
@@ -290,15 +279,18 @@ public class ProductService {
                 })
                 .toList();
     }
+
+
     // tìm theo đối tượng
     public List<ProductBestSellerResponse> findByDoiTuong(String doiTuong) {
 
         if (doiTuong == null || doiTuong.trim().isEmpty()) {
             return List.of();
         }
+        Pageable pageable = PageRequest.of(0, 10);
 
         List<Products> products =
-                productRepository.findByDoiTuong(doiTuong.trim());
+                productRepository.findByDoiTuong(doiTuong.trim(),pageable);
 
         if (products.isEmpty()) {
             return List.of();

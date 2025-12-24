@@ -12,7 +12,6 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: none
-
 logging:
   level:
     org.hibernate.SQL: DEBUG

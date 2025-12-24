@@ -17,11 +17,11 @@ public class ProductDetailResponse {
     private String tenSp;
     private int soLuong;
     private BigDecimal gia;
-    private float danhGia;
+    private BigDecimal danhGia;
     private Integer soLuongDanhGia;
     private List<ColorResponse> Variants;
     private List<String> listAnhSP;
     private String chiTiet;
-    private Set<ProductResponse> productComments = new HashSet<>();
+    private List<ProductResponse> productComments;
 
 }

@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CommentVariantResponse {
-    private int maBienThe;
+    private Integer maBienThe;
     private int soLuongDat;
     private String tenKc;
     private String tenMs;

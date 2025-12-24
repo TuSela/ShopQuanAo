@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 @Data
 public class MyOrderItemResponse {
     private String tenSanPham;
+    private Integer maBienThe;
     private String anh;
     private String mau;
     private String size;

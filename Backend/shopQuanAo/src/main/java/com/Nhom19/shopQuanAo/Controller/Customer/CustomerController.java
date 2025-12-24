@@ -129,4 +129,20 @@ public class CustomerController {
             throw new RuntimeException(e);
         }
     }
+    @GetMapping("/orders/not-reviewed")
+    public ApiResponse<List<MyOrderResponse>> getOrdersNotReviewed(
+            @RequestHeader("Authorization") String authHeader
+    ) {
+        ApiResponse <List<MyOrderResponse>> response = new ApiResponse<>();
+        String token = authHeader.substring(7);
+        JWTClaimsSet claims = jwtUtils.parseToken(token);
+        try {
+            Integer Id = claims.getIntegerClaim("id");
+            response.setResult(orderService.getOrdersNotReviewed(Id));
+            return  response;
+        } catch (
+                ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

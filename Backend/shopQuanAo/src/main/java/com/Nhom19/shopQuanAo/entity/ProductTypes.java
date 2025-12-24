@@ -21,5 +21,4 @@ public class ProductTypes {
     private String anhLoai;
     @OneToMany(mappedBy = "types")
     private Set<Products> products = new HashSet<>();
-
 }
