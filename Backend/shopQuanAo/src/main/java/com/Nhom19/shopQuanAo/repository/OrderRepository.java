@@ -24,7 +24,7 @@ public interface OrderRepository extends JpaRepository<Orders, Integer> {
         SELECT o
         FROM Orders o
         WHERE o.users.maTk = :maTk
-          AND o.orderStatus = 'Hoàn thành'
+          AND o.orderStatus = 'Đã giao'
           AND NOT EXISTS (
               SELECT 1
               FROM ProductComments pc
