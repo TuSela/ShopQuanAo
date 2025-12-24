@@ -16,66 +16,6 @@ import java.util.List;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Products, Integer> {
-
-//@Query("""
-//    SELECT new com.Nhom19.shopQuanAo.DTO.Response.ProductBestSellerResponse(
-//        p.MaSp,
-//        p.tenSp,
-//        p.gia,
-//        (
-//            SELECT MAX(pi.urlImage)
-//            FROM ProductImages pi
-//            WHERE pi.variants = pv
-//              AND pi.DaiDien = true
-//        ),
-//        SUM(oi.quantity)
-//    )
-//    FROM Products p
-//    JOIN p.ProductVariants pv
-//    JOIN pv.ordersItems oi
-//    GROUP BY p.MaSp, p.tenSp, p.gia, pv.MaBienThe
-//    ORDER BY SUM(oi.quantity) DESC
-//    """)
-//public List<ProductBestSellerResponse> getTopBestSeller(Pageable pageable);
-//@Query(value = """
-//SELECT TOP (10)
-//    p.ma_sp AS maSp,
-//    p.ten_sp AS tenSp,
-//    p.gia AS gia,
-//    (
-//        SELECT TOP 1 pi.url_hinh_anh
-//        FROM product_images pi
-//        WHERE pi.ma_bien_the = pv.ma_bien_the
-//          AND pi.dai_dien = 1
-//    ) AS urlImage
-//FROM products p
-//JOIN product_variants pv ON pv.ma_sp = p.ma_sp
-//JOIN order_items oi ON oi.ma_bien_the = pv.ma_bien_the
-//GROUP BY p.ma_sp, p.ten_sp, p.gia
-//ORDER BY SUM(oi.so_luong_dat) DESC
-//    """,
-//        nativeQuery = true)
-//List<ProductBestSellerResponse> getTopBestSeller();
-@Query(value = """
-SELECT TOP (10)
-    p.ma_sp AS maSp,
-    p.ten_sp AS tenSp,
-    p.gia AS gia,
-    pi.url_hinh_anh AS urlImage
-    p.danh_gia AS danhGia
-FROM products p
-JOIN product_variants pv ON pv.ma_sp = p.ma_sp
-JOIN order_items oi ON oi.ma_bien_the = pv.ma_bien_the
-OUTER APPLY (
-    SELECT TOP 1 url_hinh_anh
-    FROM product_images
-    WHERE ma_bien_the = pv.ma_bien_the AND dai_dien = 1
-) pi
-GROUP BY p.ma_sp, p.ten_sp, p.gia, pi.url_hinh_anh
-ORDER BY SUM(oi.so_luong_dat) DESC
-""", nativeQuery = true)
-List<ProductBestSellerResponse> getTopBestSeller();
-
     @Query(
             value = """
         SELECT p.ma_sp AS maSp, p.ten_sp AS tenSp, p.gia AS gia, MAX(pi.url_hinh_anh) AS urlImage
@@ -106,19 +46,24 @@ List<ProductBestSellerResponse> getTopBestSeller();
         FETCH NEXT 10 ROWS ONLY
         """, nativeQuery = true)
         List<ProductBestSellerResponse> findAnyTenProductsNative();
-//    @Query("""
-//    SELECT new com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.SPResponse(
-//        p.maSp,
-//        p.tenSp,
-//        p.gia,
-//        i.urlHinhAnh
-//    )
-//    FROM Products p
-//    LEFT JOIN ProductImages i
-//        ON p.maSp = i.product.maSp
-//        AND i.daiDien = true
-//    """)
-//    List<ProductBestSellerResponse> getSanPhamTheoMau();
+
+    @Query("""
+    SELECT new com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.ProductBestSellerResponse(
+        p.maSp,
+        p.tenSp,
+        p.gia,
+        img.urlImage,
+        p.danhGia
+    )
+    FROM OrderItems oi
+    JOIN oi.productVariants pv
+    JOIN pv.products p
+    LEFT JOIN p.images img
+    WHERE img.daiDien = true OR img IS NULL
+    GROUP BY p.maSp, p.tenSp, p.gia, img.urlImage, p.danhGia
+    ORDER BY SUM(oi.soLuong) DESC
+""")
+    List<ProductBestSellerResponse> findBestSellerProducts(Pageable pageable);
 
     @Query("""
     SELECT new com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.ProductBestSellerResponse(
@@ -130,9 +75,14 @@ List<ProductBestSellerResponse> getTopBestSeller();
     )
     FROM Products p
     LEFT JOIN p.images img
-    WHERE img.daiDien = true OR img IS NULL
-    """)
-    List<ProductBestSellerResponse> getProductsForHome();
+    WHERE (img.daiDien = true OR img IS NULL)
+      AND p.maSp NOT IN :ids
+    ORDER BY function('RAND')
+""")
+    List<ProductBestSellerResponse> findRandomProductsExclude(
+            @Param("ids") List<Integer> ids,
+            Pageable pageable
+    );
 
     @Query("""
         SELECT p FROM Products p

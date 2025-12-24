@@ -69,7 +69,27 @@ public class ProductService {
     }
 
     public List<ProductBestSellerResponse>getTopBestSeller(){
-        return productRepository.getProductsForHome();
+        List<ProductBestSellerResponse> result =
+                productRepository.findBestSellerProducts(PageRequest.of(0, 10));
+
+        if (result.size() < 10) {
+            int remain = 10 - result.size();
+
+            List<Integer> ids = result.stream()
+                    .map(ProductBestSellerResponse::getMaSp)
+                    .toList();
+
+            List<ProductBestSellerResponse> random =
+                    productRepository.findRandomProductsExclude(
+                            ids,
+                            PageRequest.of(0, remain)
+                    );
+
+            result.addAll(random);
+        }
+
+        return result;
+
     }
 //    public List<ProductBestSellerResponse> getAllProducts(){
 //        return productRepository.getSanPhamTheoMau();

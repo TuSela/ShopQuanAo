@@ -40,4 +40,5 @@ public interface OrderItemRepo extends JpaRepository<OrderItems, OrderItemId> {
 
    Optional<OrderItems> findByOrdersAndProductVariants(Orders orders, ProductVariants productVariants);
 
+
 }

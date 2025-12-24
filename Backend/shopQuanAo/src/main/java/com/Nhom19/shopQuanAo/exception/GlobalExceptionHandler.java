@@ -76,18 +76,18 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 //    // Lỗi không xác định (fallback)
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse> handleOtherException() {
-
-        ErrorCode errorCode = ErrorCode.UNCATEGORIZED_EXCEPTION;
-
-        ApiResponse response = new ApiResponse();
-        response.setCode(errorCode.getCode());
-        response.setMessage(errorCode.getMessage());
-
-        return ResponseEntity
-                .status(errorCode.getHttpStatus())
-                .body(response);
-    }
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<ApiResponse> handleOtherException() {
+//
+//        ErrorCode errorCode = ErrorCode.UNCATEGORIZED_EXCEPTION;
+//
+//        ApiResponse response = new ApiResponse();
+//        response.setCode(errorCode.getCode());
+//        response.setMessage(errorCode.getMessage());
+//
+//        return ResponseEntity
+//                .status(errorCode.getHttpStatus())
+//                .body(response);
+//    }
 
 }
