@@ -2,6 +2,8 @@ package com.Nhom19.shopQuanAo.service;
 
 import com.Nhom19.shopQuanAo.DTO.Request.Admin.CreateOrUpdateSizeRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.Admin.ProductSizeResponse;
+import com.Nhom19.shopQuanAo.exception.AppException;
+import com.Nhom19.shopQuanAo.exception.ErrorCode;
 import com.Nhom19.shopQuanAo.mapper.ProductSizeMapper;
 import com.Nhom19.shopQuanAo.repository.ProductSizeRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +30,7 @@ public class ProductSizeService {
     }
 
     public ProductSizeResponse getProductSize (int maKc) {
-        var size = productSizeRepo.findById(maKc).orElseThrow(RuntimeException::new);
+        var size = productSizeRepo.findById(maKc).orElseThrow(()-> new AppException(ErrorCode.PRODUCT_SIZE_NOT_FOUND));
 
         return productSizeMapper.toProductSizeResponse(size);
     }
@@ -46,7 +48,7 @@ public class ProductSizeService {
     }
 
     public ProductSizeResponse updateSize(int maKc, CreateOrUpdateSizeRequest request) {
-        var size = productSizeRepo.findById(maKc).orElseThrow(RuntimeException::new);
+        var size = productSizeRepo.findById(maKc).orElseThrow(()-> new AppException(ErrorCode.PRODUCT_SIZE_NOT_FOUND));
 
         productSizeMapper.updateSize(size, request);
         productSizeRepo.save(size);
@@ -56,7 +58,7 @@ public class ProductSizeService {
 
     public boolean deleteSize(int maKc) {
         if (!productSizeRepo.existsById(maKc)) {
-            return false;
+            throw  new AppException(ErrorCode.PRODUCT_SIZE_EXISTED);
         }
 
         productSizeRepo.deleteById(maKc);

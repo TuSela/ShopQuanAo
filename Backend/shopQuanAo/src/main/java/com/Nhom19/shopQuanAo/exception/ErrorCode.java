@@ -3,6 +3,8 @@ package com.Nhom19.shopQuanAo.exception;
 import org.springframework.http.HttpStatus;
 
 public enum ErrorCode {
+    PRODUCT_SIZE_NOT_FOUND(6002,"Không tìm thấy size sản phẩm",HttpStatus.NOT_FOUND),
+    PRODUCT_SIZE_EXISTED(6001,"Size đã tồn tại",HttpStatus.CONFLICT),
     PRODUCT_COLOR_EXISTED(5002,"Màu đã tồn tại",HttpStatus.CONFLICT),
     PRODUCT_COLOR_NOT_FOUND(5001,"Không tìm thấy màu sản phẩm",HttpStatus.NOT_FOUND),
     PAYMENT_METHOD_NOT_FOUND(4001,"Không tìm thấy phương thức thanh toán",HttpStatus.NOT_FOUND),

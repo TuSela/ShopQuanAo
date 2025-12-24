@@ -109,7 +109,7 @@ public class UserService {
 
             // 1. Kiểm tra loại ảnh
             if (!avatar.getContentType().startsWith("image/")) {
-                throw new RuntimeException("File không phải ảnh");
+                throw new AppException(ErrorCode.INVALID_FILE);
             }
 
             // 2. Tạo tên file mới (tránh trùng)
@@ -138,13 +138,11 @@ public class UserService {
                 File old = new File("D:/shopbanquanao/src/assets/avatar/" + oldFileName);
                 if (old.exists()) old.delete();
             }
-
             // 6. Lưu đường dẫn mới vào DB
             user.setAvatar(filePath2);
         }
-        userRepository.save(user);
-        
-        return authenticationService.generateTokenUsers(user);
-    }
+        Users savedUser = userRepository.save(user);
 
+        return authenticationService.generateTokenUsers(savedUser);
+    }
 }
