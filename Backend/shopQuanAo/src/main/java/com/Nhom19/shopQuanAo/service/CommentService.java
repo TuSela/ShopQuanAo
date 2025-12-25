@@ -6,10 +6,7 @@ import com.Nhom19.shopQuanAo.entity.*;
 import com.Nhom19.shopQuanAo.exception.AppException;
 import com.Nhom19.shopQuanAo.exception.ErrorCode;
 import com.Nhom19.shopQuanAo.mapper.CommentMapper;
-import com.Nhom19.shopQuanAo.repository.OrderRepository;
-import com.Nhom19.shopQuanAo.repository.ProductCommentRepo;
-import com.Nhom19.shopQuanAo.repository.ProductVariantRepo;
-import com.Nhom19.shopQuanAo.repository.UserRepository;
+import com.Nhom19.shopQuanAo.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -30,7 +27,9 @@ public class CommentService {
     @Autowired
     private ProductVariantRepo productVariantRepo;
     @Autowired
-    OrderRepository orderRepository;
+    private OrderRepository orderRepository;
+    @Autowired
+    private OrderItemRepo orderItemRepo;
     public Boolean CreateComment(CommentRequest request,Integer Id){
 
         Users users = userRepository.findById(Id).orElseThrow(()->new AppException(USER_NOT_EXISTED));
@@ -50,7 +49,9 @@ public class CommentService {
         productComments.setOrders(orders);
         productComments.setTrangThai("Show");
         productCommentRepo.save(productComments);
-
+        OrderItems orderItems = orderItemRepo.findByOrdersAndProductVariants(orders,productVariants).orElseThrow(()->new AppException(ErrorCode.ORDER_NOT_FOUND));
+        orderItems.setDaDanhGia(true);
+        orderItemRepo.save(orderItems);
         return true;
     }
 

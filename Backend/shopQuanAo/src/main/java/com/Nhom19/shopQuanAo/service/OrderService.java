@@ -86,6 +86,7 @@ public class OrderService {
                                 item.setMau(pv.getColors().getTenMs());
                                 item.setSize(pv.getSizes().getTenKc());
                                 item.setMaBienThe(pv.getMaBienThe());
+                                item.setDaDanhGia(oi.getDaDanhGia());
                                 List<ProductImages> images=
                                         productImagesRepo.getImagesByProductAndColor(oi.getProductVariants()
                                                 .getProducts().getMaSp(), oi.getProductVariants().getColors().getMaMs());

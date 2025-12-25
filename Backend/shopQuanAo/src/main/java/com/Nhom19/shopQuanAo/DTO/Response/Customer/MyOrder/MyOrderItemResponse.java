@@ -12,4 +12,5 @@ public class MyOrderItemResponse {
     private String size;
     private Integer soLuong;
     private BigDecimal gia;
+    private Boolean daDanhGia;
 }

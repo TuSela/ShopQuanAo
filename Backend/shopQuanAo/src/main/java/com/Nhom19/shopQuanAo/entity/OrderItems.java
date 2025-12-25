@@ -29,5 +29,7 @@ public class OrderItems {
 
     @Column(name = "tong_tien")
     private BigDecimal tongTien;
+    @Column(name = "tt_danh_gia")
+    private Boolean daDanhGia;
 }
 
