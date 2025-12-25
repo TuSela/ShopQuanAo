@@ -1,5 +1,6 @@
 package com.Nhom19.shopQuanAo.service;
 
+import com.Nhom19.shopQuanAo.DTO.Request.ColorRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.Admin.ProductVariantResponse;
 import com.Nhom19.shopQuanAo.entity.ProductImages;
 import com.Nhom19.shopQuanAo.entity.ProductVariants;
@@ -51,4 +52,8 @@ public class ProductVariantService {
             return res;
         }).toList();
     }
+//    public List<ColorRequest> getColorByMaSp(Integer maSp) {
+//        List<ProductVariants> productVariants = productVariantRepo.findByMaSp(maSp);
+//
+//    }
 }

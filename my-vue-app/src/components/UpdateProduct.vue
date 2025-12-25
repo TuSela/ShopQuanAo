@@ -97,16 +97,23 @@
         </button>
       </div>
     </section>
-    <!-- ===== VARIANTS ===== -->
-    <section class="card">
-      <h2>Biến thể sản phẩm</h2>
 
+    <!-- ================================================= -->
+    <!-- ================= VARIANTS ===================== -->
+    <!-- ================================================= -->
+    <section class="card">
+      <div class="row-between">
+        <h2>Biến thể sản phẩm</h2>
+        <button class="btn-update" @click="openAddColor">➕ Thêm màu</button>
+      </div>
+
+      <!-- ===== VARIANT TABLE (GIỮ NGUYÊN) ===== -->
       <div
         v-for="color in variantsByColor"
         :key="color.mau"
         class="variant-color"
       >
-        <!-- ===== COLOR HEADER ===== -->
+        <!-- COLOR HEADER -->
         <div class="color-header">
           <img :src="color.image" class="color-image" alt="Ảnh màu" />
 
@@ -118,20 +125,19 @@
           </div>
         </div>
 
-        <!-- ===== SIZE TABLE ===== -->
+        <!-- SIZE TABLE -->
         <table class="variant-table">
           <thead>
             <tr>
-              <th>Mã biến thể</th>
+              <th>Mã biến thể</th>
               <th>Size</th>
               <th>Số lượng</th>
-              <th>Trạng thái</th>
+              <th>Trạng thái</th>
             </tr>
           </thead>
 
           <tbody>
             <tr v-for="size in color.sizes" :key="size.maBienThe">
-              <!-- ❌ KHÔNG HIỂN THỊ maBienThe, maKc, maMs -->
               <td>{{ size.maBienThe }}</td>
               <td>{{ size.size }}</td>
 
@@ -148,7 +154,7 @@
 
               <td>
                 <span class="status" :class="size.soLuong > 0 ? 'on' : 'off'">
-                  {{ size.trangThai > 0 ? "Hoạt động" : "Ngưng bán" }}
+                  {{ size.soLuong > 0 ? "Hoạt động" : "Ngưng bán" }}
                 </span>
               </td>
             </tr>
@@ -156,32 +162,16 @@
         </table>
       </div>
     </section>
-    <!-- ===== VARIANT OVERLAY ===== -->
-    <div v-if="showModal" class="overlay">
-      <div v-if="showModal" class="overlay">
-        <div class="modal">
-          <h3>Quản lý size - {{ currentColor.mau }}</h3>
 
-          <div v-for="(s, i) in currentColor.sizes" :key="i">
-            <label>Size</label>
-            <input v-model="s.size" />
-
-            <label>Số lượng</label>
-            <input type="number" v-model="s.soLuong" />
-            <hr />
-          </div>
-
-          <button @click="currentColor.sizes.push({ size: '', soLuong: 0 })">
-            ➕ Thêm size
-          </button>
-
-          <div class="actions">
-            <button @click="closeModal">Huỷ</button>
-            <button class="primary" @click="saveColorSizes">Lưu</button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- ================================================= -->
+    <!-- =========== ADD / EDIT COLOR OVERLAY ============ -->
+    <!-- ================================================= -->
+    <VariantColorForm
+      v-if="showColorModal"
+      :mode="'create'"
+      @close="closeColorModal"
+      @save="addColorToVariants"
+    />
   </div>
 </template>
 <script setup>
@@ -189,38 +179,34 @@ import { ref, reactive, computed, onMounted, watch, nextTick } from "vue";
 import axios from "axios";
 import { useRoute } from "vue-router";
 
+/* ================== ROUTE ================== */
 const route = useRoute();
-
 const maSp = computed(() => route.params.id);
-/* ================== STATE ================== */
 
-const variants = ref([]); // danh sách biến thể (phẳng)
-const allTypes = ref([]); // danh sách loại
+/* ================== STATE ================== */
+const variants = ref([]); // danh sách biến thể phẳng
+const allTypes = ref([]);
 
 const selectedDoiTuong = ref("");
 const selectedTenLoai = ref("");
-
 const isInitializing = ref(true);
-
-/* ===== Modal ===== */
-const showModal = ref(false);
-const currentColor = ref(null);
 
 /* ===== Editor ===== */
 const editorRef = ref(null);
 
-/* ================== PRODUCT FORM ================== */
+/* ===== Variant Modal ===== */
+const showColorModal = ref(false);
 
+/* ================== PRODUCT FORM ================== */
 const productForm = reactive({
   maSp: null,
   tenSp: "",
   gia: 0,
-  moTa: "", // HTML chiTiet từ BE
+  moTa: "",
   maLoai: null,
 });
 
 /* ================== LOAD PRODUCT ================== */
-
 async function loadProduct(id) {
   const res = await axios.get(`http://localhost:8081/nhom19/products/${id}`);
 
@@ -230,11 +216,10 @@ async function loadProduct(id) {
   productForm.tenSp = p.tenSp;
   productForm.gia = p.gia;
   productForm.maLoai = p.maLoai;
-  productForm.moTa = p.chiTiet; // HTML
+  productForm.moTa = p.chiTiet;
 }
 
 /* ================== LOAD VARIANTS ================== */
-
 async function loadVariants(maSp) {
   const res = await axios.get(`http://localhost:8081/nhom19/variants/${maSp}`);
 
@@ -253,14 +238,12 @@ async function loadVariants(maSp) {
 }
 
 /* ================== LOAD TYPES ================== */
-
 async function loadTypes() {
   const res = await axios.get("http://localhost:8081/nhom19/types");
   allTypes.value = res.data.result || [];
 }
 
-/* ================== MAP TYPE TO SELECT ================== */
-
+/* ================== MAP TYPE ================== */
 async function mapTypeToSelect() {
   if (!productForm.maLoai || !allTypes.value.length) return;
 
@@ -272,12 +255,9 @@ async function mapTypeToSelect() {
 
   selectedTenLoai.value = found.tenLoai;
   await nextTick();
-
-  productForm.maLoai = found.maLoai;
 }
 
 /* ================== COMPUTED ================== */
-
 const doiTuongOptions = computed(() => [
   ...new Set(allTypes.value.map((x) => x.doiTuong)),
 ]);
@@ -302,8 +282,7 @@ const chiTietLoaiOptions = computed(() => {
   );
 });
 
-/* ================== VARIANTS GROUP BY COLOR ================== */
-
+/* ================== GROUP VARIANTS BY COLOR ================== */
 const variantsByColor = computed(() => {
   if (!variants.value.length) return [];
 
@@ -330,7 +309,6 @@ const variantsByColor = computed(() => {
 });
 
 /* ================== WATCH ================== */
-
 watch(selectedDoiTuong, () => {
   if (isInitializing.value) return;
   selectedTenLoai.value = "";
@@ -342,8 +320,7 @@ watch(selectedTenLoai, () => {
   productForm.maLoai = null;
 });
 
-/* ================== EDITOR WATCH ================== */
-
+/* ================== EDITOR ================== */
 watch(
   () => productForm.moTa,
   (html) => {
@@ -358,40 +335,62 @@ const onEditorInput = () => {
   productForm.moTa = editorRef.value.innerHTML;
 };
 
-/* ================== MODAL ================== */
+/* ================== VARIANT FORM (REUSE CREATE) ================== */
+function openAddColor() {
+  showColorModal.value = true;
+}
 
-const openEditColor = (color) => {
-  currentColor.value = JSON.parse(JSON.stringify(color));
-  showModal.value = true;
-};
+function closeColorModal() {
+  showColorModal.value = false;
+}
 
-const closeModal = () => {
-  showModal.value = false;
-};
-
-const saveColorSizes = () => {
-  // xoá biến thể cũ của màu
-  variants.value = variants.value.filter(
-    (v) => v.mau !== currentColor.value.mau
-  );
-
-  // add lại
-  currentColor.value.sizes.forEach((s) => {
+function addColorToVariants(colorForm) {
+  colorForm.sizes.forEach((s) => {
     variants.value.push({
-      maBienThe: s.maBienThe,
-      mau: currentColor.value.mau,
-      image: currentColor.value.image,
-      size: s.size,
-      soLuong: s.soLuong,
-      trangThai: true,
+      maBienThe: null, // new variant
+      mau: getColorName(colorForm.maMs),
+      image: getDaiDienMau(colorForm),
+      size: getSizeName(s.maKc),
+      soLuong: s.soluong,
+      maMs: colorForm.maMs,
+      maKc: s.maKc,
+      trangThai: s.soluong > 0,
     });
   });
+}
 
-  closeModal();
+/* ================== UPDATE BASIC INFO ================== */
+const updateBasicInfo = async () => {
+  try {
+    if (!productForm.maSp || !productForm.maLoai) {
+      alert("❌ Vui lòng nhập đầy đủ thông tin");
+      return;
+    }
+
+    const payload = {
+      tenSp: productForm.tenSp,
+      maLoai: productForm.maLoai,
+      gia: productForm.gia,
+      chiTiet: productForm.moTa,
+    };
+
+    const res = await axios.put(
+      `http://localhost:8081/nhom19/products/${productForm.maSp}`,
+      payload
+    );
+
+    if (res.data.code === 1000) {
+      alert("✅ Cập nhật sản phẩm thành công");
+    } else {
+      alert("❌ Cập nhật thất bại");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("❌ Có lỗi xảy ra");
+  }
 };
 
 /* ================== LIFECYCLE ================== */
-
 onMounted(async () => {
   await loadTypes();
 
@@ -402,45 +401,10 @@ onMounted(async () => {
 
   await loadProduct(maSp.value);
   await loadVariants(maSp.value);
-
   await mapTypeToSelect();
+
   isInitializing.value = false;
 });
-
-const updateBasicInfo = async () => {
-  try {
-    if (!productForm.maSp) {
-      alert("❌ Không tìm thấy mã sản phẩm");
-      return;
-    }
-
-    if (!productForm.maLoai) {
-      alert("❌ Vui lòng chọn đầy đủ loại sản phẩm");
-      return;
-    }
-
-    const payload = {
-      tenSp: productForm.tenSp,
-      maLoai: productForm.maLoai,
-      gia: productForm.gia,
-      chiTiet: productForm.moTa, // HTML editor
-    };
-    /* ================== API UPDATE ================== */
-    const res = await axios.put(
-      `http://localhost:8081/nhom19/products/${productForm.maSp}`,
-      payload
-    );
-
-    if (res.data.code === 1000 && res.data.result === true) {
-      alert("✅ Cập nhật sản phẩm thành công");
-    } else {
-      alert("❌ Cập nhật thất bại");
-    }
-  } catch (err) {
-    console.error(err);
-    alert("❌ Có lỗi xảy ra khi cập nhật");
-  }
-};
 </script>
 
 <style scoped>
