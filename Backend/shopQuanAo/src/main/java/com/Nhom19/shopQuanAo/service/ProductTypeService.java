@@ -138,16 +138,24 @@ public class ProductTypeService {
         List<ProductTypes> productTypes = productTypeRepo.findByDoiTuongAndTenLoai(doiTuong,tenLoai);
         return productTypes.stream().map(productTypeMapper::toChiTietLoaiResponse).collect(Collectors.toList());
     }
+
     public String getTenPageDanhMuc(String doiTuong, String tenLoai, Integer chiTietLoai) {
-        if (doiTuong != null && doiTuong.isBlank()) doiTuong = null;
-        if (tenLoai != null && tenLoai.isBlank()) tenLoai = null;
+
         String TenPageDanhMuc = tenLoai + " " + doiTuong;
+        if (doiTuong == null ) {
+            doiTuong = "";
+            TenPageDanhMuc = tenLoai;
+        }
+        if (tenLoai == null ) {
+            TenPageDanhMuc = doiTuong;
+        }
         if (chiTietLoai != null) {
             ProductTypes productTypes = productTypeRepo.findById(chiTietLoai).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_TYPE_NOT_FOUND));
             TenPageDanhMuc = productTypes.getChiTietLoai() + " " + productTypes.getDoiTuong();
         }
         return TenPageDanhMuc;
     }
+
     public ProductTypeResponse getProductType (int maLoai){
         var  productType = productTypeRepo.findById(maLoai).orElseThrow(()-> new AppException(ErrorCode.PRODUCT_TYPE_NOT_FOUND));
         return productTypeMapper.toProductTypeResponse(productType);

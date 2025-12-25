@@ -16,7 +16,6 @@ public interface OrderItemRepo extends JpaRepository<OrderItems, OrderItemId> {
 
     List<OrderItems> findByOrders(Orders orders);
 
-
     @Query(value = """
     SELECT
         oi.ma_ddh            AS maDdh,
@@ -39,6 +38,5 @@ public interface OrderItemRepo extends JpaRepository<OrderItems, OrderItemId> {
     List<OrderItemResponse> findOrderItems(@Param("maDdh") Integer maDdh);
 
    Optional<OrderItems> findByOrdersAndProductVariants(Orders orders, ProductVariants productVariants);
-
 
 }
