@@ -66,6 +66,15 @@ public interface ProductRepository extends JpaRepository<Products, Integer> {
     List<ProductBestSellerResponse> findBestSellerProducts(Pageable pageable);
 
     @Query("""
+    SELECT p
+    FROM OrderItems oi
+    JOIN oi.productVariants pv
+    JOIN pv.products p
+    GROUP BY p
+    ORDER BY SUM(oi.soLuong) DESC
+""")
+    Page<Products> findBestSellerProducts3(Pageable pageable);
+    @Query("""
     SELECT new com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.ProductBestSellerResponse(
         p.maSp,
         p.tenSp,
@@ -83,13 +92,13 @@ public interface ProductRepository extends JpaRepository<Products, Integer> {
             @Param("ids") List<Integer> ids,
             Pageable pageable
     );
-
+//    OR LOWER(p.chiTiet) LIKE LOWER(CONCAT('%', :keyword, '%'))
     @Query("""
         SELECT p FROM Products p
         WHERE LOWER(p.tenSp) LIKE LOWER(CONCAT('%', :keyword, '%'))
-           OR LOWER(p.chiTiet) LIKE LOWER(CONCAT('%', :keyword, '%'))
+        OR LOWER(p.chiTiet) LIKE LOWER(CONCAT('%', :keyword, '%'))
     """)
-    List<Products> searchByKeyword(@Param("keyword") String keyword);
+    Page<Products> searchByKeyword(@Param("keyword") String keyword,Pageable pageable);
 
     @Query("""
     SELECT p
@@ -101,6 +110,7 @@ public interface ProductRepository extends JpaRepository<Products, Integer> {
             @Param("doiTuong") String doiTuong,
             Pageable pageable
     );
+
     Page<Products> findByTypesIn(
             List<ProductTypes> types,
             Pageable pageable

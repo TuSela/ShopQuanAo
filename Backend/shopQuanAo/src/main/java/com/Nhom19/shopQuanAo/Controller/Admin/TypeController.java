@@ -1,4 +1,4 @@
-package com.Nhom19.shopQuanAo.Controller;
+package com.Nhom19.shopQuanAo.Controller.Admin;
 
 import com.Nhom19.shopQuanAo.DTO.Request.Admin.TypeCreationRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.ApiResponse;

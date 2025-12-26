@@ -6,10 +6,14 @@ import com.Nhom19.shopQuanAo.DTO.Request.ColorRequest;
 import com.Nhom19.shopQuanAo.DTO.Request.ImageRequest;
 import com.Nhom19.shopQuanAo.DTO.Request.SizeRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.Admin.ProductResponse2;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.Categories.PageResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.ProductBestSellerResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.NAV.ChiTietLoaiResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductDetail.*;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.Home.SPNamResponse;
 import com.Nhom19.shopQuanAo.entity.*;
+import com.Nhom19.shopQuanAo.exception.AppException;
+import com.Nhom19.shopQuanAo.exception.ErrorCode;
 import com.Nhom19.shopQuanAo.mapper.ProductMapper;
 import com.Nhom19.shopQuanAo.mapper.UserMapper;
 import com.Nhom19.shopQuanAo.mapper.VariantMapper;
@@ -20,7 +24,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -262,44 +268,84 @@ public class ProductService {
     }
 
 // tìm kiếm sản phẩm theo keyword
-    public List<ProductBestSellerResponse> searchByKeyword(String keyword) {
+// tìm kiếm sản phẩm theo keyword
+public PageResponse<ProductBestSellerResponse> searchByKeyword(
+        int page,
+        int size,
+        String sortBy,
+        String direction,
+        String keyword
+) {
+    List<String> allowedSorts = List.of("gia", "tenSp", "danhGia");
 
-        if (keyword == null || keyword.trim().isEmpty()) {
-            return List.of();
-        }
-
-        List<Products> products =
-                productRepository.searchByKeyword(keyword.trim());
-
-        if (products.isEmpty()) {
-            return List.of();
-        }
-
-        // 1 query lấy toàn bộ ảnh đại diện
-        List<ProductImages> daiDienImages =
-                productImagesRepo.findDaiDienByProducts(products);
-
-        // Map productId -> urlImage
-        Map<Integer, String> imageMap = daiDienImages.stream()
-                .collect(Collectors.toMap(
-                        pi -> pi.getProducts().getMaSp(),
-                        ProductImages::getUrlImage
-                ));
-
-        return products.stream()
-                .map(product -> {
-                    ProductBestSellerResponse dto =
-                            productMapper.toDTO5(product);
-
-                    dto.setUrlImage(
-                            imageMap.get(product.getMaSp())
-                    );
-
-                    return dto;
-                })
-                .toList();
+    if (!allowedSorts.contains(sortBy)) {
+        sortBy = "danhGia";
     }
 
+    Sort.Direction sortDirection =
+            "asc".equalsIgnoreCase(direction)
+                    ? Sort.Direction.ASC
+                    : Sort.Direction.DESC;
+
+    Pageable pageable =
+            PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
+
+    // keyword rỗng → trả response rỗng
+    if (keyword == null || keyword.trim().isEmpty()) {
+       throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
+    }
+    Page<Products> productPage =
+            productRepository.searchByKeyword(keyword.trim(), pageable);
+
+    if (productPage.isEmpty()) {
+        throw new AppException(ErrorCode.PRODUCT_NOT_FOUND);
+    }
+
+    List<Products> products = productPage.getContent();
+
+    // 1 query lấy ảnh đại diện
+    List<ProductImages> daiDienImages =
+            productImagesRepo.findDaiDienByProducts(products);
+
+    Map<Integer, String> imageMap = daiDienImages.stream()
+            .collect(Collectors.toMap(
+                    pi -> pi.getProducts().getMaSp(),
+                    ProductImages::getUrlImage
+            ));
+
+    // ===== MAP DTO SẢN PHẨM =====
+    List<ProductBestSellerResponse> dtoList =
+            products.stream()
+                    .map(product -> {
+                        ProductBestSellerResponse dto =
+                                productMapper.toDTO5(product);
+
+                        dto.setUrlImage(imageMap.get(product.getMaSp()));
+                        return dto;
+                    })
+                    .toList();
+
+    // ===== MAP CHI TIẾT LOẠI (KHÔNG TRÙNG) =====
+    List<ChiTietLoaiResponse> chiTietLoai =
+            products.stream()
+                    .map(p -> p.getTypes())
+                    .distinct()
+                    .map(t -> new ChiTietLoaiResponse(
+                            t.getMaLoai(),
+                            t.getChiTietLoai()
+                    ))
+                    .toList();
+
+    return new PageResponse<>(
+            keyword,
+            dtoList,
+            chiTietLoai,
+            page,
+            size,
+            productPage.getTotalElements(),
+            productPage.getTotalPages()
+    );
+}
 
     // tìm theo đối tượng
     public List<ProductBestSellerResponse> findByDoiTuong(String doiTuong) {
@@ -423,5 +469,53 @@ public class ProductService {
             return dto;
         });
     }
+    public PageResponse<ProductBestSellerResponse> getProductsBestSeller(
+            int page,
+            int size,
+            String sortBy,
+            String direction
+    ) { Pageable pageable = PageRequest.of(page, size);
 
+    Page<Products> pageResult =
+            productRepository.findBestSellerProducts3(pageable);
+    List<Products> products = pageResult.getContent();
+        // 1 query lấy ảnh đại diện
+        List<ProductImages> daiDienImages =
+                productImagesRepo.findDaiDienByProducts(products);
+
+        Map<Integer, String> imageMap = daiDienImages.stream()
+                .collect(Collectors.toMap(
+                        pi -> pi.getProducts().getMaSp(),
+                        ProductImages::getUrlImage
+                ));
+        // ===== MAP DTO SẢN PHẨM =====
+        List<ProductBestSellerResponse> dtoList =
+                products.stream()
+                        .map(product -> {
+                            ProductBestSellerResponse dto =
+                                    productMapper.toDTO5(product);
+                            dto.setUrlImage(imageMap.get(product.getMaSp()));
+                            return dto;
+                        })
+                        .toList();
+// ===== MAP CHI TIẾT LOẠI (KHÔNG TRÙNG) =====
+        List<ChiTietLoaiResponse> chiTietLoai =
+                products.stream()
+                        .map(p -> p.getTypes())
+                        .distinct()
+                        .map(t -> new ChiTietLoaiResponse(
+                                t.getMaLoai(),
+                                t.getChiTietLoai()
+                        ))
+                        .toList();
+    return new PageResponse<>(
+            "Sản phẩm bán chạy nhất",
+            dtoList,
+            chiTietLoai, // nếu không cần chi tiết loại
+            pageResult.getNumber(),
+            pageResult.getSize(),
+            pageResult.getTotalElements(),
+            pageResult.getTotalPages()
+            );
+    }
 }

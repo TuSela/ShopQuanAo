@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Set;
+
 @Getter
 @Setter
 @Entity
@@ -14,6 +16,9 @@ public class Admins {
     private int maTk;
     private String username;
     private String password;
+
     @Column(name = "ma_quanly")
     private String managerCode;
+    @ManyToMany
+    private Set<Role> roles;
 }

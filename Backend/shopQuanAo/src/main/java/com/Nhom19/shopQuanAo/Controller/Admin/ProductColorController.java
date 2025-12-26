@@ -1,4 +1,4 @@
-package com.Nhom19.shopQuanAo.Controller;
+package com.Nhom19.shopQuanAo.Controller.Admin;
 
 import com.Nhom19.shopQuanAo.DTO.Request.Admin.CreateOrUpdateColorRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.ApiResponse;
@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
-import java.util.Map;
 
 @RequestMapping("/colors")
 @RestController

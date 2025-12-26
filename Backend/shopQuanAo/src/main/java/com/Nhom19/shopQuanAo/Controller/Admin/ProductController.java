@@ -1,4 +1,4 @@
-package com.Nhom19.shopQuanAo.Controller;
+package com.Nhom19.shopQuanAo.Controller.Admin;
 
 import com.Nhom19.shopQuanAo.DTO.Request.Admin.CreationProductRequest;
 import com.Nhom19.shopQuanAo.DTO.Request.Admin.UpdateProductRequest;
@@ -50,18 +50,26 @@ public class ProductController {
         return apiResponse;
     }
     @GetMapping("/search")
-    public ApiResponse<List<ProductBestSellerResponse>> searchProducts(
-            @RequestParam String keyword){
+    public ApiResponse<PageResponse<ProductBestSellerResponse>> searchProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "gia") String sort,
+            @RequestParam(defaultValue = "desc") String direction,
+            @RequestParam(required = false) String keyword
+    ) {
+        ApiResponse<PageResponse<ProductBestSellerResponse>> response =
+                new ApiResponse<>();
 
-        ApiResponse<List<ProductBestSellerResponse>> response = new ApiResponse<>();
+        PageResponse<ProductBestSellerResponse> pageResponse =
+                productService.searchByKeyword(
+                        page,
+                        size,
+                        sort,
+                        direction,
+                        keyword
+                );
 
-        if (keyword == null || keyword.trim().isEmpty()) {
-            response.setResult(List.of());
-            response.setMessage("Keyword is empty");
-            return response;
-        }
-
-        response.setResult(productService.searchByKeyword(keyword));
+        response.setResult(pageResponse);
         return response;
     }
 
@@ -75,7 +83,6 @@ public class ProductController {
         response.setResult(
                 productService.findByDoiTuong(doiTuong)
         );
-
         return response;
     }
     @GetMapping("/categories")
@@ -87,30 +94,60 @@ public class ProductController {
 
             @RequestParam(required = false) String doiTuong,
             @RequestParam(required = false) String tenLoai,
-            @RequestParam(required = false) Integer maLoai
+            @RequestParam(required = false) Integer maLoai,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Boolean banChay
     ) {
-        //lấy ra danh mục liên quan
-        ApiResponse<PageResponse<ProductBestSellerResponse>> response = new ApiResponse<>();
-        List<ChiTietLoaiResponse> chiTietLoaiResponses =productTypeService.getChiTietLoai(doiTuong, tenLoai, maLoai);
-        // lấy ra sản phẩm
-        Page<ProductBestSellerResponse> page1 = productService.getProductsByTypes(
-                page, size, sort, direction,
-                doiTuong, tenLoai, maLoai
-        );
-        // lấy ra tiêu đề danh mục
+        ApiResponse<PageResponse<ProductBestSellerResponse>> response =
+                new ApiResponse<>();
+        // ===== BÁN CHẠY =====
+        if (doiTuong == null && tenLoai==null && maLoai == null && banChay == true) {
+            response.setResult(
+                    productService.getProductsBestSeller(
+                            page, size, sort, direction
+                    )
+            );
+            return response;
+        }
+        // ===== ƯU TIÊN: SEARCH =====
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            response.setResult(
+                    productService.searchByKeyword(
+                            page, size, sort, direction, keyword
+                    )
+            );
+            return response;
+        }
+        // ===== MẶC ĐỊNH: DANH MỤC =====
+        List<ChiTietLoaiResponse> chiTietLoaiResponses =
+                productTypeService.getChiTietLoai(doiTuong, tenLoai, maLoai);
 
-        String TenDanhMuc= productTypeService.getTenPageDanhMuc(doiTuong, tenLoai, maLoai);
-        response.setResult( new PageResponse<>(
-                TenDanhMuc,
-                page1.getContent(),
-                chiTietLoaiResponses,
-                page1.getNumber(),
-                page1.getSize(),
-                page1.getTotalElements(),
-                page1.getTotalPages()
-        ));
+        Page<ProductBestSellerResponse> pageData =
+                productService.getProductsByTypes(
+                        page, size, sort, direction,
+                        doiTuong, tenLoai, maLoai
+                );
+
+        String tenDanhMuc =
+                productTypeService.getTenPageDanhMuc(
+                        doiTuong, tenLoai, maLoai
+                );
+
+        response.setResult(
+                new PageResponse<>(
+                        tenDanhMuc,
+                        pageData.getContent(),
+                        chiTietLoaiResponses,
+                        pageData.getNumber(),
+                        pageData.getSize(),
+                        pageData.getTotalElements(),
+                        pageData.getTotalPages()
+                )
+        );
+
         return response;
     }
+
     @GetMapping("/product-list")
     public ApiResponse<List<ProductResponse2>> getProductsByType(){
         ApiResponse<List<ProductResponse2>> response = new ApiResponse<>();
@@ -128,4 +165,5 @@ public class ProductController {
         response.setResult(productService.UpdateProduct(request, maSp));
         return response;
     }
+
 }

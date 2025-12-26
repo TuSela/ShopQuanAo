@@ -7,4 +7,11 @@ public class ChiTietLoaiResponse {
     private Integer maLoai;
     private String chiTietLoai;
 
+    public ChiTietLoaiResponse(Integer maLoai, String chiTietLoai) {
+        this.maLoai = maLoai;
+        this.chiTietLoai = chiTietLoai;
+    }
+
+    public ChiTietLoaiResponse() {
+    }
 }

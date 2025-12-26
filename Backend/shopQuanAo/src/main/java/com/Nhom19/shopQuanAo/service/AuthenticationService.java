@@ -33,7 +33,7 @@ public class AuthenticationService {
     public AuthenticationResponse authenticate (AuthenticaitonRequest request)
     {
         System.out.println("sdt: "+ request.getSdt());
-        Admins admins = adminRepository.findByUsername(request.getSdt());
+        Admins admins = adminRepository.findByUsername(request.getSdt()).orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXISTED));
         if (admins == null) {
             Users user = userRepository.findBySdt(request.getSdt());
             if (user == null) {

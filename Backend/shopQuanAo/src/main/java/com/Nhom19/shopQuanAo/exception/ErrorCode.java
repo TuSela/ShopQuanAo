@@ -15,6 +15,7 @@ public enum ErrorCode {
     ORDER_NOT_FOUND(2007,"Không tìm thấy đơn hàng",HttpStatus.NOT_FOUND),
     COMMENT_ALREADY_EXISTS(2006,"Đơn hàng đã được đánh giá",HttpStatus.CONFLICT),
     ORDER_NOT_COMPLETED(2005,"Đơn hàng chưa được giao",HttpStatus.BAD_REQUEST),
+    PRODUCT_NOT_FOUND(2002,"Không tìm thấy sản phẩm",HttpStatus.NOT_FOUND),
     PRODUCT_NOT_EXISTED(2001, "Sản phẩm không tồn tại", HttpStatus.NOT_FOUND),
     PRODUCT_VARIANT_NOT_EXISTED(2002, "Sản phẩm biến thể không tồn tại", HttpStatus.NOT_FOUND),
     CART_ITEM_NOT_EXISTED(2003, "Sản phẩm không tồn tại trong giỏ hàng", HttpStatus.NOT_FOUND),

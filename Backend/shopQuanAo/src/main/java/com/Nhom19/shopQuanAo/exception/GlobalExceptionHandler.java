@@ -65,16 +65,16 @@ public class GlobalExceptionHandler {
                 .status(errorCode.getHttpStatus())
                 .body(response);
     }
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ApiResponse> handleIllegalArgumentException() {
-        ErrorCode errorCode = ErrorCode.INVALID_FILE;
-        ApiResponse response = new ApiResponse();
-        response.setCode(errorCode.getCode());
-        response.setMessage(errorCode.getMessage());
-        return ResponseEntity
-                .status(errorCode.getHttpStatus())
-                .body(response);
-    }
+//    @ExceptionHandler(IllegalArgumentException.class)
+//    public ResponseEntity<ApiResponse> handleIllegalArgumentException() {
+//        ErrorCode errorCode = ErrorCode.INVALID_FILE;
+//        ApiResponse response = new ApiResponse();
+//        response.setCode(errorCode.getCode());
+//        response.setMessage(errorCode.getMessage());
+//        return ResponseEntity
+//                .status(errorCode.getHttpStatus())
+//                .body(response);
+//    }
 //    // Lỗi không xác định (fallback)
 //    @ExceptionHandler(Exception.class)
 //    public ResponseEntity<ApiResponse> handleOtherException() {

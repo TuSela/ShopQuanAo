@@ -13,7 +13,7 @@ import java.util.Set;
 public class ProductTypes {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int maLoai;
+    private Integer maLoai;
     private String tenLoai;
     private String tinhTrang;
     private String chiTietLoai;
