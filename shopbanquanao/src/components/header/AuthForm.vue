@@ -237,8 +237,69 @@ const registerData = ref({
   confirmPassword: "",
 });
 
-const register = () => {
-  console.log("Register:", registerData.value);
+const register = async () => {
+  try {
+    // Validate cơ bản
+    if (
+      !registerData.value.lastName ||
+      !registerData.value.firstName ||
+      !registerData.value.phone ||
+      !registerData.value.email ||
+      !registerData.value.password ||
+      !registerData.value.confirmPassword
+    ) {
+      alert("Vui lòng nhập đầy đủ thông tin bắt buộc!");
+      return;
+    }
+
+    if (registerData.value.password !== registerData.value.confirmPassword) {
+      alert("Mật khẩu xác nhận không khớp!");
+      return;
+    }
+
+    // Chuẩn bị dữ liệu gửi BE
+    const payload = {
+      sdt: registerData.value.phone,
+      email: registerData.value.email,
+      password: registerData.value.password,
+      hoten: `${registerData.value.lastName} ${registerData.value.firstName}`,
+      gioiTinh: registerData.value.gender,
+      ngaySinh: registerData.value.birthday || null
+    };
+
+    // Gọi API
+    const res = await axios.post(
+      "http://localhost:8081/nhom19/users",
+      payload
+    );
+
+    // Xử lý kết quả
+    if (res.data.code === 1000 && res.data.result.success) {
+      alert("Đăng ký thành công! Vui lòng đăng nhập.");
+
+      // Reset form
+      registerData.value = {
+        lastName: "",
+        firstName: "",
+        phone: "",
+        gender: "Nữ",
+        email: "",
+        birthday: "",
+        password: "",
+        confirmPassword: "",
+      };
+    }
+
+  } catch (err) {
+    console.error(err);
+
+    if (err.response?.data?.code === 1002) {
+      alert("Số điện thoại hoặc email đã tồn tại!");
+    } else {
+      alert("Đăng ký thất bại, vui lòng thử lại!");
+    }
+  }
 };
+
 </script>
 

@@ -9,23 +9,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import api from "@/api"; 
-import ProductCard from './ProductCard.vue';
+import ProductCard from "./ProductCard.vue"
 
-const products = ref([])
-
-onMounted(async () => {
-  try {
-    const res = await api.get("/products")
-    console.log("API RESPONSE:", res.data)
-
-    // backend trả dạng:
-    // { code: 1000, result: [ { maSp, tenSp, gia, urlImage } ] }
-    products.value = res.data.result
-     
-  } catch (e) {
-    console.error("Error loading products", e)
+defineProps({
+  products: {
+    type: Array,
+    required: true
   }
 })
 </script>

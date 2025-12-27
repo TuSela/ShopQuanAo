@@ -9,6 +9,8 @@ import AccHome from "../pages/AccHome.vue";
 import ProductDetails from "../components/product/ProductDetails.vue";
 import CartPage from "../pages/CartPage.vue";
 import Checkout from "../pages/Checkout.vue";
+import NuPage from "../pages/NuPage.vue";
+import Category from "../components/product/Category.vue";
 const routes = [
   {
     path: "/",
@@ -27,10 +29,20 @@ const routes = [
     component: NamPage,
   },
   {
+    path: "/Nu",
+    name: "Nupage",
+    component: NuPage,
+  },
+  {
     path: "/Acc",
     name: "AccHome",
     component: AccHome,
   },
+  {
+  path: "/category",
+  name: "CategoryPage",
+  component: Category,
+},
   {
   path: "/products/:id",
   name: "ProductDetail",

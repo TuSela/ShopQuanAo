@@ -10,11 +10,11 @@
   class="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105"
 />
     </div>
-<p class="mt-3 text-sm font-medium text-gray-800">
+<p class="mt-3 text-base font-sans text-black">
   {{ product.tenSp }}
 </p>
 
-<p class="text-red-600 font-semibold text-sm mt-1">
+<p class="text-[#c92127] font-sans text-base font-semibold mt-1">
   {{ product.gia.toLocaleString() }}đ
 </p>
   </div>

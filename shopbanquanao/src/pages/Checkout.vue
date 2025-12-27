@@ -1,5 +1,29 @@
 <template>
-  <div class="max-w-7xl mx-auto py-10 grid grid-cols-12 gap-8">
+  <div
+    v-if="isEmptyCart"
+    class="max-w-7xl mx-auto py-20 bg-white rounded shadow
+           flex flex-col items-center justify-center"
+  >
+    <img
+      src="/src/assets/icon/oops.svg"
+      class="w-40 mb-6"
+    />
+
+    <p class="text-gray-600 mb-6">
+      Giỏ hàng của bạn đang trống.
+    </p>
+
+    <button
+      class="bg-[#c92127] hover:bg-red-800
+             text-white px-10 py-3 rounded font-semibold"
+      @click="$router.push('/')"
+    >
+      TIẾP TỤC MUA SẮM
+    </button>
+  </div>
+  <div 
+  v-else
+  class="max-w-7xl mx-auto py-10 grid grid-cols-12 gap-8">
 
     <!-- LEFT -->
     <div class="col-span-8 space-y-6">
@@ -104,13 +128,13 @@
 
 <!-- GIỎ HÀNG -->
 <div
-  v-if="data.myCartResponse"
+  v-if="data.myCartResponse && data.myCartResponse.items.length > 0"
   class="bg-white p-6 rounded shadow"
 >
   <!-- Title -->
   <h3 class="text-xl font-bold mb-4">
     GIỎ HÀNG
-    <span class="text-sm text-red-500 font-normal">
+    <span class="text-sm text-[#c92127] font-normal">
       ({{ data.myCartResponse.items.length }} sản phẩm)
     </span>
   </h3>
@@ -152,7 +176,7 @@
     </div>
 
     <!-- Giá -->
-    <div class="col-span-2 text-center text-red-600 font-bold">
+    <div class="col-span-2 text-center text-[#c92127] font-bold">
       {{ formatPrice(item.product.gia) }}đ
     </div>
 
@@ -189,7 +213,7 @@
 
         <div class="border-t border-dashed my-4"></div>
 
-        <div class="flex justify-between text-lg font-bold text-red-600">
+        <div class="flex justify-between text-lg font-bold text-[#c92127]">
           <span>Tổng thanh toán</span>
           <span>
             {{ formatPrice(data.myCartResponse.tongTien) }}đ
@@ -198,7 +222,7 @@
       </div>
 
       <button
-        class="w-full mt-6 bg-red-600 hover:bg-red-700
+        class="w-full mt-6 bg-[#c92127] hover:bg-red-800
                text-white py-3 rounded font-semibold"
         @click="placeOrder"
       >
@@ -331,7 +355,7 @@
         :key="addr.maDiaChi"
         class="flex justify-between gap-4 p-4 rounded border"
         :class="tempSelectedAddress === addr.maDiaChi
-          ? 'border-red-500 bg-red-50'
+          ? 'border-[#c92127] bg-red-50'
           : 'border-gray-200'"
       >
         <label class="flex gap-3 cursor-pointer flex-1">
@@ -373,7 +397,7 @@
 
   <!-- XÓA -->
   <button
-    class="flex items-center gap-1 text-gray-600 cursor-pointer hover:text-red-600"
+    class="flex items-center gap-1 text-gray-600 cursor-pointer hover:text-[#c92127]"
     @click.stop="deleteAddress(addr.maDiaChi)"
   >
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-4">
@@ -391,14 +415,14 @@
     <!-- FOOTER -->
     <div class="flex justify-center gap-4 mt-6">
       <button
-        class="px-6 py-2 border rounded cursor-pointer"
+        class="px-6 py-2 border hover:bg-[#c92127] hover:text-white rounded cursor-pointer"
         @click="addNewAddress"
       >
         Thêm địa chỉ mới
       </button>
 
       <button
-        class="px-6 py-2 bg-red-600 text-white rounded cursor-pointer"
+        class="px-6 py-2 bg-[#c92127] hover:bg-red-800 text-white rounded cursor-pointer"
         @click="confirmAddress"
       >
         Chọn địa chỉ
@@ -425,6 +449,15 @@ const selectedAddress = ref(null);
 const selectedPayment = ref(null);
 const showAddressPopup = ref(false);
 const tempSelectedAddress = ref(null);
+
+
+const isEmptyCart = computed(() => {
+  return (
+    !data.value.myCartResponse ||
+    !data.value.myCartResponse.items ||
+    data.value.myCartResponse.items.length === 0
+  );
+});
 
 
 const openAddressPopup = () => {
@@ -492,14 +525,31 @@ const placeOrder = async () => {
     const res = await api.post("/orders", payload);
 
     if (res.data.code === 1000) {
-      alert("🎉 Đặt hàng thành công!");
+      alert("Đặt hàng thành công!");
 
-      // Nếu BE trả token mới → update lại
-      if (res.data.result?.token) {
-        localStorage.setItem("token", res.data.result.token);
-      }
+      // ✅ 1. Nếu BE trả token mới
+   if (res.data.result?.token) {
+    localStorage.setItem("token", res.data.result.token);
 
-      // 👉 điều hướng sau khi đặt hàng
+    // 🔥 BẮT BUỘC: báo header reload lại token
+    window.dispatchEvent(new Event("user-updated"));
+  }
+
+      // ✅ 2. RESET GIỎ HÀNG TRONG CHECKOUT (QUAN TRỌNG)
+      data.value.myCartResponse = null;
+
+      // ✅ 3. Reset tạm chọn (an toàn)
+      selectedPayment.value = null;
+      selectedAddress.value = null;
+
+      // ✅ 4. CẬP NHẬT HEADER GIỎ HÀNG (nếu header gọi API /cart)
+      // 👉 nếu header lắng nghe event hoặc store → trigger ở đây
+      window.dispatchEvent(new Event("cart-updated"));
+
+      // 👉 hoặc nếu header đọc từ localStorage
+      // localStorage.setItem("cartCount", "0");
+
+      // (tuỳ chọn) điều hướng
       // router.push("/order-success");
     } else {
       alert(res.data.message || "Đặt hàng thất bại!");
@@ -509,6 +559,7 @@ const placeOrder = async () => {
     alert("Không thể đặt hàng!");
   }
 };
+
 
 
 

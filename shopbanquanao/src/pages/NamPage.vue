@@ -1,4 +1,6 @@
 <script setup>
+import { ref, onMounted } from "vue"
+import api from "@/api"
 import CategorySlider from '@/components/home/CategorySlider.vue';
 import Homeview from '@/components/home/Homeview.vue';
 import Homebanner from '@/components/home/Homebanner.vue';
@@ -6,6 +8,7 @@ import ProductList from '@/components/product/ProductList.vue';
 const imgList=[
 "/src/assets/image/Bannernam.png"
 ];
+const products = ref([])
 const categories=[
 {
     name:"Áo Khoác",image:"/src/assets/image/nam1.png"},
@@ -19,13 +22,20 @@ const categories=[
 }
 
 ];
-
+onMounted(async () => {
+  try {
+    const res = await api.get("/products/by-doi-tuong?doiTuong=Nam")
+    products.value = res.data.result
+  } catch (e) {
+    console.error("Load products failed", e)
+  }
+})
 </script>
 <template>
 <Homebanner :images ="imgList"></Homebanner>
 <CategorySlider :categories="categories" title="HOT NHẤT TẠI ĐÂY!"></CategorySlider>
 
-<ProductList></ProductList>
+ <ProductList :products="products" />
 <div class="space-y-12">
  <Homeview image="/src/assets/image/b1nam.png"
     to="/product/1"/>

@@ -1,171 +1,128 @@
 <template>
-  <nav class="bg-gray-100 relative">
-    <div class="max-w-7xl mx-auto flex items-center justify-center gap-20 px-4 py-3 text-lg font-medium text-black">
+  <nav class="relative bg-white">
+    <!-- MENU CẤP 1 -->
+    <ul class="max-w-7xl mx-auto flex justify-center gap-30 py-3 text-lg font-medium">
 
-      <a href="#" class="hover:text-[#c92127] uppercase font-bold">Sale</a>
-      <a href="#" class="hover:text-[#c92127]">Thời trang giữ ấm</a>
+      <li class="nav-item group relative">
+<a class="cursor-pointer hover:text-[#c92127] text-xl font-sans flex items-center gap-2">
+  <img src="/src/assets/icon/sale.webp" alt="Sale" class="w-6 h-6">
+  Sale
+</a>
+      </li>
 
-      <!-- NỮ (Mega dropdown) -->
-      <div class="relative group">
-        <a href="#" class="hover:text-[#c92127]">Nữ</a>
+      <!-- MENU CÓ MEGA -->
+      <li
+        v-for="menu in menus"
+        :key="menu.doiTuong"
+        class="nav-item group"
+      >
+        <router-link
+          v-if="menu.doiTuong === 'Nam'"
+          to="/Nam"
+          class="hover:text-[#c92127] text-xl font-sans font-semibold"
+        >
+          Nam
+        </router-link>
+
+        <router-link
+          v-else-if="menu.doiTuong === 'Nữ'"
+          to="/Nu"
+          class="hover:text-[#c92127] text-xl font-sans font-semibold"
+        >
+          Nữ
+        </router-link>
+
+        <router-link
+          v-else="menu.doiTuong === 'Trẻ em'"
+          :to="{
+    path: '/category',
+    query: {
+      doiTuong: menu.doiTuong
+    }
+  }"
+          class="hover:text-[#c92127] text-xl font-sans font-semibold"
+        >
+          Trẻ em
+        </router-link>
 
         <!-- MEGA MENU -->
         <div
-          class="absolute left-1/2 top-full -translate-x-1/2 w-screen max-w-[1200px] 
-                 bg-white shadow-lg border-t border-gray-200
-                 opacity-0 invisible pointer-events-none
-                 group-hover:opacity-100 group-hover:visible group-hover:pointer-events-auto
-                 transition-all duration-200 z-50 py-6">
-          
-          <!-- GRID 4 CỘT -->
-          <div class="grid grid-cols-4 gap-10 px-10">
+          class="absolute left-0 top-full w-screen bg-white group-hover:bg-[#faf9f8] shadow-xl
+                 opacity-0 invisible
+                 group-hover:opacity-100 group-hover:visible
+                 transition-all duration-200 z-50"
+        >
+          <div class="absolute -top-4 left-0 w-full h-4 bg-transparent"></div>
 
-            <!-- Cột 1 -->
-            <div>
-              <h3 class="font-semibold mb-3 hover:text-[#c92127]">Áo khoác</h3>
-              <ul class="space-y-1 text-sm">
-                <li><a class="hover:text-[#c92127]" href="#">Áo khoác phao & lông vũ</a></li>
-                <li><a class="hover:text-[#c92127]" href="#">Áo khoác lông cừu</a></li>
-                <li><a class="hover:text-[#c92127]" href="#">Áo khoác gió</a></li>
-                <li><a class="hover:text-[#c92127]" href="#">Áo khoác chống nắng</a></li>
-              </ul>
-            </div>
+          <div class="max-w-7xl mx-auto px-10 py-10">
+            <div class="grid grid-cols-4 gap-8">
 
-            <!-- Cột 2 -->
-            <div>
-              <h3 class="font-semibold mb-3 hover:text-[#c92127]">Áo</h3>
-              <ul class="space-y-1 text-sm">
-                <li><a class="hover:text-[#c92127]" href="#">Áo giữ nhiệt WarmMax</a></li>
-                <li><a class="hover:text-[#c92127]" href="#">Áo khoác giữ ấm</a></li>
-                <li><a class="hover:text-[#c92127]" href="#">Áo thu đông</a></li>
-                <li><a class="hover:text-[#c92127]" href="#">Áo thun & polo</a></li>
-              </ul>
-            </div>
+              <div
+                v-for="cat in menu.categories"
+                :key="cat.tenLoai"
+              >
+<router-link
+  :to="{
+    path: '/category',
+    query: {
+      tenLoai: cat.tenLoai,
+      doiTuong: menu.doiTuong
+    }
+  }"
+  class="font-semibold text-xl mb-3 hover:text-[#c92127] block"
+>
+  {{ cat.tenLoai }}
+</router-link>
+                <ul class="space-y-2">
+                  <!-- ✅ SỬA Ở ĐÂY -->
+<li
+  v-for="item in cat.danhMuc"
+  :key="item.maLoai"
+>
+<router-link
+  :to="{
+    path: '/category',
+    query: {
+      maLoai: item.maLoai,     // 4
+      doiTuong: menu.doiTuong  // Nam
+    }
+  }"
+  class=" text-base text-gray-900 hover:text-[#c92127] block"
+>
+  {{ item.chiTietLoai }}
+</router-link>
 
-            <!-- Cột 3 -->
-            <div>
-              <h3 class="font-semibold mb-3 hover:text-[#c92127]">Quần & đầm váy</h3>
-              <ul class="space-y-1 text-sm">
-                <li><a class="hover:text-[#c92127]" href="#">Quần jeans & dài</a></li>
-                <li><a class="hover:text-[#c92127]" href="#">Quần shorts & chân váy</a></li>
-                <li><a class="hover:text-[#c92127]" href="#">Váy đầm</a></li>
-              </ul>
-            </div>
+</li>
 
-            <!-- Cột 4 -->
-            <div>
-              <h3 class="font-semibold mb-3 hover:text-[#c92127]">Đồ lót</h3>
-              <ul class="space-y-1 text-sm">
-                <li><a class="hover:text-[#c92127]" href="#">Áo lót & bra</a></li>
-                <li><a class="hover:text-[#c92127]" href="#">Quần lót</a></li>
-              </ul>
-            </div>
+                </ul>
 
-          </div>
-        </div>
-      </div>
-      <div class="relative group">
-      <router-link to="/Nam"><a href="#" class="hover:text-[#c92127]">Nam</a></router-link>
+              </div>
 
-      
-        <!-- MEGA MENU -->
-        <div
-          class="absolute left-1/2 top-full -translate-x-1/2 w-screen max-w-[1200px] 
-                 bg-white shadow-lg border-t border-gray-200
-                 opacity-0 invisible pointer-events-none
-                 group-hover:opacity-100 group-hover:visible group-hover:pointer-events-auto
-                 transition-all duration-200 z-50 py-6">
-          
-          <!-- GRID 4 CỘT -->
-          <div class="grid grid-cols-4 gap-10 px-10">
-
-            <!-- Cột 1 -->
-            <div>
-              <h3 class="font-semibold mb-3 hover:text-[#c92127]">Áo khoác</h3>
-              <ul class="space-y-1 text-sm">
-                <li><a class="hover:text-[#c92127]" href="#">Áo khoác phao & lông vũ</a></li>
-                <li><a class="hover:text-[#c92127]" href="#">Áo khoác lông cừu</a></li>
-                <li><a class="hover:text-[#c92127]" href="#">Áo khoác gió</a></li>
-                <li><a class="hover:text-[#c92127]" href="#">Áo khoác chống nắng</a></li>
-              </ul>
-            </div>
-
-            <!-- Cột 2 -->
-            <div>
-              <h3 class="font-semibold mb-3 hover:text-[#c92127]">Áo</h3>
-              <ul class="space-y-1 text-sm">
-                <li><a class="hover:text-[#c92127]" href="#">Áo giữ nhiệt WarmMax</a></li>
-                <li><a class="hover:text-[#c92127]" href="#">Áo khoác giữ ấm</a></li>
-                <li><a class="hover:text-[#c92127]" href="#">Áo thu đông</a></li>
-                <li><a class="hover:text-[#c92127]" href="#">Áo thun & polo</a></li>
-              </ul>
-            </div>
-
-            <!-- Cột 3 -->
-            <div>
-              <h3 class="font-semibold mb-3 hover:text-[#c92127]">Quần</h3>
-              <ul class="space-y-1 text-sm">
-                <li><a class="hover:text-[#c92127]" href="#">Quần jeans & dài</a></li>
-                <li><a class="hover:text-[#c92127]" href="#">Quần shorts</a></li>
-              </ul>
-            </div>
-
-            <!-- Cột 4 -->
-            <div>
-              <h3 class="font-semibold mb-3 hover:text-[#c92127]">Đồ lót</h3>
-              <ul class="space-y-1 text-sm">
-                <li><a class="hover:text-[#c92127]" href="#">Quần lót</a></li>
-                <li><a class="hover:text-[#c92127]" href="#">Áo ba lỗ</a></li>
-              </ul>
-            </div>
-
-          </div>
-        </div>
-       </div>
-      <div class="relative group">
-      <a href="#" class="hover:text-[#c92127]">Trẻ em</a>
-
-    <!-- MEGA MENU -->
-        <div
-          class="absolute left-1/2 top-full -translate-x-1/2 w-screen max-w-[900px] 
-                 bg-white shadow-lg border-t border-gray-200
-                 opacity-0 invisible pointer-events-none
-                 group-hover:opacity-100 group-hover:visible group-hover:pointer-events-auto
-                 transition-all duration-200 z-50 py-6">
-          
-          <!-- GRID 4 CỘT -->
-          <div class="grid grid-cols-3 gap-10 px-10">
-
-            <!-- Cột 1 -->
-            <div>
-              <h3 class="font-semibold mb-3 hover:text-[#c92127]">Thời trang giữ ấm</h3>
-              <ul class="space-y-1 text-sm">
-                <li><a class="hover:text-[#c92127]" href="#">Áo khoác ngoài</a></li>
-              </ul>
-            </div>
-
-            <!-- Cột 2 -->
-            <div>
-              <h3 class="font-semibold mb-3 hover:text-[#c92127]">Bé gái</h3>
-              <ul class="space-y-1 text-sm">
-                <li><a class="hover:text-[#c92127]" href="#">Áo </a></li>
-                <li><a class="hover:text-[#c92127]" href="#">Quần & váy</a></li>
-              </ul>
-            </div>
-
-            <!-- Cột 3 -->
-            <div>
-              <h3 class="font-semibold mb-3 hover:text-[#c92127]">Bé trai</h3>
-              <ul class="space-y-1 text-sm">
-                <li><a class="hover:text-[#c92127]" href="#">Áo</a></li>
-                <li><a class="hover:text-[#c92127]" href="#">Quần</a></li>
-              </ul>
             </div>
           </div>
         </div>
-      </div>
-      <a href="#" class="hover:text-[#c92127]">Mua sỉ</a>
-      <a href="#" class="hover:text-[#c92127]">Tin tức</a>
-    </div>
+      </li>
+
+      <li class="nav-item">
+        <a class="hover:text-[#c92127] text-xl cursor-pointer font-sans font-semibold">Mua sỉ</a>
+      </li>
+
+      <li class="nav-item">
+        <a class="hover:text-[#c92127] text-xl cursor-pointer font-sans font-semibold">Tin tức</a>
+      </li>
+
+    </ul>
   </nav>
 </template>
+
+<script setup>
+import { ref, onMounted } from "vue"
+import axios from "axios"
+
+const menus = ref([])
+
+onMounted(async () => {
+  const res = await axios.get("/api/types/nav-menu")
+  menus.value = res.data.result
+})
+</script>

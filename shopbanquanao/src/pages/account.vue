@@ -1,22 +1,16 @@
 <template>
   <div class="max-w-7xl mx-auto mt-10 grid grid-cols-12 gap-6">
 
-    <aside class="col-span-3 bg-white p-6 rounded-lg shadow">
+    <aside class="col-span-3 bg-white p-6 rounded-lg shadow
+         self-start top-6 h-fit">
 
   <div class="flex items-center gap-4 mb-6">
   <!-- Ảnh avatar -->
   <div class="w-10 h-10 rounded-full overflow-hidden bg-gray-200 border border-gray-300 flex items-center justify-center">
-    <img 
-      v-if="profile.avatar" 
-      :src="profile.avatar" 
-      alt="Avatar"
-      class="w-full h-full object-cover"
-    />
-    <svg 
-    v-else xmlns="http://www.w3.org/2000/svg"
-           class="w-6 h-6 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-        <path d="M10 10a4 4 0 100-8 4 4 0 000 8zm-7 8a7 7 0 1114 0H3z"/>
-      </svg>
+<img
+  :src="previewAvatar || profile.avatar || '/default-avatar.png'"
+  class="w-full h-full object-cover"
+/>
   </div>
 
   <!-- Tên người dùng -->
@@ -107,7 +101,7 @@
           </thead>
 
   <tbody>
-  <template v-for="order in orders" :key="order.maDonHang">
+  <template v-for="order in filteredOrders" :key="order.maDonHang">
 
     <!-- DÒNG ĐƠN HÀNG -->
     <tr class="border-b text-sm h-20 relative">
@@ -136,26 +130,47 @@
         </span>
       </td>
 
-  <td class="h-full">
-  <div class="h-full flex items-center gap-8">
+<td class="h-full">
+  <div class="h-full flex items-center gap-4">
+
+    <!-- NÚT HỦY ĐƠN (chỉ khi Đang xử lý) -->
     <button
+      v-if="order.trangThai === 'Đang xử lý'"
       class="h-9 px-4 border border-gray-300 rounded
              text-gray-700 hover:bg-gray-100"
-             @click="viewOrderDetail(order.maDonHang)"
+      @click="cancelOrder(order.maDonHang)"
+    >
+      Hủy đơn hàng
+    </button>
+
+    <!-- NÚT XEM CHI TIẾT (khi KHÔNG phải Đang xử lý) -->
+    <button
+      v-else
+      class="h-9 px-6 border border-gray-300 rounded
+             text-gray-700 hover:bg-gray-100"
+      @click="viewOrderDetail(order.maDonHang)"
     >
       Xem chi tiết
     </button>
 
+    <!-- NÚT ĐÁNH GIÁ (GIỮ NGUYÊN LOGIC CŨ) -->
     <button
-      v-if="order.trangThai === 'Đã giao'"
-      class="h-9 px-4 bg-red-500 text-white rounded
-             hover:bg-red-600"
+      v-if="order.trangThai === 'Đã giao' && !isOrderFullyReviewed(order)"
+      class="h-9 px-4 bg-red-500 text-white rounded hover:bg-red-600"
+      @click="openReviewOrder(order)"
     >
       Đánh giá
     </button>
+
+    <span
+      v-else-if="order.trangThai === 'Đã giao'"
+      class="text-green-600 font-semibold"
+    >
+      Đã đánh giá xong
+    </span>
+
   </div>
 </td>
-
 
 
 
@@ -210,6 +225,21 @@
           <div class="font-semibold text-red-600">
             {{ formatMoney(item.gia) }}
           </div>
+<button
+  v-if="reviewOrderId === order.maDonHang && !item.daDanhGia"
+  class="px-3 py-1 bg-red-500 text-white rounded text-sm"
+  @click="openReview(order, item)"
+>
+  Đánh giá
+</button>
+
+<span
+  v-if="reviewOrderId === order.maDonHang && item.daDanhGia"
+  class="text-green-600 text-sm font-semibold"
+>
+  Đã đánh giá
+</span>
+
         </div>
       </td>
     </tr>
@@ -329,10 +359,6 @@
       <span>0 đ</span>
     </div>
 
-    <div class="flex justify-between py-2">
-      <span>Mã giảm giá</span>
-      <span>- 0 đ</span>
-    </div>
 
     <div class="border-t mt-3 pt-3 flex justify-between text-lg font-bold">
       <span>Tổng cộng</span>
@@ -362,20 +388,11 @@
     <!-- Ảnh đại diện -->
     <div class="col-span-4 flex flex-col items-center">
   <div class="w-40 h-40 rounded-full overflow-hidden bg-gray-200 border border-gray-300 flex items-center justify-center">
-    <img
-      v-if="previewAvatar || profile.avatar"
-      :src="previewAvatar || profile.avatar "
-      class="w-full h-full object-cover"
-    />
-    <svg
-    v-else
-    xmlns="http://www.w3.org/2000/svg"
-    class="w-1/2 h-1/2 text-gray-600"
-    fill="currentColor"
-    viewBox="0 0 20 20"
-  >
-    <path d="M10 10a4 4 0 100-8 4 4 0 000 8zm-7 8a7 7 0 1114 0H3z"/>
-  </svg>
+<img
+  :src="previewAvatar || profile.avatar || '/default-avatar.png'"
+  class="w-full h-full object-cover"
+/>
+
   </div>
 
   <label
@@ -739,22 +756,133 @@
     
     </section>
       </div>
-
-      <div v-if="activeTab === 'voucher'" class="text-gray-600">
-        Mã khuyến mại...
-      </div>
-
       <div v-if="activeTab === 'reviews'" class="text-gray-600">
-        Đánh giá của tôi...
+<div class="flex gap-6 border-b mb-6">
+  <span class="text-red-500 border-b-2 border-red-500">
+    Đã đánh giá
+  </span>
+</div>
+<div>
+  <div v-if="daDanhGia.length === 0" class="text-center text-gray-400">
+    Bạn chưa có đánh giá nào
+  </div>
+  <div
+    v-for="dg in daDanhGia"
+    :key="dg.maDanhGia"
+    class="flex gap-4 border p-4 mb-4"
+  >
+    <img :src="dg.anh" class="w-20 h-20 object-cover" />
+
+    <div class="flex-1">
+      <div class="font-semibold">{{ dg.tenSanPham }}</div>
+      <div class="text-sm text-gray-500">
+        {{ dg.mau }} / {{ dg.size }}
       </div>
 
-      <div v-if="activeTab === 'seen'" class="text-gray-600">
-        Sản phẩm đã xem...
+      <div class="text-yellow-500">
+        ⭐ {{ dg.diemDanhGia }}/5
       </div>
+
+      <div class="mt-1">{{ dg.noiDung }}</div>
+
+      <div class="text-xs text-gray-400">
+        {{ new Date(dg.ngayTao).toLocaleString() }}
+      </div>
+    </div>
+  </div>
+</div>
+
+
+      </div>
+
 
     </main>
 
   </div>
+  <div
+  v-if="showReviewModal"
+  class="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+>
+   <!-- MODAL BOX -->
+  <div class="bg-white w-[480px] rounded-xl p-6 shadow-lg">
+
+    <h3 class="text-xl font-bold mb-4">Đánh giá sản phẩm</h3>
+    <!-- THÔNG TIN SẢN PHẨM -->
+<div class="flex gap-4 items-center border rounded-lg p-3 mb-4 bg-gray-50">
+  <img
+    :src="currentReviewItem?.anh"
+    class="w-20 h-20 object-cover rounded border"
+  />
+
+  <div class="flex-1">
+    <p class="font-semibold text-gray-800 line-clamp-2">
+      {{ currentReviewItem?.tenSanPham }}
+    </p>
+
+    <p class="text-sm text-gray-500 mt-1">
+      Phân loại:
+      <span class="font-medium text-gray-700">
+        {{ currentReviewItem?.mau }} / {{ currentReviewItem?.size }}
+      </span>
+    </p>
+  </div>
+</div>
+
+
+    <!-- CHỌN SAO -->
+    <div class="mb-4">
+      <p class="font-semibold mb-2">Đánh giá</p>
+      <div class="flex gap-2">
+        <svg
+          v-for="star in 5"
+          :key="star"
+          @click="reviewForm.diemDanhGia = star"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          class="w-8 h-8 cursor-pointer transition"
+          :class="star <= reviewForm.diemDanhGia
+            ? 'text-yellow-400'
+            : 'text-gray-300 hover:text-yellow-300'"
+        >
+          <path
+            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.97a1 1 0 0 0 .95.69h4.174c.969 0 1.371 1.24.588 1.81l-3.378 2.455a1 1 0 0 0-.364 1.118l1.287 3.97c.3.921-.755 1.688-1.54 1.118l-3.378-2.455a1 1 0 0 0-1.176 0l-3.378 2.455c-.784.57-1.838-.197-1.539-1.118l1.286-3.97a1 1 0 0 0-.364-1.118L2.05 9.397c-.783-.57-.38-1.81.588-1.81h4.174a1 1 0 0 0 .95-.69l1.286-3.97Z"
+          />
+        </svg>
+      </div>
+    </div>
+
+    <!-- NỘI DUNG -->
+    <div class="mb-4">
+      <p class="font-semibold mb-2">Nhận xét</p>
+      <textarea
+        v-model="reviewForm.noiDung"
+        rows="4"
+        class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-red-400 focus:outline-none"
+        placeholder="Hãy chia sẻ cảm nhận của bạn về sản phẩm..."
+      ></textarea>
+    </div>
+
+    <!-- ACTION -->
+    <div class="flex justify-end gap-3 mt-6">
+      <button
+        @click="showReviewModal = false"
+        class="px-4 py-2 border rounded hover:bg-gray-100"
+      >
+        Hủy
+      </button>
+
+      <button
+        class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded font-semibold"
+        @click="submitReview"
+      >
+        Gửi đánh giá
+      </button>
+    </div>
+
+  </div>
+</div>
+
 </template>
 <style>
     @keyframes fadeIn {
@@ -770,6 +898,65 @@
 import { ref, onMounted,watch,reactive,computed } from "vue";
 import api from '@/api';
 
+
+
+const cancelOrder = async (maDonHang) => {
+  if (!confirm("Bạn có chắc chắn muốn hủy đơn hàng này không?")) return;
+
+  try {
+    const res = await api.put(
+      `/orders/cancel/${maDonHang}`
+    );
+
+    if (res.data.code === 1000) {
+      alert("Hủy đơn hàng thành công!");
+
+      // Cập nhật trạng thái ngay trên UI
+      const order = orders.value.find(o => o.maDonHang === maDonHang);
+      if (order) {
+        order.trangThai = "Đã hủy";
+      }
+    } else {
+      alert(res.data.message || "Hủy đơn hàng thất bại!");
+    }
+  } catch (err) {
+    console.error("Lỗi hủy đơn:", err);
+    alert("Không thể hủy đơn hàng!");
+  }
+};
+
+
+const daDanhGia = ref([]);
+const openReviewFromMyReview = (item) => {
+  reviewForm.value = {
+    maBienThe: item.maBienThe,
+    maDdh: item.maDonHang,   // đã có sẵn
+    noiDung: "",
+    diemDanhGia: 5
+  };
+  currentReviewItem.value = item;
+  showReviewModal.value = true;
+};
+
+const loadDanhGia = async () => {
+  try {
+    const res = await api.get("/myinfor/comments");
+
+    console.log("API comments:", res.data); // 👈 kiểm tra luôn
+
+    if (res.data.code === 1000 && Array.isArray(res.data.result)) {
+      daDanhGia.value = res.data.result;
+    } else {
+      daDanhGia.value = [];
+    }
+  } catch (err) {
+    console.error("Lỗi load đánh giá:", err);
+    daDanhGia.value = [];
+  }
+};
+onMounted(() => {
+  loadDanhGia();
+});
 
 const profile = ref({
   avatar: "",
@@ -1152,22 +1339,20 @@ const submitChangePassword = async () => {
 
 import {
   User,
-  TicketPercent,
   Star,
-  Eye,
   Package
 } from "lucide-vue-next";
 const activeTab = ref("orders"); // mặc định tab Đơn hàng
+watch(activeTab, (val) => {
+  if (val === "reviews") {
+    loadDanhGia();
+  }
+});
 const menu = [
   { key: "orders", label: "Đơn hàng của tôi", icon: Package },
   { key: "profile", label: "Tài khoản của tôi", icon: User },
-  { key: "voucher", label: "Mã khuyến mại", icon: TicketPercent },
   { key: "reviews", label: "Đánh giá của tôi", icon: Star },
-  { key: "seen", label: "Sản phẩm đã xem", icon: Eye },
 ];
-
-
-
 
 
 const expandedOrderId = ref(null);
@@ -1177,16 +1362,30 @@ const toggleOrder = (orderId) => {
     expandedOrderId.value === orderId ? null : orderId;
 };
 
+const filteredOrders = computed(() => {
+  if (orderStatus.value === "all") return orders.value;
+
+  const map = {
+
+    processing: "Đang xử lý",
+    shipping: "Đang giao",
+    done: "Đã giao",
+    cancel: "Đã hủy",
+
+  };
+
+  return orders.value.filter(
+    o => o.trangThai === map[orderStatus.value]
+  );
+});
 
 
 const orderTabs = [
   { key: "all", label: "Tất cả đơn hàng" },
-  { key: "pending", label: "Chờ thanh toán" },
-  { key: "processing", label: "Đang xử lý" },
+  { key: "processing", label: "Đang xử lý" },
   { key: "shipping", label: "Đang giao" },
   { key: "done", label: "Đã giao" },
-  { key: "cancel", label: "Đã hủy" },
-  { key: "return", label: "Hoàn hàng" },
+  { key: "cancel", label: "Đã hủy" },
 ];
 
 const orderStatus = ref("all");
@@ -1219,9 +1418,9 @@ const statusColor = (status) => {
   switch (status) {
     case "Chờ xác nhận":
       return "bg-orange-100 text-orange-600";
-    case "Đã giao":
+    case "Đã giao":
       return "bg-green-100 text-green-600";
-    case "Đã hủy":
+    case "Đã hủy":
       return "bg-red-100 text-red-600";
     default:
       return "bg-gray-100 text-gray-600";
@@ -1239,6 +1438,60 @@ const viewOrderDetail = async (maDdh) => {
   orderDetail.value = res.data
   viewMode.value = 'detail'
 }
+
+
+
+const isOrderFullyReviewed = (order) => {
+  return order.items.every(item => item.daDanhGia);
+};
+
+const currentReviewItem = ref(null);
+const showReviewModal = ref(false);
+const openReviewOrder = (order) => {
+  expandedOrderId.value = order.maDonHang;
+  reviewOrderId.value = order.maDonHang;
+};
+
+const reviewOrderId = ref(null);
+
+const reviewForm = ref({
+  maBienThe: null,
+  maDdh: null,
+  noiDung: "",
+  diemDanhGia: 5
+});
+const openReview = (order, item) => {
+  reviewForm.value = {
+    maBienThe: item.maBienThe,
+    maDdh: order.maDonHang,
+    noiDung: "",
+    diemDanhGia: 5
+  };
+  currentReviewItem.value = item;
+  showReviewModal.value = true;
+};
+const submitReview = async () => {
+  if (!reviewForm.value.noiDung.trim()) {
+    alert("Vui lòng nhập nội dung đánh giá");
+    return;
+  }
+
+  try {
+    const res = await api.post("/comments", reviewForm.value);
+
+    if (res.data.code === 1000) {
+      if (currentReviewItem.value) {
+        currentReviewItem.value.daDanhGia = true;
+      }
+      alert("Đánh giá thành công!");
+      showReviewModal.value = false;
+    }
+  } catch (err) {
+    alert("Không thể gửi đánh giá");
+  }
+};
+
+
 
 </script>
 

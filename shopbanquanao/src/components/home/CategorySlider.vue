@@ -1,13 +1,13 @@
 <template>
   <div class="w-full py-6 relative">
-    <h2 class="text-center text-xl font-bold text-[#c92127] mb-6">
+    <h2 class="text-center text-2xl font-bold text-[#c92127] mb-8">
       {{ title }}
     </h2>
 
     <!-- Nút Prev -->
     <button
       @click="scrollLeft"
-      class="absolute left-2/12 top-1/2 -translate-y-1/2 bg-white shadow rounded-full p-2 z-10"
+      class="absolute left-1/7 top-1/2 -translate-y-1/2 bg-white shadow rounded-full p-2 z-10"
     >
       <slot name="prev-icon">
         <!-- Mũi tên trái -->
@@ -30,12 +30,13 @@
           v-for="(item, index) in categories"
           :key="index"
           ref="itemRef"
-          class="flex flex-col items-center w-[140px] snap-start"
+          class="flex flex-col items-center w-[180px] snap-start cursor-pointer"
+          @click="emit('select-category', item)"
         >
-          <div class="w-32 h-32 rounded-full overflow-hidden bg-neutral-100">
+          <div class="w-40 h-40 rounded-full overflow-hidden bg-neutral-100">
             <img :src="item.image" class="w-full h-full object-cover" />
           </div>
-          <p class="mt-3 text-center font-medium text-gray-700">
+          <p class="mt-4 text-center text-base font-medium text-gray-700">
             {{ item.name }}
           </p>
         </div>
@@ -45,7 +46,7 @@
     <!-- Nút Next -->
     <button
       @click="scrollRight"
-      class="absolute right-2/12 top-1/2 -translate-y-1/2 bg-white shadow rounded-full p-2 z-10"
+      class="absolute right-1/7 top-1/2 -translate-y-1/2 bg-white shadow rounded-full p-2 z-10"
     >
       <slot name="next-icon">
         <!-- Mũi tên phải -->
@@ -67,32 +68,43 @@ defineProps({
   categories: { type: Array, required: true }
 });
 
+const emit = defineEmits(["select-category"])
+
+
 const scrollContainer = ref(null);
 const itemRef = ref([]);
 const containerWidth = ref(0);
 
 onMounted(() => {
-  const item = itemRef.value[0].getBoundingClientRect();
-  const itemWidth = item.width;
-  const gap = 40;
-  containerWidth.value = itemWidth * 5 + gap * 4;
-});
+  if (!itemRef.value.length) return
+
+  const item = itemRef.value[0].getBoundingClientRect()
+  const itemWidth = item.width
+  const gap = 40
+
+  containerWidth.value = itemWidth * 5 + gap * 4
+})
+
 
 const scrollLeft = () => {
-  const item = itemRef.value[0].getBoundingClientRect();
+  if (!itemRef.value.length) return
+
+  const item = itemRef.value[0].getBoundingClientRect()
   scrollContainer.value.scrollBy({
     left: -(item.width + 40),
     behavior: "smooth",
-  });
-};
+  })
+}
 
 const scrollRight = () => {
-  const item = itemRef.value[0].getBoundingClientRect();
+  if (!itemRef.value.length) return
+
+  const item = itemRef.value[0].getBoundingClientRect()
   scrollContainer.value.scrollBy({
     left: item.width + 40,
     behavior: "smooth",
-  });
-};
+  })
+}
 </script>
 
 <style scoped>

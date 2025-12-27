@@ -10,7 +10,7 @@
   <!-- Title -->
 <h3 class="text-xl font-bold mb-4">
   GIỎ HÀNG
-  <span class="text-sm text-red-500 font-normal">
+  <span class="text-sm text-[#c92127] font-normal">
     ({{ cart.items.length }} sản phẩm)
   </span>
 </h3>
@@ -50,7 +50,7 @@
     </div>
 
     <!-- Giá -->
-    <div class="col-span-2 text-center text-red-600 font-bold">
+    <div class="col-span-2 text-center text-[#c92127] font-bold">
       {{ formatPrice(item.product.gia) }}đ
     </div>
 
@@ -86,7 +86,7 @@
     </div>
 
     <button
-      class="text-gray-400 hover:text-red-600 mt-4"
+      class="text-gray-400 hover:text-[#c92127] mt-4"
       @click="removeItem(item)"
     >
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
@@ -112,7 +112,7 @@
       Tổng giá trị đơn hàng
     </span>
 
-    <span class="text-xl font-bold text-red-600">
+    <span class="text-xl font-bold text-[#c92127]">
       {{ formatPrice(cart.tongTien) }}đ
     </span>
   </div>
@@ -122,7 +122,7 @@
 
   <!-- Button -->
   <button
-    class="w-full bg-red-600 hover:bg-red-700
+    class="w-full bg-[#c92127] hover:bg-red-800
            text-white py-3 rounded font-semibold flex items-center justify-center gap-2"
            @click="router.push('/checkout')"
   >
@@ -132,7 +132,8 @@
 </div>
 <div
       v-else
-      class="bg-white rounded shadow p-10 flex flex-col items-center justify-center"
+      class="max-w-7xl mx-auto py-20 bg-white rounded shadow
+           flex flex-col items-center justify-center"
     >
       <img
         src="/src/assets/icon/oops.svg"
@@ -145,7 +146,7 @@
       </p>
 
       <button
-        class="bg-red-600 hover:bg-red-700 text-white px-10 py-3 rounded font-semibold"
+        class="bg-[#c92127] hover:bg-red-800 text-white px-10 py-3 rounded font-semibold"
         @click="$router.push('/')"
       >
         TIẾP TỤC MUA SẮM
@@ -230,7 +231,11 @@ const removeItem = async (item) => {
 
 const fetchCart = async () => {
   const res = await api.get("/carts");
-  cart.value = res.data.result;
+
+  cart.value = {
+    items: res.data.result?.items || [],
+    tongTien: res.data.result?.tongTien || 0
+  };
 };
 
 

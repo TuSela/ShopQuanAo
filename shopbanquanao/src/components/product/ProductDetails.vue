@@ -148,6 +148,131 @@
       </div>
     </div>
 
+    <!-- ========== ĐÁNH GIÁ TỪ NGƯỜI MUA ========== -->
+<div class="col-span-12 lg:col-start-2 lg:col-span-10 mt-14">
+
+  <h2 class="text-xl font-bold mb-6">ĐÁNH GIÁ TỪ NGƯỜI MUA</h2>
+
+  <!-- TỔNG QUAN -->
+  <div class="grid grid-cols-12 gap-6">
+    <!-- LEFT -->
+    <div class="col-span-12 lg:col-span-8 border rounded-lg p-6 bg-white">
+      <div class="flex gap-8">
+
+        <!-- SỐ SAO -->
+        <div class="text-center w-40">
+          <p class="text-5xl font-bold">
+            {{ saoTrungBinh }}<span class="text-xl">/5</span>
+          </p>
+
+          <div class="text-yellow-500 text-xl mt-2">
+            {{ "⭐".repeat(Math.round(saoTrungBinh)) }}
+          </div>
+
+          <p class="text-sm text-gray-500 mt-2">
+            {{ tongDanhGia }} đánh giá
+          </p>
+        </div>
+
+        <!-- PHÂN BỐ SAO -->
+        <div class="flex-1 space-y-2">
+          <div
+            v-for="sao in [5,4,3,2,1]"
+            :key="sao"
+            class="flex items-center gap-3 text-sm"
+          >
+            <span class="w-10">{{ sao }} ⭐</span>
+
+            <div class="flex-1 bg-gray-200 rounded h-2 overflow-hidden">
+              <div
+                class="bg-orange-400 h-2"
+                :style="{ width: tiLeSao(sao) + '%' }"
+              ></div>
+            </div>
+
+            <span class="w-6 text-right">
+              {{ demSao(sao) }}
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="col-span-12 lg:col-span-4 border rounded-lg p-6 bg-white">
+      <p class="font-semibold mb-3">Hình ảnh từ người mua</p>
+      <p class="text-sm text-gray-400">
+        Chưa có hình ảnh đánh giá
+      </p>
+    </div>
+  </div>
+
+  <!-- FILTER -->
+  <div class="flex items-center gap-3 mt-8">
+    <p class="font-semibold mr-2">Lọc đánh giá</p>
+
+    <button
+      v-for="sao in [0,5,4,3,2,1]"
+      :key="sao"
+      @click="locSao = sao"
+      class="px-4 py-2 border rounded"
+      :class="locSao === sao
+        ? 'border-red-500 text-red-500'
+        : 'hover:border-gray-400'"
+    >
+      {{ sao === 0 ? "Tất cả" : sao + " sao" }}
+    </button>
+  </div>
+
+  <!-- DANH SÁCH ĐÁNH GIÁ -->
+  <div
+  v-for="bl in danhGiaDaLoc"
+  :key="bl.maBl"
+  class="border-t border-gray-300 mt-8 pt-6 pb-8"
+>
+  <div class="flex gap-4">
+
+    <!-- AVATAR -->
+    <img
+      :src="bl.users.avatar"
+      alt="avatar"
+      class="w-12 h-12 rounded-full object-cover"
+    />
+
+    <div class="flex-1">
+      <!-- TÊN -->
+      <p class="font-semibold">{{ bl.users.hoten }}</p>
+
+      <!-- SAO -->
+      <div class="text-yellow-500 text-sm">
+        {{ "⭐".repeat(Math.floor(bl.diemDanhGia)) }}
+      </div>
+
+      <!-- PHÂN LOẠI -->
+<p class="text-sm text-gray-500 mt-1">
+  Màu sắc: {{ bl.productVariants.tenMs }},
+  Kích thước: Size {{ bl.productVariants.tenKc }}
+</p>
+
+
+      <!-- NỘI DUNG -->
+      <p class="mt-3">{{ bl.noiDung }}</p>
+
+      <!-- NGÀY -->
+      <p class="text-xs text-gray-400 mt-3">
+        Đã đánh giá ngày:
+        {{ new Date(bl.ngayTao).toLocaleDateString("vi-VN") }}
+      </p>
+    </div>
+
+  </div>
+</div>
+
+
+</div>
+
+
   </div>
 </template>
 
@@ -277,38 +402,44 @@ const soLuong = ref(1);
 
 onMounted(async () => {
   const id = route.params.id;
+
   try {
     const res = await api.get(`/products/${id}`);
     product.value = res.data.result;
 
-    // ========= GALLERY ẢNH TỪ listAnhSP =========
+    const anhDaiDien = product.value.anhDaiDien;
+
+    // ========= GALLERY =========
     galleryImages.value = (product.value.listAnhSP || []).filter(
-      a => a && a !== "chưa có ảnh"
+      img => img && img !== "chưa có ảnh"
     );
 
     if (galleryImages.value.length === 0) {
       galleryImages.value = ["/no-image.png"];
     }
 
-    selectedImage.value = galleryImages.value[0];
+    // ✅ ÉP ẢNH HIỂN THỊ = ẢNH ĐẠI DIỆN (KHÔNG PHỤ THUỘC LIST)
+    selectedImage.value = anhDaiDien || galleryImages.value[0];
 
-    //============CHI TIET==========
+    // ========= CHI TIẾT =========
     if (product.value.chiTiet) {
-      moTaHTML.value = product.value.chiTiet
+      moTaHTML.value = product.value.chiTiet;
     }
 
-    // ========= CHỌN MÀU MẶC ĐỊNH =========
+    // ========= MÀU / SIZE =========
     mauDangChon.value = product.value.variants?.[0] || null;
     sizeDangChon.value = mauDangChon.value?.sizes?.[0] || null;
 
-    // ========= ĐỔI ẢNH THEO MÀU =========
-    if (mauDangChon.value && mauDangChon.value.urlImages && mauDangChon.value.urlImages !== "chưa có ảnh") {
-      selectedImage.value = mauDangChon.value.urlImages;
-    }
+    // ❗ KHÔNG tự động đổi ảnh theo màu khi mới load
+    // chỉ đổi khi user click chọn màu
+
   } catch (e) {
     console.error("Lỗi lấy product:", e);
   }
 });
+
+
+
 
 const danhSachMau = computed(() => product.value?.variants || []);
 
@@ -383,5 +514,46 @@ const addToCart = async () => {
     alert("Không thể thêm vào giỏ hàng");
   }
 };
+
+/* ===== FILTER ===== */
+const locSao = ref(0);
+
+/* ===== COMMENTS ===== */
+const danhGiaNguoiMua = computed(() => {
+  return product.value?.productComments || [];
+});
+
+/* ===== DANH SÁCH SAU LỌC ===== */
+const danhGiaDaLoc = computed(() => {
+  if (locSao.value === 0) return danhGiaNguoiMua.value;
+  return danhGiaNguoiMua.value.filter(
+    d => Math.round(d.diemDanhGia) === locSao.value
+  );
+});
+
+/* ===== SAO TRUNG BÌNH (LẤY TỪ BE) ===== */
+const saoTrungBinh = computed(() => {
+  return product.value?.danhGia || 0;
+});
+
+/* ===== TỔNG ĐÁNH GIÁ (LẤY TỪ BE) ===== */
+const tongDanhGia = computed(() => {
+  return product.value?.soLuongDanhGia || 0;
+});
+
+/* ===== ĐẾM SAO ===== */
+const demSao = (sao) => {
+  return danhGiaNguoiMua.value.filter(
+    d => Math.round(d.diemDanhGia) === sao
+  ).length;
+};
+
+/* ===== % THANH SAO ===== */
+const tiLeSao = (sao) => {
+  if (!tongDanhGia.value) return 0;
+  return (demSao(sao) / tongDanhGia.value) * 100;
+};
+
+
 
 </script>
