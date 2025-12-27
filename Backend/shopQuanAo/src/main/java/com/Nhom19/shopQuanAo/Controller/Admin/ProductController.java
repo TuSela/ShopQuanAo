@@ -100,6 +100,15 @@ public class ProductController {
     ) {
         ApiResponse<PageResponse<ProductBestSellerResponse>> response =
                 new ApiResponse<>();
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            response.setResult(
+                    productService.searchByKeyword(
+                            page, size, sort, direction, keyword
+                    )
+            );
+            return response;
+        }
+
         // ===== BÁN CHẠY =====
         if (doiTuong == null && tenLoai==null && maLoai == null && banChay == true) {
             response.setResult(
@@ -110,14 +119,7 @@ public class ProductController {
             return response;
         }
         // ===== ƯU TIÊN: SEARCH =====
-        if (keyword != null && !keyword.trim().isEmpty()) {
-            response.setResult(
-                    productService.searchByKeyword(
-                            page, size, sort, direction, keyword
-                    )
-            );
-            return response;
-        }
+
         // ===== MẶC ĐỊNH: DANH MỤC =====
         List<ChiTietLoaiResponse> chiTietLoaiResponses =
                 productTypeService.getChiTietLoai(doiTuong, tenLoai, maLoai);

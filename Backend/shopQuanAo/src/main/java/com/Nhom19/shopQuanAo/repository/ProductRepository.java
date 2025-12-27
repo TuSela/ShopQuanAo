@@ -96,7 +96,6 @@ public interface ProductRepository extends JpaRepository<Products, Integer> {
     @Query("""
         SELECT p FROM Products p
         WHERE LOWER(p.tenSp) LIKE LOWER(CONCAT('%', :keyword, '%'))
-        OR LOWER(p.chiTiet) LIKE LOWER(CONCAT('%', :keyword, '%'))
     """)
     Page<Products> searchByKeyword(@Param("keyword") String keyword,Pageable pageable);
 
