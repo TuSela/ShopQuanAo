@@ -47,8 +47,12 @@ public class OrderController {
         apiResponse.setResult(orderService.createOrder(request));
         return apiResponse;
     }
-//    @PutMapping("/{id}")
-
+    @PutMapping("/cancel/{id}")
+    public ApiResponse<Boolean> CancelOrder(@PathVariable Integer id) {
+        ApiResponse<Boolean> apiResponse = new ApiResponse<>();
+        apiResponse.setResult(orderService.CancelOrder(id));
+        return apiResponse;
+    }
 }
 
 

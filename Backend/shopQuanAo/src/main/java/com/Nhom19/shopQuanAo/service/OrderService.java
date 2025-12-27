@@ -1,6 +1,7 @@
 package com.Nhom19.shopQuanAo.service;
 
 import com.Nhom19.shopQuanAo.DTO.Request.Customer.OrderRequest.CreatOrderRequest;
+import com.Nhom19.shopQuanAo.DTO.Request.Customer.OrderRequest.UpdateOrderRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyCart.CreatCartResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyOrder.*;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.OrderDetailRes.AddressResponse;
@@ -54,6 +55,12 @@ public class OrderService {
                     productDTOS
             );
         }).toList();
+    }
+    public Boolean CancelOrder(Integer orderId) {
+        Orders orders = orderRepository.findById(orderId).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+        orders.setOrderStatus("Đã hủy");
+        orderRepository.save(orders);
+        return true;
     }
 
     @Autowired

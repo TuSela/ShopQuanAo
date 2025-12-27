@@ -44,5 +44,4 @@ public class RoleService {
     public List<RoleResponse> getAll() {
         return roleRepository.findAll(). stream().map(p -> new RoleResponse(p.getName(),p.getDescription(),p.getPermissions())).collect(Collectors.toList());
     }
-
 }

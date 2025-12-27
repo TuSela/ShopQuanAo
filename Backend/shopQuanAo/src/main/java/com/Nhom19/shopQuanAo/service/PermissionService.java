@@ -40,7 +40,7 @@ public PermissionResponse create(PermissionRequest request){
 
 public List<PermissionResponse> findAll(){
         List<PermissionResponse> permissionResponseList=new ArrayList<>();
-        Permission permission=new Permission();
+        Permission permission =new Permission();
 
         return permissionRepository.findAll()
                 .stream()

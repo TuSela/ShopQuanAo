@@ -7,20 +7,15 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.NoSuchElementException;
-
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
     // AppException (chủ động throw)
     @ExceptionHandler(AppException.class)
     public ResponseEntity<ApiResponse> handleAppException(AppException ex) {
-
         ErrorCode errorCode = ex.getErrorCode();
-
         ApiResponse response = new ApiResponse();
         response.setCode(errorCode.getCode());
         response.setMessage(errorCode.getMessage());
-
         return ResponseEntity
                 .status(errorCode.getHttpStatus())
                 .body(response);
@@ -65,16 +60,16 @@ public class GlobalExceptionHandler {
                 .status(errorCode.getHttpStatus())
                 .body(response);
     }
-//    @ExceptionHandler(IllegalArgumentException.class)
-//    public ResponseEntity<ApiResponse> handleIllegalArgumentException() {
-//        ErrorCode errorCode = ErrorCode.INVALID_FILE;
-//        ApiResponse response = new ApiResponse();
-//        response.setCode(errorCode.getCode());
-//        response.setMessage(errorCode.getMessage());
-//        return ResponseEntity
-//                .status(errorCode.getHttpStatus())
-//                .body(response);
-//    }
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiResponse> handleIllegalArgumentException() {
+        ErrorCode errorCode = ErrorCode.INVALID_FILE;
+        ApiResponse response = new ApiResponse();
+        response.setCode(errorCode.getCode());
+        response.setMessage(errorCode.getMessage());
+        return ResponseEntity
+                .status(errorCode.getHttpStatus())
+                .body(response);
+    }
 //    // Lỗi không xác định (fallback)
 //    @ExceptionHandler(Exception.class)
 //    public ResponseEntity<ApiResponse> handleOtherException() {
@@ -89,5 +84,4 @@ public class GlobalExceptionHandler {
 //                .status(errorCode.getHttpStatus())
 //                .body(response);
 //    }
-
 }
