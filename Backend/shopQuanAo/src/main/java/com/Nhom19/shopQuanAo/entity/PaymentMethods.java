@@ -20,6 +20,7 @@ public class PaymentMethods {
     @Column(name = "ten_pt")
     private String tenPt;
 
+    private Boolean trangThai;
     @OneToMany(mappedBy = "paymentMethods")
     private Set<Orders> orders = new HashSet<>();
 }

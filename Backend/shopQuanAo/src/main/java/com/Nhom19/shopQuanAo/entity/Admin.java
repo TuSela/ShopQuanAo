@@ -19,7 +19,8 @@ public class Admin {
     private String password;
 
     @Column(name = "ma_quanly")
-    private String managerCode;
+    private Integer managerCode = 1;
+    private Boolean trangThai = true;
     @ManyToMany
     @JoinTable(
             name = "admins_roles",

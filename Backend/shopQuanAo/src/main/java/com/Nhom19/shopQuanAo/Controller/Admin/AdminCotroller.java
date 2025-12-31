@@ -7,6 +7,7 @@ import com.Nhom19.shopQuanAo.entity.Admin;
 import com.Nhom19.shopQuanAo.service.Adminservice;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -58,6 +59,25 @@ public class AdminCotroller {
     {
         ApiResponse<AdminResponse> apiResponse = new ApiResponse<>();
         apiResponse.setResult(adminservice.getMyInfo());
+        return apiResponse;
+    }
+    @PutMapping("/{id}/disable")
+    public ApiResponse<?> disableAdmin(
+            @PathVariable Integer id,
+            @RequestHeader("Authorization") String authHeader
+
+    ) {
+        adminservice.disableAdmin(id, authHeader);
+        ApiResponse apiResponse = new ApiResponse<>();
+        apiResponse.setMessage("Admin đã bị khóa");
+        return apiResponse;
+    }
+
+    @PutMapping("/{id}/enable")
+    public ApiResponse enableAdmin(@PathVariable Integer id) {
+        adminservice.enableAdmin(id);
+        ApiResponse apiResponse = new ApiResponse<>();
+        apiResponse.setMessage("Admin đã được mở khóa");
         return apiResponse;
     }
 }

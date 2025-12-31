@@ -9,6 +9,7 @@ import com.Nhom19.shopQuanAo.exception.AppException;
 import com.Nhom19.shopQuanAo.exception.ErrorCode;
 import com.Nhom19.shopQuanAo.mapper.UserMapper;
 import com.Nhom19.shopQuanAo.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -144,6 +145,21 @@ public class UserService {
         }
         Users savedUser = userRepository.save(user);
         return savedUser.getAvatar();
+    }
+    @Transactional
+    public void disableUser(Integer userId) {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User không tồn tại"));
+
+        user.setTrangThai(false);
+    }
+
+    @Transactional
+    public void enableUser(Integer userId) {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User không tồn tại"));
+
+        user.setTrangThai(true);
     }
 }
 

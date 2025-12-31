@@ -3,6 +3,7 @@ package com.Nhom19.shopQuanAo.service;
 import com.Nhom19.shopQuanAo.DTO.Request.Admin.AdminRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.Admin.AdminResponse;
 import com.Nhom19.shopQuanAo.entity.Admin;
+import com.Nhom19.shopQuanAo.entity.Users;
 import com.Nhom19.shopQuanAo.enums.Role;
 import com.Nhom19.shopQuanAo.exception.AppException;
 import com.Nhom19.shopQuanAo.exception.ErrorCode;
@@ -10,6 +11,7 @@ import com.Nhom19.shopQuanAo.mapper.AdminMapper;
 import com.Nhom19.shopQuanAo.repository.AdminRepository;
 import com.Nhom19.shopQuanAo.repository.PermissionRepository;
 import com.Nhom19.shopQuanAo.repository.RoleRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -81,9 +83,29 @@ public class Adminservice {
         Admin admin = adminRepository.save(user);
         return  adminMapper.toDTO(admin);
     }
-
     public void  deleteUserById(Integer id)
     {
         adminRepository.deleteById(id);
+    }
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @Transactional
+    public void disableAdmin(Integer adminId, String authHeader) {
+        var context = SecurityContextHolder.getContext();
+        String sdt = context.getAuthentication().getName();
+        Admin admin1 = adminRepository.findByUsername(sdt).orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        if (adminId.equals(admin1.getMaTk())) {
+            throw new RuntimeException("Không thể khóa chính mình");
+        }
+        Admin admin = adminRepository.findById(adminId)
+                .orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXISTED));
+        admin.setTrangThai(false);
+    }
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @Transactional
+    public void enableAdmin(Integer adminId) {
+        Admin admin = adminRepository.findById(adminId)
+                .orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXISTED));
+        admin.setTrangThai(true);
     }
 }

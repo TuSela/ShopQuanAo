@@ -3,6 +3,7 @@ package com.Nhom19.shopQuanAo.exception;
 import org.springframework.http.HttpStatus;
 
 public enum ErrorCode {
+
     SQL_EXCEPTION(9990,"Dữ liệu không hợp lệ",HttpStatus.BAD_REQUEST),
     UNAUTHORIZED(1010,"Bạn Không có quyền truy cập",HttpStatus.FORBIDDEN),
     PRODUCT_TYPE_NOT_FOUND(6002,"Không tìm thấy loại sản phẩm",HttpStatus.NOT_FOUND),

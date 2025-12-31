@@ -26,7 +26,7 @@ public class Users {
     private LocalDate ngaySinh;
     private String gioiTinh;
     private String avatar;
-
+    private Boolean trangThai = true;
     @OneToMany(mappedBy = "users")
     private List<Orders> orders;
 

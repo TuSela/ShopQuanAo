@@ -66,4 +66,18 @@ public class UserController {
         return apiResponse;
     }
 
+    @PutMapping("/{id}/disable")
+    public ApiResponse disableUser(@PathVariable Integer id) {
+        userService.disableUser(id);
+        ApiResponse apiResponse = new ApiResponse<>();
+        apiResponse.setMessage("User đã bị vô hiệu hóa");
+        return apiResponse;
+    }
+    @PutMapping("/{id}/enable")
+    public ApiResponse enableUser(@PathVariable Integer id) {
+        userService.enableUser(id);
+        ApiResponse apiResponse = new ApiResponse<>();
+        apiResponse.setMessage("User đã được kích hoạt");
+        return apiResponse;
+    }
 }
