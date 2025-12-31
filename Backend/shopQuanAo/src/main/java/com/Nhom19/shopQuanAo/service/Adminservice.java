@@ -2,7 +2,7 @@ package com.Nhom19.shopQuanAo.service;
 
 import com.Nhom19.shopQuanAo.DTO.Request.Admin.AdminRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.Admin.AdminResponse;
-import com.Nhom19.shopQuanAo.entity.Admins;
+import com.Nhom19.shopQuanAo.entity.Admin;
 import com.Nhom19.shopQuanAo.enums.Role;
 import com.Nhom19.shopQuanAo.exception.AppException;
 import com.Nhom19.shopQuanAo.exception.ErrorCode;
@@ -32,7 +32,7 @@ public class Adminservice {
     private RoleRepository roleRepository;
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public AdminResponse createAdmin(AdminRequest request){
-        Admins users = new Admins();
+        Admin users = new Admin();
         if(adminRepository.existsIdByUsername(request.getUsername())){
             throw new AppException(ErrorCode.USER_EXISTED);
         }
@@ -45,42 +45,41 @@ public class Adminservice {
         HashSet<String> roles = new HashSet<>();
         roles.add(Role.ADMIN.name());
 //        users.setRoles(request.getRoles());
-        Admins admin =  adminRepository.save(users);
+        Admin admin =  adminRepository.save(users);
         return adminMapper.toDTO(admin);
     }
-
-    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public List<AdminResponse> getUsers()
     {
-        List<Admins> admins = adminRepository.findAll();
+        List<Admin> admins = adminRepository.findAll();
         return admins.stream().map(adminMapper::toDTO).collect(Collectors.toList());
     }
     //    @PreAuthorize("hasAuthority('SCOPE_USER')")
     @PostAuthorize("returnObject.username == authentication.name")
-    public Admins getUserById(Integer id)
+    public Admin getUserById(Integer id)
     {
-        Admins admins= adminRepository.findById(id).orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXISTED));
-        return admins;
+        Admin admin = adminRepository.findById(id).orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXISTED));
+        return admin;
     }
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public AdminResponse getMyInfo()
     {
         var context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
-        Admins admins= adminRepository.findByUsername(username).orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXISTED));
-        return adminMapper.toDTO(admins);
+        Admin admin = adminRepository.findByUsername(username).orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXISTED));
+        return adminMapper.toDTO(admin);
     }
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public AdminResponse userUpdate(Integer userID, AdminRequest request)
     {
-        Admins user = getUserById(userID);
+        Admin user = getUserById(userID);
         user.setPassword(request.getPassword());
         user.setUsername(request.getUsername());
         var roles = roleRepository.findAllById(request.getRoles());
         user.setRoles(new HashSet<>(roles));
 
-        Admins admins = adminRepository.save(user);
-        return  adminMapper.toDTO(admins);
+        Admin admin = adminRepository.save(user);
+        return  adminMapper.toDTO(admin);
     }
 
     public void  deleteUserById(Integer id)

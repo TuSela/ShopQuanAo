@@ -10,7 +10,8 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-public class Admins {
+@Table(name = "admins")
+public class Admin {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int maTk;
@@ -20,5 +21,10 @@ public class Admins {
     @Column(name = "ma_quanly")
     private String managerCode;
     @ManyToMany
+    @JoinTable(
+            name = "admins_roles",
+            joinColumns = @JoinColumn(name = "admin_ma_tk"),          // FK tới admins
+            inverseJoinColumns = @JoinColumn(name = "role_name") // FK tới role
+    )
     private Set<Role> roles;
 }

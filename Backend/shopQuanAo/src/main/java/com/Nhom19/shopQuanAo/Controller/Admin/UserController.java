@@ -17,9 +17,10 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
     @Autowired
-    UserService userService;
+    private UserService userService;
     @Autowired
-    AddressSevice addressSevice;
+    private AddressSevice addressSevice;
+
     @PostMapping()
     public ApiResponse<TaoUsersResponse> creatUsers(@RequestBody @Valid TaoUsersRequest Request){
         ApiResponse<TaoUsersResponse> apiResponse = new ApiResponse<>();
@@ -33,14 +34,12 @@ public class UserController {
          apiResponse.setResult(taoUsersResponse);
          return apiResponse;
     }
-
     @GetMapping
     public ApiResponse<List<UserResponse>> getUsers(){
             ApiResponse<List<UserResponse>> apiResponse = new ApiResponse<>();
             apiResponse.setResult(userService.getUsers());
             return apiResponse;
     }
-
     @GetMapping("/{userId}")
     public ApiResponse<UserResponse> getUser(@PathVariable Integer userId)
     {
@@ -66,4 +65,5 @@ public class UserController {
         }
         return apiResponse;
     }
+
 }

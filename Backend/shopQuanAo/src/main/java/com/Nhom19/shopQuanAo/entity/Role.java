@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.Set;
 @Data
 @Entity
-@Table(name = "role")
+@Table(name = "roles")
 public class Role {
 
     @Id
@@ -19,7 +19,7 @@ public class Role {
     @JoinTable(
             name = "role_permissions",
             joinColumns = @JoinColumn(name = "role_name"),
-            inverseJoinColumns = @JoinColumn(name = "permissions_name")
+            inverseJoinColumns = @JoinColumn(name = "permission_name")
     )
     private Set<Permission> permissions;
 }

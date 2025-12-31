@@ -399,9 +399,6 @@ const allTypes = ref([]);
 const Colors = ref([]);
 const Sizes = ref([]);
 
-
-
-
 onMounted(() => {
   loadAll();
 });

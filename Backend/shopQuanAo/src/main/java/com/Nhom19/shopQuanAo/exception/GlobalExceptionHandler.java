@@ -1,11 +1,14 @@
 package com.Nhom19.shopQuanAo.exception;
 
 import com.Nhom19.shopQuanAo.DTO.Response.ApiResponse;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.nio.file.AccessDeniedException;
+import java.sql.SQLException;
 import java.util.NoSuchElementException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -84,4 +87,30 @@ public class GlobalExceptionHandler {
 //                .status(errorCode.getHttpStatus())
 //                .body(response);
 //    }
+    @ExceptionHandler(AccessDeniedException.class)
+    ResponseEntity<ApiResponse> handleAccessDeniedException(AccessDeniedException ex) {
+        ErrorCode errorCode= ErrorCode.UNAUTHORIZED;
+        ApiResponse response = new ApiResponse();
+        response.setCode(errorCode.getCode());
+        response.setMessage(errorCode.getMessage());
+        return ResponseEntity
+                .status(errorCode.getHttpStatus())
+                .body(response);
+    }
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiResponse<?>> handleDuplicateKey(
+            DataIntegrityViolationException ex) {
+        ApiResponse response = new ApiResponse();
+        String message = "Dữ liệu đã tồn tại (biến thể bị trùng)";
+        response.setMessage(message);
+        // Nếu muốn check đúng UNIQUE constraint
+        if (ex.getCause() != null && ex.getCause().getMessage().contains("UQ_BienThe")) {
+            message = "Sản phẩm biến thể đã tồn tại (màu + size)";
+            response.setMessage(message);
+        }
+        response.setCode(9990);
+        return ResponseEntity
+                .badRequest()
+                .body(response);
+    }
 }

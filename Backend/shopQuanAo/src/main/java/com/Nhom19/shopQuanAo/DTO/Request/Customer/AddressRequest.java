@@ -17,5 +17,4 @@ public class AddressRequest {
     private String phuongXa;
     private String quanHuyen;
     private String diaChi;
-
 }

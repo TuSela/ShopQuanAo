@@ -4,22 +4,24 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
 import javax.crypto.spec.SecretKeySpec;
 import java.util.List;
-
+@EnableMethodSecurity
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity()
 public class SecurityConfig {
     private final String[] PUBLIC_ENDPOINTS = {"/auth/login","users","users/{userId}","products"
             ,"products/type","home","products/{maSp}","home/{maSp}","/types","/colors","/sizes"
@@ -41,28 +43,38 @@ public class SecurityConfig {
                         requestMatchers(HttpMethod.GET,PUBLIC_ENDPOINTS).permitAll().
                         requestMatchers(HttpMethod.DELETE,PUBLIC_ENDPOINTS).permitAll().
                         requestMatchers(HttpMethod.PUT,PUBLIC_ENDPOINTS).permitAll().
-                        requestMatchers(PUBLIC_ENDPOINTS).permitAll()
-                .requestMatchers(PUBLIC_Img).permitAll()
-              .anyRequest().authenticated());
-        httpSecurity.oauth2ResourceServer(ouath2-> ouath2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())));
+                        requestMatchers(PUBLIC_ENDPOINTS).permitAll().
+                        requestMatchers(PUBLIC_Img).permitAll().
+
+                        anyRequest().authenticated());
+
+        httpSecurity.oauth2ResourceServer(ouath2-> ouath2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder()).jwtAuthenticationConverter(jwtAuthenticationConverter())));
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
         return httpSecurity.build();
     }
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-
         config.setAllowCredentials(true);
         config.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:5174"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setExposedHeaders(List.of("Authorization", "Content-Type"));
-
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
-
         return source;
     }
+    @Bean
+    JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtGrantedAuthoritiesConverter authoritiesConverter =
+                new JwtGrantedAuthoritiesConverter();
+
+        authoritiesConverter.setAuthorityPrefix("");
+        JwtAuthenticationConverter jwtConverter = new JwtAuthenticationConverter();
+        jwtConverter.setJwtGrantedAuthoritiesConverter(authoritiesConverter);
+        return jwtConverter;
+    }
+
     @Bean
     JwtDecoder jwtDecoder() {
         SecretKeySpec secretKeySpec= new SecretKeySpec(jwtSignerKey.getBytes(), "HS512");
@@ -70,5 +82,6 @@ public class SecurityConfig {
                 .macAlgorithm(MacAlgorithm.HS512)
                 .build();
     }
+
 }
 

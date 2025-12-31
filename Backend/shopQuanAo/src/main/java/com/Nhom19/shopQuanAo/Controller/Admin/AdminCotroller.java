@@ -3,16 +3,15 @@ package com.Nhom19.shopQuanAo.Controller.Admin;
 import com.Nhom19.shopQuanAo.DTO.Request.Admin.AdminRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.Admin.AdminResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.ApiResponse;
-import com.Nhom19.shopQuanAo.entity.Admins;
+import com.Nhom19.shopQuanAo.entity.Admin;
 import com.Nhom19.shopQuanAo.service.Adminservice;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping("admins")
+@RequestMapping("/admins")
 @RestController
 public class AdminCotroller {
     @Autowired
@@ -25,7 +24,8 @@ public class AdminCotroller {
         apiResponse.setResult(adminservice.createAdmin(request));
         return apiResponse;
     }
-    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+
+
     @GetMapping()
     public ApiResponse<List<AdminResponse>>  getUsers()
     {
@@ -33,15 +33,14 @@ public class AdminCotroller {
         apiResponse.setResult(adminservice.getUsers());
         return apiResponse;
     }
-    //    @PreAuthorize("hasAuthority('SCOPE_USER')")
+
     @GetMapping("/{userId}")
-    public ApiResponse<Admins> getUser(@PathVariable Integer userId)
+    public ApiResponse<Admin> getUser(@PathVariable Integer userId)
     {
-        ApiResponse<Admins> apiResponse = new ApiResponse<>();
+        ApiResponse<Admin> apiResponse = new ApiResponse<>();
         apiResponse.setResult(adminservice.getUserById(userId));
         return  apiResponse;
     }
-
     @PutMapping("/{userId}")
     public ApiResponse<AdminResponse> upDateUser(@PathVariable Integer userId, @RequestBody @Valid AdminRequest request){
         ApiResponse<AdminResponse> apiResponse = new ApiResponse<>();
