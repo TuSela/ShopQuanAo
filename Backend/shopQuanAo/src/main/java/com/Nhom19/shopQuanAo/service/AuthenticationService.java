@@ -41,8 +41,8 @@ public class AuthenticationService {
             if (user == null) {
                 throw new AppException(ErrorCode.USER_NOT_EXISTED);
             }
-            boolean authentication = request.getPassword().equals(user.getPassword());
 
+            boolean authentication = request.getPassword().equals(user.getPassword()) && user.getTrangThai() == true;
             if (!authentication) {
                 throw new AppException(ErrorCode.UNAUTHENTICATED);
             }
@@ -52,7 +52,7 @@ public class AuthenticationService {
             return authenticationResponse;
         }
         else {
-            boolean authentication = request.getPassword().equals(admin.getPassword());
+            boolean authentication = request.getPassword().equals(admin.getPassword()) && admin.getTrangThai() == true;
 
             if (!authentication) {
                 throw new AppException(ErrorCode.UNAUTHENTICATED);

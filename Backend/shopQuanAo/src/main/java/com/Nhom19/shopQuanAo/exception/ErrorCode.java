@@ -25,7 +25,7 @@ public enum ErrorCode {
     ADDRESS_NOT_EXISTED(1010, "Không tìm thấy địa chỉ", HttpStatus.NOT_FOUND),
     USER_ID_NOT_EXISTED(1004, "Không tìm thấy người dùng với mã đã cung cấp", HttpStatus.NOT_FOUND),
     USER_NOT_EXISTED(1001, "Người dùng không tồn tại", HttpStatus.NOT_FOUND),
-    UNAUTHENTICATED(1006, "Bạn chưa đăng nhập hoặc phiên đăng nhập đã hết hạn", HttpStatus.UNAUTHORIZED),
+    UNAUTHENTICATED(1006, "Không thể xác thực tài khoản đăng nhập", HttpStatus.UNAUTHORIZED),
     USERNAME_INVALID(1003, "Tên đăng nhập không hợp lệ", HttpStatus.BAD_REQUEST),
     PASSWORD_INVALID(1005, "Mật khẩu không hợp lệ", HttpStatus.BAD_REQUEST),
     PASSWORD_CONFIRM_NOT_MATCH(1008, "Mật khẩu xác nhận không trùng khớp", HttpStatus.BAD_REQUEST),
