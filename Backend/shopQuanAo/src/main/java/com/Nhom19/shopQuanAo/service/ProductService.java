@@ -238,6 +238,7 @@ public class ProductService {
 
         ProductTypes productTypes = productTypeRepo.findById(request.getMaLoai()).orElseThrow(() -> new RuntimeException("Không tìm thấy màu"));
         products.setTypes(productTypes);
+        products.setTrangThai(false);
         productRepository.save(products);
 
         List<ColorRequest> colors = request.getColors();
