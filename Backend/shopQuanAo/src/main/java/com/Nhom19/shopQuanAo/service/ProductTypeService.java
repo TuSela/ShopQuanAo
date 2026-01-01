@@ -30,7 +30,7 @@ public class ProductTypeService {
     ProductTypeMapper productTypeMapper;
 
     public ProductTypeResponse addProductType(TypeCreationRequest request){
-        if (!productTypeRepo.existsByTenLoai(request.getTenLoai())){
+        if (productTypeRepo.existsByChiTietLoai(request.getChiTietLoai())){
             throw new RuntimeException();
         }
 

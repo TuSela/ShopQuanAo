@@ -48,5 +48,25 @@ public class TypeController {
         return productTypeResponse;
     }
 
+    @PutMapping("/{maLoai}")
+    public ApiResponse<ProductTypeResponse> updateProductType (
+            @RequestBody TypeCreationRequest request,
+            @PathVariable("maLoai") int maLoai) {
+        ApiResponse<ProductTypeResponse> productTypeResponse = new ApiResponse<>();
+        productTypeResponse.setResult(productTypeService.updateProductType(maLoai, request));
+        return productTypeResponse;
+    }
+
+    @DeleteMapping("/{maLoai}")
+    public ApiResponse<Boolean> deleteProductType(@PathVariable("maLoai") int maLoai) {
+        ApiResponse<Boolean> response = new ApiResponse<>();
+        var result = productTypeService.deleteProductType(maLoai);
+        if (result) {
+            response.setResult(true);
+        } else  {
+            response.setResult(false);
+        }
+        return response;
+    }
 }
 
