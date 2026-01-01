@@ -25,6 +25,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.method.P;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -57,7 +58,7 @@ public class ProductService {
     private OrderItemRepo orderItemRepo;
     @Autowired
     private VariantMapper variantMapper;
-
+//    @PreAuthorize("hasAuthority('PRODUCT_MANAGE')")
     public List<ProductResponse2> getProducts() {
         return productRepository.findAll()
                 .stream()
@@ -107,6 +108,7 @@ public class ProductService {
         return productRepository.findAnyTenProductsNative();
     }
 
+//    @PreAuthorize("hasAuthority('PRODUCT_MANAGE')")
     public Boolean UpdateProduct(UpdateProductRequest request, Integer maSp){
         Products products = productRepository.findById(maSp).orElseThrow(()-> new RuntimeException("không tìm thấy sản phẩm"));
         products.setGia(products.getGia());
@@ -230,6 +232,7 @@ public class ProductService {
 
 
 // THÊM SẢN PHẨM MỚI
+//    @PreAuthorize("hasAuthority('PRODUCT_MANAGE')")
     @Transactional
     public Boolean createProduct(CreationProductRequest request) {
         Products products = productMapper.toEntity(request);
@@ -267,7 +270,6 @@ public class ProductService {
         return true;
     }
 
-// tìm kiếm sản phẩm theo keyword
 // tìm kiếm sản phẩm theo keyword
 public PageResponse<ProductBestSellerResponse> searchByKeyword(
         int page,

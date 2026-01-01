@@ -17,4 +17,5 @@ public class UserResponse {
     private String gioiTinh;
     private String ngaySinh;
     private String avatar;
+    private Boolean trangThai;
 }

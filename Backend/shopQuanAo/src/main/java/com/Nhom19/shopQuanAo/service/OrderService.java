@@ -1,7 +1,6 @@
 package com.Nhom19.shopQuanAo.service;
 
 import com.Nhom19.shopQuanAo.DTO.Request.Customer.OrderRequest.CreatOrderRequest;
-import com.Nhom19.shopQuanAo.DTO.Request.Customer.OrderRequest.UpdateOrderRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyCart.CreatCartResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyOrder.*;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.OrderDetailRes.AddressResponse;
@@ -18,6 +17,7 @@ import com.Nhom19.shopQuanAo.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -34,10 +34,9 @@ public class OrderService {
     @Autowired
     OrderItemRepo orderItemRepo;
 
+//    @PreAuthorize("hasAuthority('ORDER_MANAGE')")
     public List<OrderResponseDTO> getAllOrdersWithProducts() {
-
         List<Orders> orders = orderRepository.findAllOrdersWithItems();
-
         return orders.stream().map(order -> {
             List<OrderProductDTO> productDTOS = order.getItems().stream().map(item ->
                     new OrderProductDTO(
@@ -56,6 +55,7 @@ public class OrderService {
             );
         }).toList();
     }
+    //Hủy đơn hàng
     public Boolean CancelOrder(Integer orderId) {
         Orders orders = orderRepository.findById(orderId).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
         orders.setOrderStatus("Đã hủy");
@@ -123,6 +123,8 @@ public class OrderService {
     private PaymentMethodRepo paymentMethodRepo;
     @Autowired
     private PaymentMapper paymentMapper;
+
+    // xem chi tiết đơn hàng
     public OrderDetailResponse getOrderDetail(Integer maDdh) {
 
         Orders order = orderRepository.findById(maDdh)
@@ -187,6 +189,7 @@ public class OrderService {
         response.setTotalAmount(order.getTongTien());
         return response;
     }
+
     @Autowired
     private CartService cartService;
     @Autowired
@@ -194,8 +197,8 @@ public class OrderService {
     @Autowired
     private PaymentMethodRepo paymentMethodRepository;
 
-    public CreatOrderResponse Order() {
-
+    // lấy ra thông tin Thanh toán để tạo đơn
+    public CreatOrderResponse PaymentOrder() {
         var context = SecurityContextHolder.getContext();
         String sdt = context.getAuthentication().getName();
         Users users = userRepository.findBySdt(sdt);
@@ -206,7 +209,6 @@ public class OrderService {
             AddressResponse addressRes = addressMapper.ToDTO(address);
             addressResponseList.add(addressRes);
         });
-
         List<PaymentMethods> paymentMethodsList = paymentMethodRepository.findAll();
         List<PaymentResponse> paymentResponseList = new ArrayList<>();
         paymentMethodsList.forEach(paymentMethod -> {
@@ -226,9 +228,10 @@ public class OrderService {
     private CartItemRepo cartItemRepo;
     @Autowired
     AuthenticationService authenticationService;
+
+    //Tạo đơn hàng
     @Transactional
     public CreatCartResponse createOrder(CreatOrderRequest request) {
-
         Orders order = new Orders();
         addresses addresses = addressRepository.findById(request.getMaDiaChi()).orElseThrow(() -> new AppException(ErrorCode.ADDRESS_NOT_EXISTED));
         PaymentMethods paymentMethods = paymentMethodRepo.findById(request.getMaPt()).orElseThrow(() -> new AppException(ErrorCode.PAYMENT_METHOD_NOT_FOUND));

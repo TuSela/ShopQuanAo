@@ -15,6 +15,7 @@ import com.Nhom19.shopQuanAo.mapper.ProductMapper;
 import com.Nhom19.shopQuanAo.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -37,23 +38,10 @@ public class CartService {
     private UserRepository userRepo;
     @Autowired
     private ProductMapper productMapper;
-
     @Autowired
     AuthenticationService authenticationService;
 
-    private Users getCurrentUser() {
-        var auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated()) {
-            throw new AppException(ErrorCode.UNAUTHENTICATED);
-        }
-
-        Users user = userRepo.findBySdt(auth.getName());
-        if (user == null) {
-            throw new AppException(ErrorCode.USER_NOT_EXISTED);
-        }
-        return user;
-    }
-
+    @PreAuthorize("hasAuthority('SCOPE_USER')")
     public CreatCartResponse createCart(CreateCartRequest request, Integer Id) {
 
         Cart cart = new Cart();
@@ -117,6 +105,7 @@ public class CartService {
     }
     @Autowired
     private ProductImagesRepo productImagesRepo;
+    @PreAuthorize("hasAuthority('SCOPE_USER')")
     public MyCartResponse getAllMyCart() {
         var context = SecurityContextHolder.getContext();
         String sdt = context.getAuthentication().getName();
@@ -180,6 +169,7 @@ public class CartService {
 
         return myCartResponse;
     }
+    @PreAuthorize("hasAuthority('SCOPE_USER')")
     public Boolean UpdateMyCart(UpdateMyCartReq request, Integer maBienThe) {
         var context = SecurityContextHolder.getContext();
         String sdt = context.getAuthentication().getName();
@@ -208,15 +198,13 @@ public class CartService {
             thanhTien2 = thanhTien2.add(item.getTongTien());
         }
         cart.setTongTien(thanhTien2);
-
-
-
         cart.setNgaySua(LocalDateTime.now());
         cartRepository.save(cart);
 
         return true;
 
     }
+    @PreAuthorize("hasAuthority('SCOPE_USER')")
     @Transactional
     public CreatCartResponse DeleteMyCartItem(Integer maBienThe) {
         var context = SecurityContextHolder.getContext();

@@ -14,6 +14,7 @@ import com.Nhom19.shopQuanAo.mapper.VariantMapper;
 import com.Nhom19.shopQuanAo.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -81,6 +82,7 @@ public class ProductVariantService {
     @Autowired
     private ProductSizeRepo productSizeRepo;
 
+//    @PreAuthorize("hasAuthority('PRODUCT_MANAGE')")
     @Transactional
     public List<ProductVariantResponse> createVariants(CreateVariantRequest request,Integer maSp) {
         Products products =productRepo.findById(maSp).orElseThrow(()->new AppException(ErrorCode.PRODUCT_NOT_EXISTED));

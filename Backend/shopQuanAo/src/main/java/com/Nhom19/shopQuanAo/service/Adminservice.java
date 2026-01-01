@@ -32,7 +32,7 @@ public class Adminservice {
     private PermissionRepository permissionRepository;
     @Autowired
     private RoleRepository roleRepository;
-    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+//    @PreAuthorize("hasAuthority('ADMIN_MANAGE')")
     public AdminResponse createAdmin(AdminRequest request){
         Admin users = new Admin();
         if(adminRepository.existsIdByUsername(request.getUsername())){
@@ -40,30 +40,28 @@ public class Adminservice {
         }
         users.setUsername(request.getUsername());
         users.setPassword(request.getPassword());
-
 //        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 //        users.setPassword(passwordEncoder.encode(request.getPassword()));
-
         HashSet<String> roles = new HashSet<>();
         roles.add(Role.ADMIN.name());
 //        users.setRoles(request.getRoles());
         Admin admin =  adminRepository.save(users);
         return adminMapper.toDTO(admin);
     }
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+
+//    @PreAuthorize("hasAuthority('ADMIN_MANAGE')")
     public List<AdminResponse> getUsers()
     {
         List<Admin> admins = adminRepository.findAll();
         return admins.stream().map(adminMapper::toDTO).collect(Collectors.toList());
     }
-    //    @PreAuthorize("hasAuthority('SCOPE_USER')")
-    @PostAuthorize("returnObject.username == authentication.name")
+//        @PreAuthorize("hasAuthority('ADMIN_MANAGE')")
+//    @PostAuthorize("returnObject.username == authentication.name")
     public Admin getUserById(Integer id)
     {
         Admin admin = adminRepository.findById(id).orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXISTED));
         return admin;
     }
-    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public AdminResponse getMyInfo()
     {
         var context = SecurityContextHolder.getContext();
@@ -71,7 +69,7 @@ public class Adminservice {
         Admin admin = adminRepository.findByUsername(username).orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXISTED));
         return adminMapper.toDTO(admin);
     }
-    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+//    @PreAuthorize("hasAuthority('ADMIN_MANAGE')")
     public AdminResponse userUpdate(Integer userID, AdminRequest request)
     {
         Admin user = getUserById(userID);
@@ -87,7 +85,7 @@ public class Adminservice {
     {
         adminRepository.deleteById(id);
     }
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+//    @PreAuthorize("hasAuthority('ADMIN_MANAGE')")
     @Transactional
     public void disableAdmin(Integer adminId, String authHeader) {
         var context = SecurityContextHolder.getContext();
@@ -101,7 +99,7 @@ public class Adminservice {
                 .orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXISTED));
         admin.setTrangThai(false);
     }
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+//    @PreAuthorize("hasAuthority('ADMIN_MANAGE')")
     @Transactional
     public void enableAdmin(Integer adminId) {
         Admin admin = adminRepository.findById(adminId)
