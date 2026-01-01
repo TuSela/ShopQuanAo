@@ -18,7 +18,7 @@ public class PermissionService {
     @Autowired
     private PermissionRepository permissionRepository;
 
-//    @PreAuthorize("hasAuthority('ADMIN_MANAGE')")
+    @PreAuthorize("hasAuthority('ADMIN_MANAGE')")
     public PermissionResponse create(PermissionRequest request){
         if (request == null) {
             throw new IllegalArgumentException("Request must not be null");
@@ -35,7 +35,7 @@ public class PermissionService {
             return permissionResponse;
         }
 
-//    @PreAuthorize("hasAuthority('ADMIN_MANAGE')")
+    @PreAuthorize("hasAuthority('ADMIN_MANAGE')")
     public List<PermissionResponse> findAll(){
         List<PermissionResponse> permissionResponseList=new ArrayList<>();
         Permission permission =new Permission();
@@ -45,7 +45,6 @@ public class PermissionService {
                     .collect(Collectors.toList());
 
     }
-
     @PreAuthorize("hasAuthority('ADMIN_MANAGE')")
     public void delete(String permission){
         permissionRepository.deleteById(permission);

@@ -23,7 +23,7 @@ public class ProductImageService {
     private ProductRepository productRepo;
     @Autowired
     private ProductColorRepo productColorRepo;
-//    @PreAuthorize("hasAuthority('PRODUCT_MANAGE')")
+    @PreAuthorize("hasAuthority('PRODUCT_MANAGE')")
     public Boolean createProductImageRequest(CreationProductImageRequest request){
         Products products = productRepo.findById(request.getMaSp()).orElseThrow(()-> new AppException(ErrorCode.PRODUCT_NOT_EXISTED));
         ProductColors colorsX = productColorRepo.findById(request.getMaSp()).orElseThrow(()-> new AppException(ErrorCode.PRODUCT_COLOR_NOT_FOUND));

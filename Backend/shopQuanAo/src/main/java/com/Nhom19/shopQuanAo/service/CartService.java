@@ -234,7 +234,6 @@ public class CartService {
         if(!cartItemRepo.existsByCart(cart)){
             cartRepository.delete(cart);
         }
-        
         CreatCartResponse creatCartResponse = new CreatCartResponse();
         creatCartResponse.setToken(authenticationService.generateTokenUsers(users));
         creatCartResponse.setSuccess(Boolean.TRUE);

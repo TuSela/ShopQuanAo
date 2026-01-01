@@ -23,24 +23,24 @@ public class ProductColorService {
     private ProductColorRepo productColorRepo;
     @Autowired
     private ProductTypeMapper productTypeMapper;
-
+    @PreAuthorize("hasAuthority('COLOR_MANAGE')")
     public List<ColorResponse> getAllProductColors() {
         List<ProductColors> productColors = productColorRepo.findAll();
         return productColors.stream().map(productTypeMapper::toColorResponse).collect(Collectors.toList());
     }
-//    @PreAuthorize("hasAuthority('COLOR_MANAGE')")
+    @PreAuthorize("hasAuthority('COLOR_MANAGE')")
     public ColorResponse getProductColor(int maMs) {
         var productColors = productColorRepo.findById(maMs).orElseThrow(()-> new AppException(ErrorCode.PRODUCT_COLOR_NOT_FOUND));
         return colorMapper.toDto(productColors);
     }
-//    @PreAuthorize("hasAuthority('COLOR_MANAGE')")
+    @PreAuthorize("hasAuthority('COLOR_MANAGE')")
     public ColorResponse updateProductColor(int maMs, CreateOrUpdateColorRequest request){
         var productColors = productColorRepo.findById(maMs).orElseThrow(()-> new AppException(ErrorCode.PRODUCT_COLOR_NOT_FOUND));
         colorMapper.updateColor(productColors, request);
         productColorRepo.save(productColors);
         return colorMapper.toDto(productColors);
     }
-//    @PreAuthorize("hasAuthority('COLOR_MANAGE')")
+    @PreAuthorize("hasAuthority('COLOR_MANAGE')")
     public boolean deleteColor(int maMs) {
         if (!productColorRepo.existsById(maMs)) {
             throw new AppException(ErrorCode.PRODUCT_COLOR_EXISTED);
@@ -48,11 +48,12 @@ public class ProductColorService {
         productColorRepo.deleteById(maMs);
         return true;
     }
-//    @PreAuthorize("hasAuthority('COLOR_MANAGE')")
+    @PreAuthorize("hasAuthority('COLOR_MANAGE')")
     public ColorResponse createProductColor(CreateOrUpdateColorRequest request){
         if (productColorRepo.existsByTenMs(request.getTenMs())) {
             throw new RuntimeException();
         }
+
         var productColor = colorMapper.toEntity(request);
         productColorRepo.save(productColor);
         return colorMapper.toDto(productColor);

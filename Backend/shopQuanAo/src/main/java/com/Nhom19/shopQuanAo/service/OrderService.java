@@ -17,7 +17,6 @@ import com.Nhom19.shopQuanAo.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -281,11 +280,8 @@ public class OrderService {
 
     //Lấy ra sản phẩm chưa đánh giá!
     public List<MyOrderResponse> getOrdersNotReviewed(Integer maTk) {
-
         List<Orders> orders = orderRepository.findCompletedOrdersNotReviewed(maTk);
-
         return orders.stream().map(order -> {
-
             MyOrderResponse res = new MyOrderResponse();
             res.setMaDonHang(order.getMaDdh());
             res.setNgayDat(order.getNgayThanhToan());

@@ -44,7 +44,6 @@ public class AddressSevice {
 
         return users;
     }
-//    @PreAuthorize("hasAuthority('SCOPE_USER')")
     public List<AddressResponse> getmyaddress() {
 
         Users users = getCurrentUser();
@@ -58,7 +57,6 @@ public class AddressSevice {
 
         return responses;
     }
-    @PreAuthorize("hasAuthority('SCOPE_USER')")
     public Boolean CreateAddress (AddressRequest request){
         var context = SecurityContextHolder.getContext();
         String sdt = context.getAuthentication().getName();

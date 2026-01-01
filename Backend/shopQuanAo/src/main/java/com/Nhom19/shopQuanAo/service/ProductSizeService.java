@@ -30,13 +30,13 @@ public class ProductSizeService {
                 .collect(Collectors.toList());
     }
 
-//    @PreAuthorize("hasAuthority('SIZE_MANAGE')")
+    @PreAuthorize("hasAuthority('SIZE_MANAGE')")
     public ProductSizeResponse getProductSize (int maKc) {
         var size = productSizeRepo.findById(maKc).orElseThrow(()-> new AppException(ErrorCode.PRODUCT_SIZE_NOT_FOUND));
 
         return productSizeMapper.toProductSizeResponse(size);
     }
-//    @PreAuthorize("hasAuthority('SIZE_MANAGE')")
+    @PreAuthorize("hasAuthority('SIZE_MANAGE')")
     public ProductSizeResponse createSize (CreateOrUpdateSizeRequest createOrUpdateSizeRequest) {
         if (productSizeRepo.existsByTenKc(createOrUpdateSizeRequest.getTenKc())) {
             throw new RuntimeException();
@@ -48,7 +48,7 @@ public class ProductSizeService {
 
         return productSizeMapper.toProductSizeResponse(size);
     }
-//    @PreAuthorize("hasAuthority('SIZE_MANAGE')")
+    @PreAuthorize("hasAuthority('SIZE_MANAGE')")
     public ProductSizeResponse updateSize(int maKc, CreateOrUpdateSizeRequest request) {
         var size = productSizeRepo.findById(maKc).orElseThrow(()-> new AppException(ErrorCode.PRODUCT_SIZE_NOT_FOUND));
 

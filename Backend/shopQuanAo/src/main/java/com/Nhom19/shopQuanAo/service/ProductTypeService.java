@@ -29,7 +29,7 @@ public class ProductTypeService {
     @Autowired
     ProductTypeMapper productTypeMapper;
 
-//    @PreAuthorize("hasAuthority('CATEGORY_MANAGE')")
+    @PreAuthorize("hasAuthority('CATEGORY_MANAGE')")
     public ProductTypeResponse addProductType(TypeCreationRequest request){
         if (!productTypeRepo.existsByTenLoai(request.getTenLoai())){
             throw new RuntimeException();
@@ -40,7 +40,7 @@ public class ProductTypeService {
         return productTypeMapper.toProductTypeResponse(productType);
     }
 
-//    @PreAuthorize("hasAuthority('CATEGORY_MANAGE')")
+    @PreAuthorize("hasAuthority('CATEGORY_MANAGE')")
     public List<ProductTypeResponse> getTypes (){
          List<ProductTypes> productTypes = productTypeRepo.findAll();
          return productTypes.stream()
@@ -48,7 +48,7 @@ public class ProductTypeService {
                  .collect(Collectors.toList());
     }
 
-//    @PreAuthorize("hasAuthority('CATEGORY_MANAGE')")
+    @PreAuthorize("hasAuthority('CATEGORY_MANAGE')")
     public ProductTypeResponse updateProductType (int maLoai, TypeCreationRequest request){
         var productType = productTypeRepo.findById(maLoai).orElseThrow(()-> new AppException(ErrorCode.PRODUCT_TYPE_NOT_FOUND));
 
@@ -176,7 +176,5 @@ public class ProductTypeService {
         var  productType = productTypeRepo.findById(maLoai).orElseThrow(()-> new AppException(ErrorCode.PRODUCT_TYPE_NOT_FOUND));
         return productTypeMapper.toProductTypeResponse(productType);
     }
-
-
 
 }
