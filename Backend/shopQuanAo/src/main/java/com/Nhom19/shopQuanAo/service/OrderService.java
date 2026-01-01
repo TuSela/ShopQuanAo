@@ -1,6 +1,7 @@
 package com.Nhom19.shopQuanAo.service;
 
 import com.Nhom19.shopQuanAo.DTO.Request.Customer.OrderRequest.CreatOrderRequest;
+import com.Nhom19.shopQuanAo.DTO.Response.Admin.OrderResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyCart.CreatCartResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyOrder.*;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.OrderDetailRes.AddressResponse;
@@ -12,11 +13,13 @@ import com.Nhom19.shopQuanAo.entityCompositeKey.OrderItemId;
 import com.Nhom19.shopQuanAo.exception.AppException;
 import com.Nhom19.shopQuanAo.exception.ErrorCode;
 import com.Nhom19.shopQuanAo.mapper.AddressMapper;
+import com.Nhom19.shopQuanAo.mapper.OrderMapper;
 import com.Nhom19.shopQuanAo.mapper.PaymentMapper;
 import com.Nhom19.shopQuanAo.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -24,16 +27,19 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class OrderService {
     @Autowired
-    OrderRepository orderRepository;
+    private OrderRepository orderRepository;
     @Autowired
-    OrderItemRepo orderItemRepo;
-
+    private OrderItemRepo orderItemRepo;
+    @Autowired
+    private OrderMapper orderMapper;
 //    @PreAuthorize("hasAuthority('ORDER_MANAGE')")
+
     public List<OrderResponseDTO> getAllOrdersWithProducts() {
         List<Orders> orders = orderRepository.findAllOrdersWithItems();
         return orders.stream().map(order -> {
@@ -53,6 +59,30 @@ public class OrderService {
                     productDTOS
             );
         }).toList();
+    }
+    //Lấy ra danh sách các sản phẩm
+    @PreAuthorize("hasAuthority('ORDER_MANAGE')")
+    public List<OrderResponse> getAllOrders() {
+        List<Orders> orders = orderRepository.findAll();
+       return orders.stream().map(orderMapper::toOrderResponse).collect(Collectors.toList());
+
+    }
+    //Cập nhật trạng thái đơn hàng
+    @PreAuthorize("hasAuthority('ORDER_MANAGE')")
+    public  Boolean DangGiaoOrder(Integer orderId) {
+        Orders orders = orderRepository.findById(orderId).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+        orders.setOrderStatus("Đang giao");
+        orders.setShippedAt(LocalDateTime.now());
+        orderRepository.save(orders);
+        return true;
+    }
+    @PreAuthorize("hasAuthority('ORDER_MANAGE')")
+    public Boolean DaGiaoOrder(Integer orderId) {
+        Orders orders = orderRepository.findById(orderId).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+        orders.setOrderStatus("Đã giao");
+        orders.setPaymentStatus("Đã thanh toán");
+        orderRepository.save(orders);
+        return true;
     }
     //Hủy đơn hàng
     public Boolean CancelOrder(Integer orderId) {

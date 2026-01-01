@@ -549,7 +549,6 @@ async function loadProduct(id) {
   const res = await axios.get(`http://localhost:8081/nhom19/products/${id}`);
 
   const p = res.data.result;
-
   productForm.maSp = p.maSp;
   productForm.tenSp = p.tenSp;
   productForm.gia = p.gia;

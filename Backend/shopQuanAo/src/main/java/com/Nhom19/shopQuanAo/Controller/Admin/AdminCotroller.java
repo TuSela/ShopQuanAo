@@ -26,7 +26,6 @@ public class AdminCotroller {
         return apiResponse;
     }
 
-
     @GetMapping()
     public ApiResponse<List<AdminResponse>>  getUsers()
     {
@@ -72,7 +71,6 @@ public class AdminCotroller {
         apiResponse.setMessage("Admin đã bị khóa");
         return apiResponse;
     }
-
     @PutMapping("/{id}/enable")
     public ApiResponse enableAdmin(@PathVariable Integer id) {
         adminservice.enableAdmin(id);
