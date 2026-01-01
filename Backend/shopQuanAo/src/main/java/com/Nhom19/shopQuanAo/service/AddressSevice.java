@@ -44,7 +44,7 @@ public class AddressSevice {
 
         return users;
     }
-    @PreAuthorize("hasAuthority('SCOPE_USER')")
+//    @PreAuthorize("hasAuthority('SCOPE_USER')")
     public List<AddressResponse> getmyaddress() {
 
         Users users = getCurrentUser();
@@ -69,11 +69,11 @@ public class AddressSevice {
         addressRepository.save(addr);
         return true;
     }
-    @PreAuthorize("hasAuthority('SCOPE_USER')")
+//    @PreAuthorize("hasAuthority('SCOPE_USER')")
     public Boolean DeleteAddress(Integer id){          addressRepository.deleteById(id);
         return true;
     }
-    @PreAuthorize("hasAuthority('SCOPE_USER')")
+//    @PreAuthorize("hasAuthority('SCOPE_USER')")
     public addresses getAddressById(Integer id) {
 
         if (id == null) {
@@ -84,7 +84,7 @@ public class AddressSevice {
                         new AppException(ErrorCode.ADDRESS_NOT_EXISTED)
                 );
     }
-    @PreAuthorize("hasAuthority('SCOPE_USER')")
+//    @PreAuthorize("hasAuthority('SCOPE_USER')")
     public Boolean updateAddress(AddressRequest request, Integer id) {
 
         if (request == null) {

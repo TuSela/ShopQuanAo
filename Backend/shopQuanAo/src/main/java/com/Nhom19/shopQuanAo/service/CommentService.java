@@ -31,7 +31,7 @@ public class CommentService {
     private OrderRepository orderRepository;
     @Autowired
     private OrderItemRepo orderItemRepo;
-    @PreAuthorize("hasAuthority('SCOPE_USER')")
+//    @PreAuthorize("hasAuthority('SCOPE_USER')")
     public Boolean CreateComment(CommentRequest request,Integer Id){
 
         Users users = userRepository.findById(Id).orElseThrow(()->new AppException(USER_NOT_EXISTED));
