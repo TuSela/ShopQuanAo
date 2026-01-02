@@ -10,7 +10,9 @@ import com.Nhom19.shopQuanAo.exception.AppException;
 import com.Nhom19.shopQuanAo.exception.ErrorCode;
 import com.Nhom19.shopQuanAo.mapper.ProductTypeMapper;
 import com.Nhom19.shopQuanAo.repository.ProductTypeRepo;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -164,6 +166,12 @@ public class ProductTypeService {
     public ProductTypeResponse updateProductType (int maLoai, TypeCreationRequest request){
         var productType = productTypeRepo.findById(maLoai).orElseThrow(()-> new AppException(ErrorCode.PRODUCT_TYPE_NOT_FOUND));
 
+        if (productType.getChiTietLoai().equals(request.getChiTietLoai())) {
+            if (productTypeRepo.existsByChiTietLoai(request.getChiTietLoai())) {
+                throw new AppException(ErrorCode.PRODUCT_TYPE_EXISTED);
+            }
+        }
+
         productTypeMapper.updateProductTypes(productType, request);
         productTypeRepo.save(productType);
 
@@ -178,4 +186,21 @@ public class ProductTypeService {
         return true;
     }
 
+//    @PreAuthorize("hasAuthority('CATEGORY_MANAGE')")
+    @Transactional
+    public void enableType (int maLoai) {
+        var type  = productTypeRepo.findById(maLoai).orElseThrow(
+                ()-> new AppException(ErrorCode.PRODUCT_TYPE_NOT_FOUND));
+
+        type.setTinhTrang(true);
+    }
+
+    //    @PreAuthorize("hasAuthority('CATEGORY_MANAGE')")
+    @Transactional
+    public void disableType (int maLoai) {
+        var type  = productTypeRepo.findById(maLoai).orElseThrow(
+                ()-> new AppException(ErrorCode.PRODUCT_TYPE_NOT_FOUND));
+
+        type.setTinhTrang(false);
+    }
 }
