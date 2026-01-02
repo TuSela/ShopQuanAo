@@ -68,5 +68,21 @@ public class TypeController {
         }
         return response;
     }
+
+    @PutMapping("/{maLoai}/enable")
+    public ApiResponse<String> enableType(@PathVariable("maLoau")  int maLoai) {
+        ApiResponse<String> response = new ApiResponse<>();
+        productTypeService.enableType(maLoai);
+        response.setResult("Loại sản phẩm đã được kích hoạt!");
+        return response;
+    }
+
+    @PutMapping("/{maLoai}/disable")
+    public ApiResponse<String> disableType(@PathVariable("maLoai")  int maLoai) {
+        ApiResponse<String> response = new ApiResponse<>();
+        productTypeService.disableType(maLoai);
+        response.setMessage("Loại sản phẩm đã bị vô hiệu hóa");
+        return response;
+    }
 }
 
