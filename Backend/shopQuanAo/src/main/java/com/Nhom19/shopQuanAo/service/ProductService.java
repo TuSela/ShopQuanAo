@@ -58,7 +58,7 @@ public class ProductService {
     private OrderItemRepo orderItemRepo;
     @Autowired
     private VariantMapper variantMapper;
-
+    @PreAuthorize("hasAuthority('PRODUCT_MANAGE')")
     public List<ProductResponse2> getProducts() {
         return productRepository.findAll()
                 .stream()
@@ -74,7 +74,7 @@ public class ProductService {
                 })
                 .toList();
     }
-
+    @PreAuthorize("hasAuthority('PRODUCT_MANAGE')")
     public List<ProductBestSellerResponse>getTopBestSeller(){
         List<ProductBestSellerResponse> result =
                 productRepository.findBestSellerProducts(PageRequest.of(0, 10));
@@ -96,7 +96,6 @@ public class ProductService {
         }
 
         return result;
-
     }
 //    public List<ProductBestSellerResponse> getAllProducts(){
 //        return productRepository.getSanPhamTheoMau();
@@ -108,6 +107,7 @@ public class ProductService {
         return productRepository.findAnyTenProductsNative();
     }
 
+    @PreAuthorize("hasAuthority('PRODUCT_MANAGE')")
     public Boolean UpdateProduct(UpdateProductRequest request, Integer maSp){
         Products products = productRepository.findById(maSp).orElseThrow(()-> new RuntimeException("không tìm thấy sản phẩm"));
         products.setGia(products.getGia());
@@ -231,12 +231,14 @@ public class ProductService {
 
 
 // THÊM SẢN PHẨM MỚI
+    @PreAuthorize("hasAuthority('PRODUCT_MANAGE')")
     @Transactional
     public Boolean createProduct(CreationProductRequest request) {
         Products products = productMapper.toEntity(request);
 
         ProductTypes productTypes = productTypeRepo.findById(request.getMaLoai()).orElseThrow(() -> new RuntimeException("Không tìm thấy màu"));
         products.setTypes(productTypes);
+        products.setTrangThai(false);
         productRepository.save(products);
 
         List<ColorRequest> colors = request.getColors();
@@ -268,7 +270,6 @@ public class ProductService {
         return true;
     }
 
-// tìm kiếm sản phẩm theo keyword
 // tìm kiếm sản phẩm theo keyword
 public PageResponse<ProductBestSellerResponse> searchByKeyword(
         int page,

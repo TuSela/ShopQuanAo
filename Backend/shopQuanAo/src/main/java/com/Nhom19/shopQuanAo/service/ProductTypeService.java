@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +30,7 @@ public class ProductTypeService {
     @Autowired
     ProductTypeMapper productTypeMapper;
 
+    @PreAuthorize("hasAuthority('CATEGORY_MANAGE')")
     public ProductTypeResponse addProductType(TypeCreationRequest request){
         if (productTypeRepo.existsByChiTietLoai(request.getChiTietLoai())){
             throw new RuntimeException();
@@ -41,6 +41,7 @@ public class ProductTypeService {
         return productTypeMapper.toProductTypeResponse(productType);
     }
 
+    @PreAuthorize("hasAuthority('CATEGORY_MANAGE')")
     public List<ProductTypeResponse> getTypes (){
          List<ProductTypes> productTypes = productTypeRepo.findAll();
          return productTypes.stream()
@@ -48,20 +49,13 @@ public class ProductTypeService {
                  .collect(Collectors.toList());
     }
 
-    public List<ProductTypeResponse> getALLTypesByNam (){
-        List<ProductTypes> productTypes = productTypeRepo.findAll();
-        return productTypes.stream()
-                .map(productTypeMapper::toProductTypeResponse)
-                .collect(Collectors.toList());
-    }
-
+    //Danh mục theo Loại sản phẩm
     private String normalize(String input) {
         if (input == null) return "";
         return Normalizer.normalize(input, Normalizer.Form.NFD)
                 .replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
                 .toLowerCase();
     }
-
     public List<NavMenuDTO> buildNavMenu() {
 
         List<ProductTypes> list = productTypeRepo.findAllForMenuSorted();
@@ -129,6 +123,9 @@ public class ProductTypeService {
                 })
                 .collect(Collectors.toList());
     }
+
+    //Lấy ra những sản phẩm theo danh mục
+
     public List<ChiTietLoaiResponse> getChiTietLoai(String doiTuong, String tenLoai, Integer chiTietLoai) {
         if (doiTuong != null && doiTuong.isBlank()) doiTuong = null;
         if (tenLoai != null && tenLoai.isBlank()) tenLoai = null;

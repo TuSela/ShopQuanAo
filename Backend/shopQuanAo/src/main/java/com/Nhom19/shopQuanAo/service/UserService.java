@@ -32,7 +32,6 @@ public class UserService {
         if (request == null) {
             throw new AppException(ErrorCode.INVALID_REQUEST);
         }
-
         // kiểm tra tồn tại
         if (userRepository.existsBySdt(request.getSdt())) {
             throw new AppException(ErrorCode.USER_EXISTED);
@@ -43,17 +42,21 @@ public class UserService {
         userRepository.save(users);
         return userResponse;
     }
+
+    @PreAuthorize("hasAuthority('USER_MANAGE')")
     public List<UserResponse> getUsers() {
         return userRepository.findAll()
                 .stream()
                 .map(userMapper::toUserResponse)
                 .collect(Collectors.toList());
     }
+    @PreAuthorize("hasAuthority('USER_MANAGE')")
     public UserResponse getUserById(Integer id)
     {
        return userMapper.toUserResponse(userRepository.findById(id).orElseThrow(()->new AppException(ErrorCode.USER_ID_NOT_EXISTED)));
     }
 
+    @PreAuthorize("hasAuthority('USER_MANAGE')")
     public boolean deleteUserById(Integer id)
     {
         if (userRepository.existsById(id)) {
@@ -96,7 +99,7 @@ public class UserService {
     }
     @Autowired
     AuthenticationService authenticationService;
-    @PreAuthorize("hasAuthority('SCOPE_USER')")
+//    @PreAuthorize("hasAuthority('SCOPE_USER')")
     public UserResponse getMyInfo()
     {
         var context = SecurityContextHolder.getContext();
@@ -104,6 +107,7 @@ public class UserService {
         Users users = userRepository.findBySdt(sdt);
         return userMapper.toUserResponse(users);
     }
+//    @PreAuthorize("hasAuthority('SCOPE_USER')")
     public String uploadAvatar(Integer userID,MultipartFile avatar) throws IOException {
         Users user = userRepository.findById(userID).get();
         // nếu client không upload ảnh → giữ ảnh cũ
@@ -146,14 +150,15 @@ public class UserService {
         Users savedUser = userRepository.save(user);
         return savedUser.getAvatar();
     }
+
+    @PreAuthorize("hasAuthority('USER_MANAGE')")
     @Transactional
     public void disableUser(Integer userId) {
         Users user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User không tồn tại"));
-
         user.setTrangThai(false);
     }
-
+    @PreAuthorize("hasAuthority('USER_MANAGE')")
     @Transactional
     public void enableUser(Integer userId) {
         Users user = userRepository.findById(userId)

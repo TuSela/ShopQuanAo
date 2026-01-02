@@ -8,6 +8,7 @@ import com.Nhom19.shopQuanAo.exception.ErrorCode;
 import com.Nhom19.shopQuanAo.mapper.CommentMapper;
 import com.Nhom19.shopQuanAo.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +31,7 @@ public class CommentService {
     private OrderRepository orderRepository;
     @Autowired
     private OrderItemRepo orderItemRepo;
+//    @PreAuthorize("hasAuthority('SCOPE_USER')")
     public Boolean CreateComment(CommentRequest request,Integer Id){
 
         Users users = userRepository.findById(Id).orElseThrow(()->new AppException(USER_NOT_EXISTED));
@@ -54,7 +56,7 @@ public class CommentService {
         orderItemRepo.save(orderItems);
         return true;
     }
-
+//    @PreAuthorize("hasAuthority('SCOPE_USER')")
     public List<MyCommentResponse> getMyComments(Integer maTk) {
 
         return productCommentRepo.findMyComments(maTk)

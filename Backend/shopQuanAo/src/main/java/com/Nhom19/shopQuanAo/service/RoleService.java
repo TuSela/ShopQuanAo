@@ -8,6 +8,7 @@ import com.Nhom19.shopQuanAo.entity.Role;
 import com.Nhom19.shopQuanAo.repository.PermissionRepository;
 import com.Nhom19.shopQuanAo.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -22,12 +23,8 @@ public class RoleService {
     private PermissionService permissionService;
     @Autowired
     private PermissionRepository permissionRepository;
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public RoleResponse create(RoleRequest request) {
-        Permission permission=new Permission();
-        System.out.println("ket qua permission "+ request.getPermissions());
-        System.out.println("ket qua name "+ request.getName());
-        System.out.println("ket qua description "+ request.getDescription());
-
         Role role = new Role();
         role.setName(request.getName());
         role.setDescription(request.getDescription());
@@ -41,6 +38,7 @@ public class RoleService {
         roleResponse.setPermissions(role.getPermissions());
         return roleResponse;
     }
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public List<RoleResponse> getAll() {
         return roleRepository.findAll(). stream().map(p -> new RoleResponse(p.getName(),p.getDescription(),p.getPermissions())).collect(Collectors.toList());
     }

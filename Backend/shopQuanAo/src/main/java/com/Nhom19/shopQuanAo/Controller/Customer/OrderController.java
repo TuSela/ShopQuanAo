@@ -1,22 +1,18 @@
 package com.Nhom19.shopQuanAo.Controller.Customer;
 
-import com.Nhom19.shopQuanAo.DTO.Request.Customer.CreateCartRequest;
 import com.Nhom19.shopQuanAo.DTO.Request.Customer.OrderRequest.CreatOrderRequest;
+import com.Nhom19.shopQuanAo.DTO.Response.Admin.OrderResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.ApiResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyCart.CreatCartResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyOrder.CreatOrderResponse;
-import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyOrder.MyOrderResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyOrder.OrderResponseDTO;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.OrderDetailRes.OrderDetailResponse;
-import com.Nhom19.shopQuanAo.service.JwtUtils;
 import com.Nhom19.shopQuanAo.service.OrderService;
-import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.ParseException;
 import java.util.List;
 
 @RestController
@@ -29,7 +25,10 @@ public class OrderController {
     public List<OrderResponseDTO> getOrders() {
         return orderService.getAllOrdersWithProducts();
     }
-
+    @GetMapping("/list")
+    public List<OrderResponse> getALLOrders() {
+        return orderService.getAllOrders();
+    }
     @GetMapping("/{id}")
     public ResponseEntity<OrderDetailResponse> getOrderDetail(@PathVariable Integer id) {
         return ResponseEntity.ok(orderService.getOrderDetail(id));
@@ -38,7 +37,7 @@ public class OrderController {
     public ApiResponse<CreatOrderResponse> getPayments() {
         ApiResponse<CreatOrderResponse> apiResponse = new ApiResponse<>();
 
-        apiResponse.setResult(orderService.Order());
+        apiResponse.setResult(orderService.PaymentOrder());
         return apiResponse;
     }
     @PostMapping
@@ -51,6 +50,18 @@ public class OrderController {
     public ApiResponse<Boolean> CancelOrder(@PathVariable Integer id) {
         ApiResponse<Boolean> apiResponse = new ApiResponse<>();
         apiResponse.setResult(orderService.CancelOrder(id));
+        return apiResponse;
+    }
+    @PutMapping("/delivering/{id}")
+    public ApiResponse<Boolean> DeliveringOrder(@PathVariable Integer id) {
+        ApiResponse<Boolean> apiResponse = new ApiResponse<>();
+        apiResponse.setResult(orderService.DangGiaoOrder(id));
+        return apiResponse;
+    }
+    @PutMapping("/delivered/{id}")
+    public ApiResponse<Boolean> DeliveredOrder(@PathVariable Integer id) {
+        ApiResponse<Boolean> apiResponse = new ApiResponse<>();
+        apiResponse.setResult(orderService.DaGiaoOrder(id));
         return apiResponse;
     }
 }

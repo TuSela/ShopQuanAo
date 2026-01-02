@@ -10,6 +10,7 @@ import com.Nhom19.shopQuanAo.mapper.AddressMapper;
 import com.Nhom19.shopQuanAo.repository.AddressRepository;
 import com.Nhom19.shopQuanAo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -22,10 +23,9 @@ public class AddressSevice {
     AddressRepository addressRepository;
     @Autowired
     AddressMapper addressMapper;
-
     @Autowired
     UserRepository userRepository;
-
+    
     private Users getCurrentUser() {
         var authentication = SecurityContextHolder
                 .getContext()
@@ -44,7 +44,6 @@ public class AddressSevice {
 
         return users;
     }
-
     public List<AddressResponse> getmyaddress() {
 
         Users users = getCurrentUser();
@@ -58,7 +57,6 @@ public class AddressSevice {
 
         return responses;
     }
-
     public Boolean CreateAddress (AddressRequest request){
         var context = SecurityContextHolder.getContext();
         String sdt = context.getAuthentication().getName();
@@ -69,9 +67,11 @@ public class AddressSevice {
         addressRepository.save(addr);
         return true;
     }
+//    @PreAuthorize("hasAuthority('SCOPE_USER')")
     public Boolean DeleteAddress(Integer id){          addressRepository.deleteById(id);
         return true;
     }
+//    @PreAuthorize("hasAuthority('SCOPE_USER')")
     public addresses getAddressById(Integer id) {
 
         if (id == null) {
@@ -82,6 +82,7 @@ public class AddressSevice {
                         new AppException(ErrorCode.ADDRESS_NOT_EXISTED)
                 );
     }
+//    @PreAuthorize("hasAuthority('SCOPE_USER')")
     public Boolean updateAddress(AddressRequest request, Integer id) {
 
         if (request == null) {

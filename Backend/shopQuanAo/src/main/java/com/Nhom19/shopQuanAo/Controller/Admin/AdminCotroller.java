@@ -17,7 +17,6 @@ import java.util.List;
 public class AdminCotroller {
     @Autowired
     private Adminservice adminservice;
-
     @PostMapping
     public ApiResponse<AdminResponse> createUser(@RequestBody @Valid AdminRequest request)
     {
@@ -25,8 +24,6 @@ public class AdminCotroller {
         apiResponse.setResult(adminservice.createAdmin(request));
         return apiResponse;
     }
-
-
     @GetMapping()
     public ApiResponse<List<AdminResponse>>  getUsers()
     {
@@ -72,7 +69,6 @@ public class AdminCotroller {
         apiResponse.setMessage("Admin đã bị khóa");
         return apiResponse;
     }
-
     @PutMapping("/{id}/enable")
     public ApiResponse enableAdmin(@PathVariable Integer id) {
         adminservice.enableAdmin(id);

@@ -30,6 +30,7 @@ public class ProductVariantService {
     private VariantMapper variantMapper;
     @Autowired
     private ProductRepository productRepo;
+
     public List<ProductVariantResponse> getVariantsByMaSp(Integer maSp) {
 
         List<ProductVariants> variants =
@@ -65,7 +66,9 @@ public class ProductVariantService {
 //        List<ProductVariants> productVariants = productVariantRepo.findByMaSp(maSp);
 //
 //    }
-    public Boolean UpdateVariant(UpdateVariantRequest request,Integer maBienThe) {
+
+@PreAuthorize("hasAuthority('PRODUCT_MANAGE')")
+public Boolean UpdateVariant(UpdateVariantRequest request,Integer maBienThe) {
         ProductVariants productVariants = productVariantRepo.findById(maBienThe).orElseThrow(()->new AppException(ErrorCode.PRODUCT_VARIANT_NOT_EXISTED));
         productVariants.setSoluong(request.getSoluong());
         productVariants.setTrangThai(request.isTrangThai());
@@ -82,6 +85,7 @@ public class ProductVariantService {
     @Autowired
     private ProductSizeRepo productSizeRepo;
 
+    @PreAuthorize("hasAuthority('PRODUCT_MANAGE')")
     @Transactional
     public List<ProductVariantResponse> createVariants(CreateVariantRequest request,Integer maSp) {
         Products products =productRepo.findById(maSp).orElseThrow(()->new AppException(ErrorCode.PRODUCT_NOT_EXISTED));
