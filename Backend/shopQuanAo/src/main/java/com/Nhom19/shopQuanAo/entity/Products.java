@@ -26,6 +26,7 @@ public class Products {
     private BigDecimal gia;
     private String chiTiet;
     private Float danhGia;
+    private Boolean trangThai = true;
 
     @OneToMany(mappedBy = "products", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductVariants> productVariants;
