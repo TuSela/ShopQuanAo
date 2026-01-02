@@ -264,6 +264,7 @@ public class ProductService {
                 productVariants.setColors(colorsX);
                 productVariants.setSizes(sizes);
                 productVariants.setSoluong(sizeRequest.getSoluong());
+                productVariants.setTrangThai(false);
                 productVariantsRepo.save(productVariants);
             });
         });

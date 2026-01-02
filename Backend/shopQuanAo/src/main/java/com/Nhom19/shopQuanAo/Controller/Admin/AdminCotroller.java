@@ -70,10 +70,10 @@ public class AdminCotroller {
         return apiResponse;
     }
     @PutMapping("/{id}/enable")
-    public ApiResponse enableAdmin(@PathVariable Integer id) {
-        adminservice.enableAdmin(id);
-        ApiResponse apiResponse = new ApiResponse<>();
+    public ApiResponse<Boolean> enableAdmin(@PathVariable Integer id) {
+        ApiResponse<Boolean> apiResponse = new ApiResponse<>();
         apiResponse.setMessage("Admin đã được mở khóa");
+        apiResponse.setResult(adminservice.enableAdmin(id));
         return apiResponse;
     }
 }

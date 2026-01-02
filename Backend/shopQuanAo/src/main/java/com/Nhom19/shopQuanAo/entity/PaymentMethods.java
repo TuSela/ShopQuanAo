@@ -21,6 +21,7 @@ public class PaymentMethods {
     private String tenPt;
 
     private Boolean tinhTrang;
+
     @OneToMany(mappedBy = "paymentMethods")
     private Set<Orders> orders = new HashSet<>();
 }

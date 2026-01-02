@@ -3,7 +3,10 @@ package com.Nhom19.shopQuanAo.exception;
 import org.springframework.http.HttpStatus;
 
 public enum ErrorCode {
-
+    USER_NOT_UNDER_YOUR_MANAGEMENT(7002,
+            "Người này không thuộc quyền quản lý của bạn",
+            HttpStatus.FORBIDDEN),
+    CANNOT_LOCK_SELF(7001, "Bạn không thể khóa chính mình", HttpStatus.BAD_REQUEST),
     SQL_EXCEPTION(9990,"Dữ liệu không hợp lệ",HttpStatus.BAD_REQUEST),
     UNAUTHORIZED(1010,"Bạn Không có quyền truy cập",HttpStatus.FORBIDDEN),
     PRODUCT_TYPE_NOT_FOUND(6002,"Không tìm thấy loại sản phẩm",HttpStatus.NOT_FOUND),

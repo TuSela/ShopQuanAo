@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -17,5 +19,7 @@ public class UserResponse {
     private String gioiTinh;
     private String ngaySinh;
     private String avatar;
+    private String soDon;
+    private BigDecimal tongTien;
     private Boolean trangThai;
 }

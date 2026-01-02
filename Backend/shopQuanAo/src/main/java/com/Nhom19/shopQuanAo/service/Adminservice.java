@@ -34,16 +34,20 @@ public class Adminservice {
     private RoleRepository roleRepository;
 //    @PreAuthorize("hasAuthority('ADMIN_MANAGE')")
     public AdminResponse createAdmin(AdminRequest request){
+        var context = SecurityContextHolder.getContext();
+        String sdt = context.getAuthentication().getName();
+        Admin admin1 = adminRepository.findByUsername(sdt).orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXISTED));
         Admin users = new Admin();
         if(adminRepository.existsIdByUsername(request.getUsername())){
             throw new AppException(ErrorCode.USER_EXISTED);
         }
         users.setUsername(request.getUsername());
         users.setPassword(request.getPassword());
+        users.setManagerCode(admin1.getMaTk());
 //        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 //        users.setPassword(passwordEncoder.encode(request.getPassword()));
-        HashSet<String> roles = new HashSet<>();
-        roles.add(Role.ADMIN.name());
+//        HashSet<String> roles = new HashSet<>();
+//        roles.add(Role.ADMIN.name());
 //        users.setRoles(request.getRoles());
         Admin admin =  adminRepository.save(users);
         return adminMapper.toDTO(admin);
@@ -93,17 +97,28 @@ public class Adminservice {
         Admin admin1 = adminRepository.findByUsername(sdt).orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXISTED));
 
         if (adminId.equals(admin1.getMaTk())) {
-            throw new RuntimeException("Không thể khóa chính mình");
+            throw new AppException(ErrorCode.CANNOT_LOCK_SELF);
         }
         Admin admin = adminRepository.findById(adminId)
                 .orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXISTED));
+        if(adminId.equals(admin.getManagerCode())&&adminId.equals(1)){
+            throw new AppException(ErrorCode.USER_NOT_UNDER_YOUR_MANAGEMENT);
+        }
         admin.setTrangThai(false);
+        adminRepository.save(admin);
     }
-//    @PreAuthorize("hasAuthority('ADMIN_MANAGE')")
-    @Transactional
-    public void enableAdmin(Integer adminId) {
+
+    @PreAuthorize("hasAuthority('ADMIN_MANAGE')")
+    public Boolean enableAdmin(Integer adminId) {
         Admin admin = adminRepository.findById(adminId)
-                .orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXISTED));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        if (!adminId.equals(admin.getManagerCode()) && !adminId.equals(1)) {
+            throw new AppException(ErrorCode.USER_NOT_UNDER_YOUR_MANAGEMENT);
+        }
         admin.setTrangThai(true);
+        adminRepository.save(admin);
+        System.out.println("đay là trang thái sau cạp nhtaj: " + admin.getTrangThai());
+        return true;
     }
 }
