@@ -537,5 +537,12 @@ public PageResponse<ProductBestSellerResponse> searchByKeyword(
                 ()->new AppException(ErrorCode.PRODUCT_NOT_FOUND));
 
         product.setTrangThai(false);
+
+        product.getProductVariants().forEach(variant -> {
+            variant.setTrangThai(false);
+            productVariantsRepo.save(variant);
+        });
+
+        productRepository.save(product);
     }
 }
