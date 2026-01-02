@@ -25,6 +25,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.method.P;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -517,5 +518,23 @@ public PageResponse<ProductBestSellerResponse> searchByKeyword(
             pageResult.getTotalElements(),
             pageResult.getTotalPages()
             );
+    }
+
+    //    @PreAuthorize("hasAuthority('PRODUCT_MANAGE')")
+    @Transactional
+    public void enableProduct(int maSp) {
+        var product = productRepository.findById(maSp).orElseThrow(
+                ()->new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        product.setTrangThai(true);
+    }
+
+//    @PreAuthorize("hasAuthority('PRODUCT_MANAGE')")
+    @Transactional
+    public void disableProduct(int maSp) {
+        var product = productRepository.findById(maSp).orElseThrow(
+                ()->new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        product.setTrangThai(false);
     }
 }
