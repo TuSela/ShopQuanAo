@@ -14,6 +14,7 @@ import com.Nhom19.shopQuanAo.mapper.VariantMapper;
 import com.Nhom19.shopQuanAo.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -115,5 +116,33 @@ public class ProductVariantService {
             });
         });
         return productVariantResponses;
+    }
+
+    //    @PreAuthorize("hasAuthority('PRODUCT_MANAGE')")
+    @Transactional
+    public void enableProductVariant(int maBienThe, int maSp) {
+        var variant = productVariantRepo.findById(maBienThe).orElseThrow(
+                ()->new AppException(ErrorCode.PRODUCT_VARIANT_NOT_EXISTED));
+
+        if (!variant.getProducts().getMaSp().equals(maSp)) {
+            throw new AppException(ErrorCode.PRODUCT_VARIANT_NOT_EXISTED);
+        }
+
+        variant.setTrangThai(true);
+        productVariantRepo.save(variant);
+    }
+
+    //    @PreAuthorize("hasAuthority('PRODUCT_MANAGE')")
+    @Transactional
+    public void disableProductVariant(int maBienThe, int maSp) {
+        var variant = productVariantRepo.findById(maBienThe).orElseThrow(
+                ()->new AppException(ErrorCode.PRODUCT_VARIANT_NOT_EXISTED));
+
+        if (!variant.getProducts().getMaSp().equals(maSp)) {
+            throw new AppException(ErrorCode.PRODUCT_VARIANT_NOT_EXISTED);
+        }
+
+        variant.setTrangThai(false);
+        productVariantRepo.save(variant);
     }
 }
