@@ -9,6 +9,7 @@ import com.Nhom19.shopQuanAo.entity.ProductTypes;
 import com.Nhom19.shopQuanAo.exception.AppException;
 import com.Nhom19.shopQuanAo.exception.ErrorCode;
 import com.Nhom19.shopQuanAo.mapper.ProductTypeMapper;
+import com.Nhom19.shopQuanAo.repository.ProductRepository;
 import com.Nhom19.shopQuanAo.repository.ProductTypeRepo;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,8 @@ public class ProductTypeService {
     ProductTypeRepo productTypeRepo;
     @Autowired
     ProductTypeMapper productTypeMapper;
+    @Autowired
+    ProductRepository productRepo;
 
     @PreAuthorize("hasAuthority('CATEGORY_MANAGE')")
     public ProductTypeResponse addProductType(TypeCreationRequest request){
@@ -199,5 +202,12 @@ public class ProductTypeService {
                 ()-> new AppException(ErrorCode.PRODUCT_TYPE_NOT_FOUND));
 
         type.setTinhTrang(false);
+
+        type.getProducts().forEach(product -> {
+            product.setTrangThai(false);
+            productRepo.save(product);
+        });
+
+        productTypeRepo.save(type);
     }
 }
