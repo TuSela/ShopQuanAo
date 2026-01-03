@@ -1,6 +1,7 @@
 package com.Nhom19.shopQuanAo.service;
 
 import com.Nhom19.shopQuanAo.DTO.Request.Admin.AdminRequest;
+import com.Nhom19.shopQuanAo.DTO.Request.Customer.UpdatePassRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.Admin.AdminResponse;
 import com.Nhom19.shopQuanAo.entity.Admin;
 import com.Nhom19.shopQuanAo.entity.Role;
@@ -16,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -43,10 +46,9 @@ public class Adminservice {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
         users.setUsername(request.getUsername());
-        users.setPassword(request.getPassword());
         users.setManagerCode(admin1.getMaTk());
-//        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-//        users.setPassword(passwordEncoder.encode(request.getPassword()));
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        users.setPassword(passwordEncoder.encode(request.getPassword()));
         Set<Role> roles1 = new HashSet<>();
         Set<String> roles = request.getRoles();
         roles.forEach(role1 -> {
@@ -55,6 +57,25 @@ public class Adminservice {
         users.setRoles(roles1);
         Admin admin =  adminRepository.save(users);
         return adminMapper.toDTO(admin);
+    }
+    public Boolean updateMyPass(Integer userID, UpdatePassRequest request) {
+
+        var context = SecurityContextHolder.getContext();
+        String sdt = context.getAuthentication().getName();
+        Admin user = adminRepository.findByUsername(sdt).orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        if (request.getNewPass1().equals(request.getNewPass2())) {
+            if (passwordEncoder.matches(request.getOldPass(),user.getPassword())) {
+                user.setPassword(passwordEncoder.encode(request.getNewPass1()));
+                adminRepository.save(user);
+                return true;
+            } else {
+                throw new AppException(ErrorCode.PASSWORD_INVALID);
+            }
+        }else {
+            throw new AppException(ErrorCode.PASSWORD_CONFIRM_NOT_MATCH);
+        }
     }
     @PreAuthorize("hasAuthority('ADMIN_MANAGE')")
     public List<AdminResponse> getUsers()

@@ -13,10 +13,22 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Products, Integer> {
     List<Products> findAllByOrderByMaSpDesc();
+
+    @Query("""
+    SELECT p
+    FROM Products p
+    JOIN FETCH p.types
+    WHERE p.maSp = :id
+      AND p.trangThai = true
+""")
+    Optional<Products> findProductDetail(@Param("id") int id);
+
+
     @Query(
             value = """
         SELECT p.ma_sp AS maSp, p.ten_sp AS tenSp, p.gia AS gia, MAX(pi.url_hinh_anh) AS urlImage

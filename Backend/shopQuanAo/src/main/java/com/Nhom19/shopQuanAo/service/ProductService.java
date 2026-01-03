@@ -110,73 +110,80 @@ public class ProductService {
     }
 
     //SHOW CHI TIẾT SẢN PHẨM
+    @Transactional
     public ProductDetailResponse getProductDetail(int id) {
-        Products products = productRepository.getById(id);
 
-        List<ProductImages> listAnhSP = productImagesRepo.findByProductsOrderByDaiDienDesc(products);
-        ProductDetailResponse productDetailResponse = productMapper.toDTO2(products);
+        Products product = productRepository.findProductDetail(id)
+                .orElseThrow(() -> new AppException(
+                        ErrorCode.SP_DANG_BAO_TRI
+                ));
 
-        List<String> images = listAnhSP.stream()
-                .map(ProductImages::getUrlImage)
+        // ===== MAP CƠ BẢN =====
+        ProductDetailResponse res = productMapper.toDTO2(product);
+        res.setMaLoai(product.getTypes().getMaLoai());
+
+        // ===== IMAGES =====
+        List<String> images = productImagesRepo.findImageUrlsByProduct(product);
+        res.setListAnhSP(images);
+
+        productImagesRepo.findFirstByProductsAndDaiDienTrue(product)
+                .ifPresent(img -> res.setAnhDaiDien(img.getUrlImage()));
+
+        // ===== COMMENTS =====
+        List<ProductComments> comments =
+                productCommentRepo.findDetailComments(product);
+
+        res.setSoLuongDanhGia(comments.size());
+
+        List<ProductCommentResponse> commentResponses = comments.stream()
+                .map(pc -> {
+                    ProductCommentResponse c = new ProductCommentResponse();
+                    c.setMaBl(pc.getMaBl());
+                    c.setNgayTao(pc.getNgayTao());
+                    c.setNoiDung(pc.getNoiDung());
+                    c.setDiemDanhGia(pc.getDiemDanhGia());
+
+                    // user
+                    c.setUsers(userMapper.toUserCommentResponse(pc.getUsers()));
+
+                    // variant
+                    CommentVariantResponse v = new CommentVariantResponse();
+                    v.setMaBienThe(pc.getProductVariants().getMaBienThe());
+                    v.setTenMs(pc.getProductVariants().getColors().getTenMs());
+                    v.setTenKc(pc.getProductVariants().getSizes().getTenKc());
+
+                    // số lượng đặt (đã JOIN FETCH)
+                    pc.getOrders().getItems().stream()
+                            .filter(oi -> oi.getProductVariants()
+                                    .equals(pc.getProductVariants()))
+                            .findFirst()
+                            .ifPresent(oi -> v.setSoLuongDat(oi.getSoLuong()));
+
+                    c.setProductVariants(v);
+                    return c;
+                })
                 .toList();
 
-        productDetailResponse.setListAnhSP(images);
-        productDetailResponse.setMaLoai(products.getTypes().getMaLoai());
-        // Ảnh đầu tiên chắc chắn là đại diện
-        productDetailResponse.setAnhDaiDien(
-                listAnhSP.isEmpty() ? null : listAnhSP.get(0).getUrlImage()
-        );
-        // Lấy danh sách comment
-        List<ProductComments> productComments = productCommentRepo.findDetailComments(products);
-        productDetailResponse.setSoLuongDanhGia(productComments.size());
-        // Map comments
-        productDetailResponse.setProductComments(
-                productComments.stream()
-                        .map(pc -> {
-                            Users users = pc.getUsers();
-                            UserCommentResponse userResponse = userMapper.toUserCommentResponse(users);
+        res.setProductComments(commentResponses);
 
-                            ProductCommentResponse res = new ProductCommentResponse();
-                            res.setMaBl(pc.getMaBl());
-                            res.setNgayTao(pc.getNgayTao());
-                            res.setNoiDung(pc.getNoiDung());
-                            res.setDiemDanhGia(pc.getDiemDanhGia());
-                            res.setUsers(userResponse);
-
-                            CommentVariantResponse productVariants = new CommentVariantResponse();
-                            productVariants.setMaBienThe(pc.getProductVariants().getMaBienThe());
-
-//                            productVariants.setSoLuongDat(pc.getOrders().);
-                            productVariants.setTenMs(pc.getProductVariants().getColors().getTenMs());
-                            productVariants.setTenKc(pc.getProductVariants().getSizes().getTenKc());
-
-                            res.setProductVariants(productVariants);
-
-                            return res;
-                        })
-                        .collect(Collectors.toList())
-        );
-
-        // Map variant
+        // ===== VARIANTS (GOM THEO MÀU) =====
         List<ProductVariants> variants =
-                productVariantsRepo.findByProductOrderByImageDaiDien(products);
+                productVariantsRepo.findVariantsForDetail(product);
 
         Map<Integer, ProductVariants> uniqueColorMap = new LinkedHashMap<>();
-
         for (ProductVariants v : variants) {
-            Integer maMs = v.getColors().getMaMs();
-
-            // chỉ giữ bản ghi đầu tiên (đã đúng thứ tự đại diện)
-            uniqueColorMap.putIfAbsent(maMs, v);
+            uniqueColorMap.putIfAbsent(v.getColors().getMaMs(), v);
         }
 
         List<ColorResponse> colors = uniqueColorMap.values().stream()
-                .map(v -> getColorDetail(products.getMaSp(), v.getColors().getMaMs()))
+                .map(v -> getColorDetail(product.getMaSp(), v.getColors().getMaMs()))
                 .toList();
 
-        productDetailResponse.setVariants(colors);
-        return productDetailResponse;
+        res.setVariants(colors);
+
+        return res;
     }
+
 
     ///LẤY RA SẢN PHẨM BIẾN THỂ
     @Transactional()

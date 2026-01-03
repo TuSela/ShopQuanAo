@@ -32,7 +32,17 @@ Set<ProductImages> findByProducts(Products products);
 """)
     List<ProductImages> findDaiDienByProducts(@Param("products") List<Products> products);
 
+    @Query("""
+    SELECT pi.urlImage
+    FROM ProductImages pi
+    WHERE pi.products = :product
+    ORDER BY pi.daiDien DESC
+""")
+    List<String> findImageUrlsByProduct(@Param("product") Products product);
+
     Optional<ProductImages> findFirstByProductsAndDaiDienTrue(Products products);
+
+
 
     @Query("""
         SELECT pi

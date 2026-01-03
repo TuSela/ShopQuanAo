@@ -3,6 +3,7 @@ package com.Nhom19.shopQuanAo.exception;
 import org.springframework.http.HttpStatus;
 
 public enum ErrorCode {
+    SP_DANG_BAO_TRI(5000,"Sản phẩm đã ngưng bán!",HttpStatus.FORBIDDEN),
     USER_NOT_UNDER_YOUR_MANAGEMENT(7002,
             "Người này không thuộc quyền quản lý của bạn",
             HttpStatus.FORBIDDEN),

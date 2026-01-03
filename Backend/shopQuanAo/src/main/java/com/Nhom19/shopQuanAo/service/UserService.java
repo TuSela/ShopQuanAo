@@ -13,6 +13,8 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,7 +28,7 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    UserMapper userMapper;
+    private UserMapper userMapper;
 
     public UserResponse createUsers(TaoUsersRequest request){
         if (request == null) {
@@ -37,8 +39,9 @@ public class UserService {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
         Users users = userMapper.toUsers(request);
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        users.setPassword(passwordEncoder.encode(request.getPassword()));
         UserResponse userResponse = userMapper.toUserResponse(users);
-
         userRepository.save(users);
         return userResponse;
     }
@@ -83,11 +86,10 @@ public class UserService {
         }
     public Boolean updateMyPass(Integer userID, UpdatePassRequest request) {
         Users user = userRepository.findById(userID).get();
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         if (request.getNewPass1().equals(request.getNewPass2())) {
-            if (user.getPassword().equals(request.getOldPass())) {
-                user.setPassword(request.getNewPass1());
-
-
+            if (passwordEncoder.matches(request.getOldPass(),user.getPassword())) {
+                user.setPassword(passwordEncoder.encode(request.getNewPass1()));
                 userRepository.save(user);
                 return true;
             } else {

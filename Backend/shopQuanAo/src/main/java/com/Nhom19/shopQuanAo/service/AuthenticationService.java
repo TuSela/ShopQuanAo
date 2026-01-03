@@ -15,6 +15,8 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jwt.JWTClaimsSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -41,8 +43,9 @@ public class AuthenticationService {
             if (user == null) {
                 throw new AppException(ErrorCode.USER_NOT_EXISTED);
             }
-
-            boolean authentication = request.getPassword().equals(user.getPassword()) && user.getTrangThai() == true;
+            PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+            boolean authentication = passwordEncoder.matches(request.getPassword(), user.getPassword())&& user.getTrangThai() == true;
+//            boolean authentication = request.getPassword().equals(user.getPassword()) && user.getTrangThai() == true;
             if (!authentication) {
                 throw new AppException(ErrorCode.UNAUTHENTICATED);
             }
@@ -52,7 +55,8 @@ public class AuthenticationService {
             return authenticationResponse;
         }
         else {
-            boolean authentication = request.getPassword().equals(admin.getPassword()) && admin.getTrangThai() == true;
+            PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+            boolean authentication = passwordEncoder.matches(request.getPassword(), admin.getPassword())&& admin.getTrangThai() == true;
 
             if (!authentication) {
                 throw new AppException(ErrorCode.UNAUTHENTICATED);

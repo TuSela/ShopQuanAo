@@ -40,7 +40,7 @@ public interface ProductTypeRepo extends JpaRepository<ProductTypes, Integer> {
         SELECT pt
         FROM ProductTypes pt
         WHERE (:doiTuong IS NULL OR pt.doiTuong = :doiTuong)
-          AND (:tenLoai IS NULL OR pt.tenLoai = :tenLoai)
+          AND (:tenLoai IS NULL OR pt.tenLoai = :tenLoai) AND pt.tinhTrang = true
         ORDER BY pt.tenLoai, pt.chiTietLoai
     """)
     List<ProductTypes> findByDoiTuongAndTenLoai(

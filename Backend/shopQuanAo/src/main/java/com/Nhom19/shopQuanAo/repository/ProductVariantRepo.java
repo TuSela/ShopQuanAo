@@ -72,4 +72,14 @@ public interface ProductVariantRepo extends JpaRepository<ProductVariants, Integ
 """)
     List<LowStockProductDTO> sanPhamTonKhoThap(@Param("nguong") int nguong);
 
+    @Query("""
+    SELECT pv
+    FROM ProductVariants pv
+    JOIN FETCH pv.colors
+    JOIN FETCH pv.sizes
+    WHERE pv.products = :product
+      AND pv.trangThai = true
+""")
+    List<ProductVariants> findVariantsForDetail(@Param("product") Products product);
+
 }

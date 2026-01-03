@@ -14,16 +14,16 @@ import java.util.Set;
 public interface ProductCommentRepo extends JpaRepository<ProductComments, Integer> {
     Set<ProductComments> getByMaBl(Integer id);
     List<ProductComments> findByProducts(Products product);
-    @Query("""
-    SELECT pc
-    FROM ProductComments pc
-    JOIN FETCH pc.users
-    JOIN FETCH pc.productVariants pv
-    JOIN FETCH pv.colors
-    JOIN FETCH pv.sizes
-    WHERE pc.products = :product
-""")
-    List<ProductComments> findDetailComments(@Param("product") Products product);
+//    @Query("""
+//    SELECT pc
+//    FROM ProductComments pc
+//    JOIN FETCH pc.users
+//    JOIN FETCH pc.productVariants pv
+//    JOIN FETCH pv.colors
+//    JOIN FETCH pv.sizes
+//    WHERE pc.products = :product
+//""")
+//    List<ProductComments> findDetailComments(@Param("product") Products product);
 
     boolean existsByUsersAndOrdersAndProductVariants(Users users,Orders orders, ProductVariants productVariants);
 
@@ -69,6 +69,20 @@ public interface ProductCommentRepo extends JpaRepository<ProductComments, Integ
       AND pc.trangThai = 'HIDDEN'
 """)
     List<NegativeCommentDTO> binhLuanTieuCuc();
+
+    @Query("""
+    SELECT pc
+    FROM ProductComments pc
+    JOIN FETCH pc.users u
+    JOIN FETCH pc.productVariants pv
+    JOIN FETCH pv.colors
+    JOIN FETCH pv.sizes
+    JOIN FETCH pc.orders o
+    JOIN FETCH o.items oi
+    WHERE pc.products = :product
+      AND oi.productVariants = pv
+""")
+    List<ProductComments> findDetailComments(@Param("product") Products product);
 
 }
 
