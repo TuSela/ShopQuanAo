@@ -17,7 +17,6 @@ public class FileService {
         if (!file.getContentType().startsWith("image/")) {
             throw new IllegalArgumentException("File không phải dạng ảnh");
         }
-
         // Tạo folder
         String folder = "D:/shopbanquanao/public/";
         File dir = new File(folder);

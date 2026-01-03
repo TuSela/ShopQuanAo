@@ -27,11 +27,11 @@ import java.text.Normalizer;
 @Service
 public class ProductTypeService {
     @Autowired
-    ProductTypeRepo productTypeRepo;
+    private ProductTypeRepo productTypeRepo;
     @Autowired
-    ProductTypeMapper productTypeMapper;
+    private ProductTypeMapper productTypeMapper;
     @Autowired
-    ProductRepository productRepo;
+    private ProductRepository productRepo;
 
     @PreAuthorize("hasAuthority('CATEGORY_MANAGE')")
     public ProductTypeResponse addProductType(TypeCreationRequest request){

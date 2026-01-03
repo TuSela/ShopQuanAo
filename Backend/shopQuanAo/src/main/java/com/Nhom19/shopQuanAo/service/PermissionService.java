@@ -34,7 +34,6 @@ public class PermissionService {
             PermissionResponse permissionResponse=new PermissionResponse(permission.getDescription(), permission.getName());
             return permissionResponse;
         }
-
     @PreAuthorize("hasAuthority('ADMIN_MANAGE')")
     public List<PermissionResponse> findAll(){
         List<PermissionResponse> permissionResponseList=new ArrayList<>();

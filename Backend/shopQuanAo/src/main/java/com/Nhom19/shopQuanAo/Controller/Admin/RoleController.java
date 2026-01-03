@@ -15,7 +15,6 @@ import java.util.List;
 public class RoleController {
     @Autowired
     RoleService roleService;
-
     @PostMapping
     public ApiResponse<RoleResponse> addPermission(@RequestBody RoleRequest request){
 
@@ -31,11 +30,16 @@ public class RoleController {
         apiResponse.setResult(all);
         return apiResponse;
     }
-//    @DeleteMapping("/{permission}")
-//    public ApiResponse<Boolean> deletePermission(@PathVariable String permission){
-//        roleService.delete(permission);
-//        ApiResponse<Boolean> apiResponse = new ApiResponse<>();
-//        apiResponse.setResult(true);
-//        return apiResponse;
-//    }
+    @PutMapping("/{maTk}")
+    public ApiResponse<Boolean> updatePermission(@PathVariable("maTk") String maTk,@RequestBody RoleRequest request){
+        ApiResponse<Boolean> apiResponse = new ApiResponse<>();
+        apiResponse.setResult(roleService.update(request,maTk));
+        return apiResponse;
+    }
+    @DeleteMapping("/{maTk}")
+    public ApiResponse<Boolean> deleteROLE(@PathVariable("maTk") String maTk){
+        ApiResponse<Boolean> apiResponse = new ApiResponse<>();
+        apiResponse.setResult(roleService.deleteRole(maTk));
+        return apiResponse;
+    }
 }

@@ -65,7 +65,6 @@ public class OrderService {
     public List<OrderResponse> getAllOrders() {
         List<Orders> orders = orderRepository.findAll();
        return orders.stream().map(orderMapper::toOrderResponse).collect(Collectors.toList());
-
     }
     //Cập nhật trạng thái đơn hàng
     @PreAuthorize("hasAuthority('ORDER_MANAGE')")
@@ -92,7 +91,7 @@ public class OrderService {
         return true;
     }
     @Autowired
-    ProductImagesRepo productImagesRepo;
+    private ProductImagesRepo productImagesRepo;
     public List<MyOrderResponse> getALLMyOrders(Integer maTk) {
 
         List<Orders> ordersList =

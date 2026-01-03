@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -16,5 +17,5 @@ import java.util.List;
 public class AdminRequest {
     private String username;
     private String password;
-    List<String> roles;
+    Set<String> roles;
 }

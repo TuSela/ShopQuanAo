@@ -58,10 +58,7 @@ public class CartService {
             cartRepository.save(cart);
         }
         Cart cart1 = cartRepository.findByUsers(user).orElseThrow(()->new AppException(ErrorCode.CART_NOT_EXISTED));
-
-
         CartItems cartItems = new CartItems();
-
         cartItems.setCart(cart1);
         cartItems.setSoluong(request.getSoLuong());
         ProductVariants productVariants = productVariantRepo.findByProductAndColorAndSize(request.getMaSp(),  request.getMaMs(), request.getMaKc()).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_VARIANT_NOT_EXISTED));

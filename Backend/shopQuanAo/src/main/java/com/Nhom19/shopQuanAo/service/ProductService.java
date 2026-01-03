@@ -73,7 +73,6 @@ public class ProductService {
                 .toList();
     }
 
-//    @PreAuthorize("hasAuthority('PRODUCT_MANAGE')")
     public List<ProductBestSellerResponse>getTopBestSeller(){
         List<ProductBestSellerResponse> result =
                 productRepository.findBestSellerProducts(PageRequest.of(0, 10));

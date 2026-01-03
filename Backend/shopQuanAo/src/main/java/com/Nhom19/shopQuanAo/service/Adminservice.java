@@ -3,8 +3,8 @@ package com.Nhom19.shopQuanAo.service;
 import com.Nhom19.shopQuanAo.DTO.Request.Admin.AdminRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.Admin.AdminResponse;
 import com.Nhom19.shopQuanAo.entity.Admin;
+import com.Nhom19.shopQuanAo.entity.Role;
 import com.Nhom19.shopQuanAo.entity.Users;
-import com.Nhom19.shopQuanAo.enums.Role;
 import com.Nhom19.shopQuanAo.exception.AppException;
 import com.Nhom19.shopQuanAo.exception.ErrorCode;
 import com.Nhom19.shopQuanAo.mapper.AdminMapper;
@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,13 +47,15 @@ public class Adminservice {
         users.setManagerCode(admin1.getMaTk());
 //        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 //        users.setPassword(passwordEncoder.encode(request.getPassword()));
-//        HashSet<String> roles = new HashSet<>();
-//        roles.add(Role.ADMIN.name());
-//        users.setRoles(request.getRoles());
+        Set<Role> roles1 = new HashSet<>();
+        Set<String> roles = request.getRoles();
+        roles.forEach(role1 -> {
+           roles1.add(roleRepository.findById(role1).orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXISTED)));
+        });
+        users.setRoles(roles1);
         Admin admin =  adminRepository.save(users);
         return adminMapper.toDTO(admin);
     }
-
     @PreAuthorize("hasAuthority('ADMIN_MANAGE')")
     public List<AdminResponse> getUsers()
     {
@@ -73,7 +76,7 @@ public class Adminservice {
         Admin admin = adminRepository.findByUsername(username).orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXISTED));
         return adminMapper.toDTO(admin);
     }
-//    @PreAuthorize("hasAuthority('ADMIN_MANAGE')")
+    @PreAuthorize("hasAuthority('ADMIN_MANAGE')")
     public AdminResponse userUpdate(Integer userID, AdminRequest request)
     {
         Admin user = getUserById(userID);
@@ -120,4 +123,5 @@ public class Adminservice {
         adminRepository.save(admin);
         return true;
     }
+
 }
