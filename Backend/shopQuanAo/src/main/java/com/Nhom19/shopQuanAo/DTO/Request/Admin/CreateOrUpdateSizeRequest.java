@@ -4,5 +4,5 @@ import lombok.Data;
 
 @Data
 public class CreateOrUpdateSizeRequest {
-    String tenKc;
+    private String tenKc;
 }

@@ -43,7 +43,7 @@ public class CommentService {
 
         Users users = userRepository.findById(Id).orElseThrow(()->new AppException(USER_NOT_EXISTED));
         Orders orders = orderRepository.findById(request.getMaDdh()).orElseThrow(()->new AppException(ORDER_NOT_FOUND));
-        if(!orders.getOrderStatus().equals("Đã giao")){
+        if(!orders.getOrderStatus().equals("DA_GIAO")){
             throw new AppException(ORDER_NOT_COMPLETED);
         }
         ProductVariants productVariants = productVariantRepo.findById(request.getMaBienThe()).orElseThrow(()-> new AppException(PRODUCT_VARIANT_NOT_EXISTED));
@@ -56,7 +56,7 @@ public class CommentService {
         productComments.setUsers(users);
         productComments.setProductVariants(productVariants);
         productComments.setOrders(orders);
-        productComments.setTrangThai("Show");
+        productComments.setTrangThai("SHOW");
         productCommentRepo.save(productComments);
         OrderItems orderItems = orderItemRepo.findByOrdersAndProductVariants(orders,productVariants).orElseThrow(()->new AppException(ErrorCode.ORDER_NOT_FOUND));
         orderItems.setDaDanhGia(true);

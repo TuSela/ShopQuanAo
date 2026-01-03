@@ -79,7 +79,7 @@ public class AuthenticationService {
                 .expirationTime(new Date(Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()))
                 .claim("id",user.getMaTk())
                 .claim("hoten",user.getHoten())
-                .claim("scope", Role.USER.toString())
+                .claim("scope",Role.USER.toString())
                 .claim("avatar",user.getAvatar())
                 .claim("giohang",soluong)
                 .build();
@@ -89,7 +89,6 @@ public class AuthenticationService {
 
         try{
             jwsObject.sign(new MACSigner(SIGNER_KEY.getBytes()));
-            System.out.println("token= "+ jwsObject.serialize());
             return  jwsObject.serialize();
         }
         catch(JOSEException e){
@@ -109,14 +108,12 @@ public class AuthenticationService {
         JWSObject jwsObject = new JWSObject(header,payload);
         try{
             jwsObject.sign(new MACSigner(SIGNER_KEY.getBytes()));
-            System.out.println("token= "+ jwsObject.serialize());
             return  jwsObject.serialize();
         }
         catch(JOSEException e){
             throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
     }
-
     private String buildScope(Admin admin) {
         StringJoiner stringJoiner =new StringJoiner(" ");
         if(!CollectionUtils.isEmpty(admin.getRoles()))

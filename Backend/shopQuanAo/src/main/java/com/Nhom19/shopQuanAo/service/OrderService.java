@@ -79,8 +79,8 @@ public class OrderService {
     @PreAuthorize("hasAuthority('ORDER_MANAGE')")
     public Boolean DaGiaoOrder(Integer orderId) {
         Orders orders = orderRepository.findById(orderId).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
-        orders.setOrderStatus("Đã giao");
-        orders.setPaymentStatus("Đã thanh toán");
+        orders.setOrderStatus("DA_GIAO");
+        orders.setPaymentStatus("DA_THANH_TOAN");
         orderRepository.save(orders);
         return true;
     }
@@ -270,7 +270,7 @@ public class OrderService {
         order.setOrderStatus("Đang xử lý");
         order.setPaymentStatus("Thanh toán khi nhận hàng");
         if (order.getPaymentMethods().getMaPt()!= 1){
-            order.setPaymentStatus("Đã thanh toán");
+            order.setPaymentStatus("DA_THANH_TOAN");
             order.setNgayThanhToan(LocalDateTime.now());
         }
 

@@ -1,5 +1,6 @@
 package com.Nhom19.shopQuanAo.repository;
 
+import com.Nhom19.shopQuanAo.DTO.Response.Admin.dashboard.LowStockProductDTO;
 import com.Nhom19.shopQuanAo.entity.ProductVariants;
 import com.Nhom19.shopQuanAo.entity.Products;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -54,4 +55,21 @@ public interface ProductVariantRepo extends JpaRepository<ProductVariants, Integ
         WHERE p.maSp = :maSp
     """)
     List<ProductVariants> findByMaSp(@Param("maSp") Integer maSp);
+
+    @Query("""
+    SELECT new com.Nhom19.shopQuanAo.DTO.Response.Admin.dashboard.LowStockProductDTO(
+        p.maSp,
+        p.tenSp,
+        s.tenKc,
+        c.tenMs,
+        pv.soluong
+    )
+    FROM ProductVariants pv
+    JOIN pv.products p
+    JOIN pv.sizes s
+    JOIN pv.colors c
+    WHERE pv.soluong <= :nguong
+""")
+    List<LowStockProductDTO> sanPhamTonKhoThap(@Param("nguong") int nguong);
+
 }

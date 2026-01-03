@@ -72,27 +72,23 @@ public class ProductService {
                 })
                 .toList();
     }
-    @PreAuthorize("hasAuthority('PRODUCT_MANAGE')")
+
+//    @PreAuthorize("hasAuthority('PRODUCT_MANAGE')")
     public List<ProductBestSellerResponse>getTopBestSeller(){
         List<ProductBestSellerResponse> result =
                 productRepository.findBestSellerProducts(PageRequest.of(0, 10));
-
         if (result.size() < 10) {
             int remain = 10 - result.size();
-
             List<Integer> ids = result.stream()
                     .map(ProductBestSellerResponse::getMaSp)
                     .toList();
-
             List<ProductBestSellerResponse> random =
                     productRepository.findRandomProductsExclude(
                             ids,
                             PageRequest.of(0, remain)
                     );
-
             result.addAll(random);
         }
-
         return result;
     }
 //    public List<ProductBestSellerResponse> getAllProducts(){
@@ -121,7 +117,6 @@ public class ProductService {
         Products products = productRepository.getById(id);
 
         List<ProductImages> listAnhSP = productImagesRepo.findByProductsOrderByDaiDienDesc(products);
-        System.out.println("listAnhSP: " + listAnhSP.toString());
         ProductDetailResponse productDetailResponse = productMapper.toDTO2(products);
 
         List<String> images = listAnhSP.stream()
