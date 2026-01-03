@@ -2,10 +2,14 @@ package com.Nhom19.shopQuanAo.service;
 
 import com.Nhom19.shopQuanAo.DTO.Request.Admin.CommentRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyCommentResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductDetail.CommentVariantResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductDetail.ProductCommentResponse;
+import com.Nhom19.shopQuanAo.DTO.Response.Customer.ProductDetail.UserCommentResponse;
 import com.Nhom19.shopQuanAo.entity.*;
 import com.Nhom19.shopQuanAo.exception.AppException;
 import com.Nhom19.shopQuanAo.exception.ErrorCode;
 import com.Nhom19.shopQuanAo.mapper.CommentMapper;
+import com.Nhom19.shopQuanAo.mapper.UserMapper;
 import com.Nhom19.shopQuanAo.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,7 +17,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.Nhom19.shopQuanAo.exception.ErrorCode.*;
 
@@ -96,6 +102,56 @@ public class CommentService {
         res.setAnh(anh);
 
         return res;
+    }
+    @Autowired
+    private UserMapper userMapper;
+    public List<ProductCommentResponse> mapToProductComment() {
+
+        return productCommentRepo.findAll()
+                .stream()
+                .map(pc -> {
+
+                    // Map user
+                    Users users = pc.getUsers();
+                    UserCommentResponse userResponse =
+                            userMapper.toUserCommentResponse(users);
+
+                    // Map product variant
+                    OrderItems orderItems = orderItemRepo
+                            .findByOrdersAndProductVariants(
+                                    pc.getOrders(),
+                                    pc.getProductVariants()
+                            )
+                            .orElseThrow(() ->
+                                    new RuntimeException("Sản phẩm trong đơn hàng không tồn tại"));
+
+                    CommentVariantResponse variantResponse =
+                            new CommentVariantResponse();
+
+                    variantResponse.setMaBienThe(
+                            pc.getProductVariants().getMaBienThe());
+                    variantResponse.setSoLuongDat(
+                            orderItems.getSoLuong());
+                    variantResponse.setTenMs(
+                            pc.getProductVariants().getColors().getTenMs());
+                    variantResponse.setTenKc(
+                            pc.getProductVariants().getSizes().getTenKc());
+
+                    // Map comment
+                    ProductCommentResponse res =
+                            new ProductCommentResponse();
+
+                    res.setMaBl(pc.getMaBl());
+                    res.setNgayTao(pc.getNgayTao());
+                    res.setNoiDung(pc.getNoiDung());
+                    res.setDiemDanhGia(pc.getDiemDanhGia());
+                    res.setUsers(userResponse);
+                    res.setProductVariants(variantResponse);
+                    res.setTrangThai(pc.getTrangThai());
+                    res.setMaSp(pc.getProducts().getMaSp());
+                    return res;
+                })
+                .collect(Collectors.toList());
     }
 }
 

@@ -15,7 +15,7 @@ public class ProductTypes {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer maLoai;
     private String tenLoai;
-    private String tinhTrang;
+    private Boolean tinhTrang = true;
     private String chiTietLoai;
     private String doiTuong;
     private String anhLoai;

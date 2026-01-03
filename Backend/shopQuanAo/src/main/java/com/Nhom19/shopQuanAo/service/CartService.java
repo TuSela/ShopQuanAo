@@ -105,7 +105,7 @@ public class CartService {
     }
     @Autowired
     private ProductImagesRepo productImagesRepo;
-    @PreAuthorize("hasAuthority('SCOPE_USER')")
+//    @PreAuthorize("hasAuthority('SCOPE_USER')")
     public MyCartResponse getAllMyCart() {
         var context = SecurityContextHolder.getContext();
         String sdt = context.getAuthentication().getName();

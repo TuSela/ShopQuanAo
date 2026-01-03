@@ -168,5 +168,19 @@ public class ProductController {
 //        return response;
 //    }
 
+    @PutMapping("/{maSp}/enable")
+    public ApiResponse<String> enableProduct(@PathVariable("maSp") int maSp) {
+        ApiResponse<String> response = new ApiResponse<>();
+        productTypeService.enableType(maSp);
+        response.setMessage("Sản phẩm đã được kích hoạt!");
+        return response;
+    }
 
+    @PutMapping("/{maSp}/disable")
+    public ApiResponse<String> disableProduct(@PathVariable("maSp") int maSp) {
+        ApiResponse<String> response = new ApiResponse<>();
+        productTypeService.disableType(maSp);
+        response.setMessage("Sản phẩm đã bị vô hiệu hóa!");
+        return response;
+    }
 }

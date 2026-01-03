@@ -48,4 +48,6 @@ public interface ProductTypeRepo extends JpaRepository<ProductTypes, Integer> {
             @Param("tenLoai") String tenLoai
     );
     boolean existsByTenLoai(String tenLoai);
+
+    boolean existsByChiTietLoai(String chiTietLoai);
 }

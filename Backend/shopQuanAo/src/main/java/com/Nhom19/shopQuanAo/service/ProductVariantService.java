@@ -121,4 +121,32 @@ public Boolean UpdateVariant(UpdateVariantRequest request,Integer maBienThe) {
         });
         return productVariantResponses;
     }
+
+    //    @PreAuthorize("hasAuthority('PRODUCT_MANAGE')")
+    @Transactional
+    public void enableProductVariant(int maBienThe, int maSp) {
+        var variant = productVariantRepo.findById(maBienThe).orElseThrow(
+                ()->new AppException(ErrorCode.PRODUCT_VARIANT_NOT_EXISTED));
+
+        if (!variant.getProducts().getMaSp().equals(maSp)) {
+            throw new AppException(ErrorCode.PRODUCT_VARIANT_NOT_EXISTED);
+        }
+
+        variant.setTrangThai(true);
+        productVariantRepo.save(variant);
+    }
+
+    //    @PreAuthorize("hasAuthority('PRODUCT_MANAGE')")
+    @Transactional
+    public void disableProductVariant(int maBienThe, int maSp) {
+        var variant = productVariantRepo.findById(maBienThe).orElseThrow(
+                ()->new AppException(ErrorCode.PRODUCT_VARIANT_NOT_EXISTED));
+
+        if (!variant.getProducts().getMaSp().equals(maSp)) {
+            throw new AppException(ErrorCode.PRODUCT_VARIANT_NOT_EXISTED);
+        }
+
+        variant.setTrangThai(false);
+        productVariantRepo.save(variant);
+    }
 }

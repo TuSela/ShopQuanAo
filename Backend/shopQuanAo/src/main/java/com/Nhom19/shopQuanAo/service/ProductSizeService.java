@@ -52,6 +52,12 @@ public class ProductSizeService {
     public ProductSizeResponse updateSize(int maKc, CreateOrUpdateSizeRequest request) {
         var size = productSizeRepo.findById(maKc).orElseThrow(()-> new AppException(ErrorCode.PRODUCT_SIZE_NOT_FOUND));
 
+        if (!size.getTenKc().equals(request.getTenKc())) {
+            if (productSizeRepo.existsByTenKc(request.getTenKc())) {
+                throw new AppException(ErrorCode.PRODUCT_SIZE_EXISTED);
+            }
+        }
+
         productSizeMapper.updateSize(size, request);
         productSizeRepo.save(size);
 

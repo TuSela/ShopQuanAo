@@ -9,7 +9,9 @@ import com.Nhom19.shopQuanAo.entity.ProductTypes;
 import com.Nhom19.shopQuanAo.exception.AppException;
 import com.Nhom19.shopQuanAo.exception.ErrorCode;
 import com.Nhom19.shopQuanAo.mapper.ProductTypeMapper;
+import com.Nhom19.shopQuanAo.repository.ProductRepository;
 import com.Nhom19.shopQuanAo.repository.ProductTypeRepo;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -28,10 +30,12 @@ public class ProductTypeService {
     ProductTypeRepo productTypeRepo;
     @Autowired
     ProductTypeMapper productTypeMapper;
+    @Autowired
+    ProductRepository productRepo;
 
     @PreAuthorize("hasAuthority('CATEGORY_MANAGE')")
     public ProductTypeResponse addProductType(TypeCreationRequest request){
-        if (!productTypeRepo.existsByTenLoai(request.getTenLoai())){
+        if (productTypeRepo.existsByChiTietLoai(request.getChiTietLoai())){
             throw new RuntimeException();
         }
 
@@ -46,24 +50,6 @@ public class ProductTypeService {
          return productTypes.stream()
                  .map(productTypeMapper::toProductTypeResponse)
                  .collect(Collectors.toList());
-    }
-
-    @PreAuthorize("hasAuthority('CATEGORY_MANAGE')")
-    public ProductTypeResponse updateProductType (int maLoai, TypeCreationRequest request){
-        var productType = productTypeRepo.findById(maLoai).orElseThrow(()-> new AppException(ErrorCode.PRODUCT_TYPE_NOT_FOUND));
-
-        productTypeMapper.updateProductTypes(productType, request);
-        productTypeRepo.save(productType);
-
-        return productTypeMapper.toProductTypeResponse(productType);
-    }
-//    @PreAuthorize("hasAuthority('CATEGORY_MANAGE')")
-    public boolean deleteProductType (int maLoai){
-        if (!productTypeRepo.existsById(maLoai)){
-            return false;
-        }
-        productTypeRepo.deleteById(maLoai);
-        return true;
     }
 
     //Danh mục theo Loại sản phẩm
@@ -177,4 +163,51 @@ public class ProductTypeService {
         return productTypeMapper.toProductTypeResponse(productType);
     }
 
+    public ProductTypeResponse updateProductType (int maLoai, TypeCreationRequest request){
+        var productType = productTypeRepo.findById(maLoai).orElseThrow(()-> new AppException(ErrorCode.PRODUCT_TYPE_NOT_FOUND));
+
+        if (productType.getChiTietLoai().equals(request.getChiTietLoai())) {
+            if (productTypeRepo.existsByChiTietLoai(request.getChiTietLoai())) {
+                throw new AppException(ErrorCode.PRODUCT_TYPE_EXISTED);
+            }
+        }
+
+        productTypeMapper.updateProductTypes(productType, request);
+        productTypeRepo.save(productType);
+
+        return productTypeMapper.toProductTypeResponse(productType);
+    }
+
+    public boolean deleteProductType (int maLoai){
+        if (!productTypeRepo.existsById(maLoai)){
+            return false;
+        }
+        productTypeRepo.deleteById(maLoai);
+        return true;
+    }
+
+//    @PreAuthorize("hasAuthority('CATEGORY_MANAGE')")
+    @Transactional
+    public void enableType (int maLoai) {
+        var type  = productTypeRepo.findById(maLoai).orElseThrow(
+                ()-> new AppException(ErrorCode.PRODUCT_TYPE_NOT_FOUND));
+
+        type.setTinhTrang(true);
+    }
+
+    //    @PreAuthorize("hasAuthority('CATEGORY_MANAGE')")
+    @Transactional
+    public void disableType (int maLoai) {
+        var type  = productTypeRepo.findById(maLoai).orElseThrow(
+                ()-> new AppException(ErrorCode.PRODUCT_TYPE_NOT_FOUND));
+
+        type.setTinhTrang(false);
+
+        type.getProducts().forEach(product -> {
+            product.setTrangThai(false);
+            productRepo.save(product);
+        });
+
+        productTypeRepo.save(type);
+    }
 }

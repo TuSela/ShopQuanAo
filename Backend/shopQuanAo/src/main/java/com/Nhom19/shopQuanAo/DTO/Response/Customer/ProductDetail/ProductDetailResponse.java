@@ -4,9 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -22,6 +20,6 @@ public class ProductDetailResponse {
     private List<ColorResponse> Variants;
     private List<String> listAnhSP;
     private String chiTiet;
-    private List<ProductResponse> productComments;
+    private List<ProductCommentResponse> productComments;
 
 }

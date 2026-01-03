@@ -32,7 +32,7 @@ public class Adminservice {
     private PermissionRepository permissionRepository;
     @Autowired
     private RoleRepository roleRepository;
-//    @PreAuthorize("hasAuthority('ADMIN_MANAGE')")
+    @PreAuthorize("hasAuthority('ADMIN_MANAGE')")
     public AdminResponse createAdmin(AdminRequest request){
         var context = SecurityContextHolder.getContext();
         String sdt = context.getAuthentication().getName();
@@ -53,13 +53,13 @@ public class Adminservice {
         return adminMapper.toDTO(admin);
     }
 
-//    @PreAuthorize("hasAuthority('ADMIN_MANAGE')")
+    @PreAuthorize("hasAuthority('ADMIN_MANAGE')")
     public List<AdminResponse> getUsers()
     {
         List<Admin> admins = adminRepository.findAll();
         return admins.stream().map(adminMapper::toDTO).collect(Collectors.toList());
     }
-//        @PreAuthorize("hasAuthority('ADMIN_MANAGE')")
+        @PreAuthorize("hasAuthority('ADMIN_MANAGE')")
 //    @PostAuthorize("returnObject.username == authentication.name")
     public Admin getUserById(Integer id)
     {

@@ -24,10 +24,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -138,8 +136,6 @@ public class ProductService {
         );
         // Lấy danh sách comment
         List<ProductComments> productComments = productCommentRepo.findByProducts(products);
-        System.out.println("productComments: " + productComments.toString());
-        // Set số lượng đánh giá
         productDetailResponse.setSoLuongDanhGia(productComments.size());
         // Map comments
         productDetailResponse.setProductComments(
@@ -148,7 +144,7 @@ public class ProductService {
                             Users users = pc.getUsers();
                             UserCommentResponse userResponse = userMapper.toUserCommentResponse(users);
 
-                            ProductResponse res = new ProductResponse();
+                            ProductCommentResponse res = new ProductCommentResponse();
                             res.setMaBl(pc.getMaBl());
                             res.setNgayTao(pc.getNgayTao());
                             res.setNoiDung(pc.getNoiDung());
@@ -228,7 +224,6 @@ public class ProductService {
 
         return res;
     }
-
 
 // THÊM SẢN PHẨM MỚI
     @PreAuthorize("hasAuthority('PRODUCT_MANAGE')")
@@ -520,5 +515,30 @@ public PageResponse<ProductBestSellerResponse> searchByKeyword(
             pageResult.getTotalElements(),
             pageResult.getTotalPages()
             );
+    }
+
+    //    @PreAuthorize("hasAuthority('PRODUCT_MANAGE')")
+    @Transactional
+    public void enableProduct(int maSp) {
+        var product = productRepository.findById(maSp).orElseThrow(
+                ()->new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        product.setTrangThai(true);
+    }
+
+//    @PreAuthorize("hasAuthority('PRODUCT_MANAGE')")
+    @Transactional
+    public void disableProduct(int maSp) {
+        var product = productRepository.findById(maSp).orElseThrow(
+                ()->new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        product.setTrangThai(false);
+
+        product.getProductVariants().forEach(variant -> {
+            variant.setTrangThai(false);
+            productVariantsRepo.save(variant);
+        });
+
+        productRepository.save(product);
     }
 }

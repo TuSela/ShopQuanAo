@@ -48,5 +48,41 @@ public class TypeController {
         return productTypeResponse;
     }
 
+    @PutMapping("/{maLoai}")
+    public ApiResponse<ProductTypeResponse> updateProductType (
+            @RequestBody TypeCreationRequest request,
+            @PathVariable("maLoai") int maLoai) {
+        ApiResponse<ProductTypeResponse> productTypeResponse = new ApiResponse<>();
+        productTypeResponse.setResult(productTypeService.updateProductType(maLoai, request));
+        return productTypeResponse;
+    }
+
+    @DeleteMapping("/{maLoai}")
+    public ApiResponse<Boolean> deleteProductType(@PathVariable("maLoai") int maLoai) {
+        ApiResponse<Boolean> response = new ApiResponse<>();
+        var result = productTypeService.deleteProductType(maLoai);
+        if (result) {
+            response.setResult(true);
+        } else  {
+            response.setResult(false);
+        }
+        return response;
+    }
+
+    @PutMapping("/{maLoai}/enable")
+    public ApiResponse<String> enableType(@PathVariable("maLoau")  int maLoai) {
+        ApiResponse<String> response = new ApiResponse<>();
+        productTypeService.enableType(maLoai);
+        response.setResult("Loại sản phẩm đã được kích hoạt!");
+        return response;
+    }
+
+    @PutMapping("/{maLoai}/disable")
+    public ApiResponse<String> disableType(@PathVariable("maLoai")  int maLoai) {
+        ApiResponse<String> response = new ApiResponse<>();
+        productTypeService.disableType(maLoai);
+        response.setMessage("Loại sản phẩm đã bị vô hiệu hóa");
+        return response;
+    }
 }
 

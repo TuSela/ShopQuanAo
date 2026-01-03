@@ -36,6 +36,12 @@ public class ProductColorService {
     @PreAuthorize("hasAuthority('COLOR_MANAGE')")
     public ColorResponse updateProductColor(int maMs, CreateOrUpdateColorRequest request){
         var productColors = productColorRepo.findById(maMs).orElseThrow(()-> new AppException(ErrorCode.PRODUCT_COLOR_NOT_FOUND));
+
+        if (!productColors.getTenMs().equals(request.getTenMs())) {
+            if (productColorRepo.existsByTenMs(request.getTenMs())) {
+                throw new AppException(ErrorCode.PRODUCT_COLOR_EXISTED);
+            }
+        }
         colorMapper.updateColor(productColors, request);
         productColorRepo.save(productColors);
         return colorMapper.toDto(productColors);
