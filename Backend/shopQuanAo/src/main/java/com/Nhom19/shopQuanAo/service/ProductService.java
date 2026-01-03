@@ -58,21 +58,19 @@ public class ProductService {
     private VariantMapper variantMapper;
     @PreAuthorize("hasAuthority('PRODUCT_MANAGE')")
     public List<ProductResponse2> getProducts() {
-        return productRepository.findAll()
+        return productRepository.findAllByOrderByMaSpDesc()
                 .stream()
                 .map(product -> {
                     ProductResponse2 productResponse = productMapper.toDTO(product);
-
+                    productResponse.setChiTiet(null);
                     productImagesRepo.getDaiDienByProducts(product.getMaSp())
                             .ifPresent(img ->
                                     productResponse.setAnhDaiDien(img.getUrlImage())
                             );
-
                     return productResponse;
                 })
                 .toList();
     }
-
     public List<ProductBestSellerResponse>getTopBestSeller(){
         List<ProductBestSellerResponse> result =
                 productRepository.findBestSellerProducts(PageRequest.of(0, 10));
@@ -129,7 +127,7 @@ public class ProductService {
                 listAnhSP.isEmpty() ? null : listAnhSP.get(0).getUrlImage()
         );
         // Lấy danh sách comment
-        List<ProductComments> productComments = productCommentRepo.findByProducts(products);
+        List<ProductComments> productComments = productCommentRepo.findDetailComments(products);
         productDetailResponse.setSoLuongDanhGia(productComments.size());
         // Map comments
         productDetailResponse.setProductComments(
@@ -147,9 +145,8 @@ public class ProductService {
 
                             CommentVariantResponse productVariants = new CommentVariantResponse();
                             productVariants.setMaBienThe(pc.getProductVariants().getMaBienThe());
-                            OrderItems orderItems = orderItemRepo.findByOrdersAndProductVariants(pc.getOrders(),pc.getProductVariants()).orElseThrow(()-> new RuntimeException("Sản phẩm trong đơn hàng không tồn tại"));
 
-                            productVariants.setSoLuongDat(orderItems.getSoLuong());
+//                            productVariants.setSoLuongDat(pc.getOrders().);
                             productVariants.setTenMs(pc.getProductVariants().getColors().getTenMs());
                             productVariants.setTenKc(pc.getProductVariants().getSizes().getTenKc());
 
@@ -191,15 +188,12 @@ public class ProductService {
         ColorResponse res = new ColorResponse();
         res.setMaMs(color.getMaMs());
         res.setTenMs(color.getTenMs());
-
         // Ảnh đã được sắp xếp: đại diện đứng đầu
         List<ProductImages> images =
                 productImagesRepo.getImagesByProductAndColorOrderByDaiDien(maSp, maMs);
-
         res.setUrlImages(
                 images.isEmpty() ? null : images.get(0).getUrlImage()
         );
-
         // Size theo màu
         List<ProductVariants> variants =
                 productVariantsRepo.getSizesByProductAndColor(maSp, maMs);
@@ -213,9 +207,7 @@ public class ProductService {
                     return s;
                 })
                 .toList();
-
         res.setSizes(sizeList);
-
         return res;
     }
 
@@ -338,7 +330,6 @@ public PageResponse<ProductBestSellerResponse> searchByKeyword(
             productPage.getTotalPages()
     );
 }
-
     // tìm theo đối tượng
     public List<ProductBestSellerResponse> findByDoiTuong(String doiTuong) {
 

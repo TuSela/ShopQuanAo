@@ -115,7 +115,6 @@ public class Adminservice {
     public Boolean enableAdmin(Integer adminId) {
         Admin admin = adminRepository.findById(adminId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-
         if (!adminId.equals(admin.getManagerCode()) && !adminId.equals(1)) {
             throw new AppException(ErrorCode.USER_NOT_UNDER_YOUR_MANAGEMENT);
         }

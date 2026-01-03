@@ -16,6 +16,7 @@ import java.util.List;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Products, Integer> {
+    List<Products> findAllByOrderByMaSpDesc();
     @Query(
             value = """
         SELECT p.ma_sp AS maSp, p.ten_sp AS tenSp, p.gia AS gia, MAX(pi.url_hinh_anh) AS urlImage
@@ -59,7 +60,7 @@ public interface ProductRepository extends JpaRepository<Products, Integer> {
     JOIN oi.productVariants pv
     JOIN pv.products p
     LEFT JOIN p.images img
-    WHERE img.daiDien = true OR img IS NULL
+    WHERE p.trangThai = true AND (img.daiDien = true OR img IS NULL)
     GROUP BY p.maSp, p.tenSp, p.gia, img.urlImage, p.danhGia
     ORDER BY SUM(oi.soLuong) DESC
 """)
@@ -85,7 +86,7 @@ public interface ProductRepository extends JpaRepository<Products, Integer> {
     FROM Products p
     LEFT JOIN p.images img
     WHERE (img.daiDien = true OR img IS NULL)
-      AND p.maSp NOT IN :ids
+      AND (p.maSp NOT IN :ids) AND p.trangThai = true
     ORDER BY function('RAND')
 """)
     List<ProductBestSellerResponse> findRandomProductsExclude(
@@ -95,7 +96,7 @@ public interface ProductRepository extends JpaRepository<Products, Integer> {
 //    OR LOWER(p.chiTiet) LIKE LOWER(CONCAT('%', :keyword, '%'))
     @Query("""
         SELECT p FROM Products p
-        WHERE LOWER(p.tenSp) LIKE LOWER(CONCAT('%', :keyword, '%'))
+        WHERE LOWER(p.tenSp) LIKE LOWER(CONCAT('%', :keyword, '%')) AND p.trangThai = true
     """)
     Page<Products> searchByKeyword(@Param("keyword") String keyword,Pageable pageable);
 

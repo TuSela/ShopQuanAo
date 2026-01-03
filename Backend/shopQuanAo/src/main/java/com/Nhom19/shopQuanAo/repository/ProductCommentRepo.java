@@ -14,6 +14,17 @@ import java.util.Set;
 public interface ProductCommentRepo extends JpaRepository<ProductComments, Integer> {
     Set<ProductComments> getByMaBl(Integer id);
     List<ProductComments> findByProducts(Products product);
+    @Query("""
+    SELECT pc
+    FROM ProductComments pc
+    JOIN FETCH pc.users
+    JOIN FETCH pc.productVariants pv
+    JOIN FETCH pv.colors
+    JOIN FETCH pv.sizes
+    WHERE pc.products = :product
+""")
+    List<ProductComments> findDetailComments(@Param("product") Products product);
+
     boolean existsByUsersAndOrdersAndProductVariants(Users users,Orders orders, ProductVariants productVariants);
 
     // lấy ra danh sách comment của tôi

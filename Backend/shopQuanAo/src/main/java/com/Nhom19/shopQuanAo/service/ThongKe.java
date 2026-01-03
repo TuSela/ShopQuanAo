@@ -28,23 +28,18 @@ public class ThongKe {
         thongKe.setCustomerStatisticDTO(
                 userRepository.thongKeHanhViKhachHang()
         );
-
         thongKe.setLowStockProductDTO(
                 productVariantRepo.sanPhamTonKhoThap(2)
         ); // ❗ tồn kho không filter thời gian
-
         thongKe.setRevenueByMonthDTO(
                 orderRepository.doanhThuTheoThang(fromDate, toDate)
         );
-
         thongKe.setRevenueByPaymentMethodDTO(
                 orderRepository.doanhThuTheoPhuongThuc(fromDate, toDate)
         );
-
         thongKe.setOrderByMonthDTO(
                 orderRepository.countCompletedOrdersByMonth(fromDate, toDate)
         );
-
         thongKe.setRatingStatisticDTO(
                 productCommentRepo.thongKeDanhGia(fromDate, toDate)
         );
@@ -60,7 +55,6 @@ public class ThongKe {
         thongKe.setOrderStatusStatisticDTO(
                 orderRepository.countOrdersByStatus()
         );
-
         return thongKe;
     }
 }

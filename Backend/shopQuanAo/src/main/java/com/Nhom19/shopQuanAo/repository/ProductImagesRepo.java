@@ -1,8 +1,6 @@
 package com.Nhom19.shopQuanAo.repository;
 
-import com.Nhom19.shopQuanAo.entity.ProductColors;
 import com.Nhom19.shopQuanAo.entity.ProductImages;
-import com.Nhom19.shopQuanAo.entity.ProductVariants;
 import com.Nhom19.shopQuanAo.entity.Products;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -23,6 +21,8 @@ public interface ProductImagesRepo extends JpaRepository<ProductImages, Integer>
 """)
 List<ProductImages> getImagesByProductAndColor(Integer maSp, Integer maMs);
 
+    List<String> findUrlImageByProducts(Products products);
+
 Set<ProductImages> findByProducts(Products products);
     @Query("""
     SELECT pi
@@ -32,7 +32,7 @@ Set<ProductImages> findByProducts(Products products);
 """)
     List<ProductImages> findDaiDienByProducts(@Param("products") List<Products> products);
 
-    List<ProductImages> findByProductsOrderByDaiDienDesc(Products products);
+    Optional<ProductImages> findFirstByProductsAndDaiDienTrue(Products products);
 
     @Query("""
         SELECT pi

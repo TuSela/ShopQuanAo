@@ -21,5 +21,4 @@ public class ProductDetailResponse {
     private List<String> listAnhSP;
     private String chiTiet;
     private List<ProductCommentResponse> productComments;
-
 }
