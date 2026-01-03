@@ -30,7 +30,6 @@ public class CommentController {
         ApiResponse <Boolean> response = new ApiResponse<>();
         String token = authHeader.substring(7);
         JWTClaimsSet claims = jwtUtils.parseToken(token);
-
         try {
             Integer Id = claims.getIntegerClaim("id");
             response.setResult(commentService.CreateComment(request,Id));
@@ -39,6 +38,33 @@ public class CommentController {
             throw new RuntimeException(e);
         }
     }
+    @PutMapping("/{id}/disable")
+    public ApiResponse<?> disableAdmin(
+            @PathVariable Integer id
 
-
+    ) {
+        commentService.disableComment(id);
+        ApiResponse apiResponse = new ApiResponse<>();
+        apiResponse.setMessage("Admin đã bị khóa");
+        return apiResponse;
+    }
+    @PutMapping("/{id}/enable")
+    public ApiResponse<Boolean> enableAdmin(@PathVariable Integer id) {
+        ApiResponse<Boolean> apiResponse = new ApiResponse<>();
+        apiResponse.setMessage("Admin đã được mở khóa");
+        apiResponse.setResult(commentService.enableComment(id));
+        return apiResponse;
+    }
+    @DeleteMapping("/{maBl}")
+    public ApiResponse<Boolean> deleteComment(@PathVariable Integer maBl) {
+        ApiResponse<Boolean> response = new ApiResponse<>();
+        try {
+        commentService.deleteComment(maBl);
+            response.setResult(true);
+        }
+        catch (Exception e) {
+            response.setResult(false);
+        }
+        return response;
+    }
 }

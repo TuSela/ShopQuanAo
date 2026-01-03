@@ -22,7 +22,6 @@ public class TypeController {
         listProductTypes.setResult(productTypeService.getTypes());
        return listProductTypes;
     }
-
     @GetMapping("/nav-menu")
     public ApiResponse<List<NavMenuDTO>> getNavMenu() {
 
@@ -76,7 +75,6 @@ public class TypeController {
         response.setResult("Loại sản phẩm đã được kích hoạt!");
         return response;
     }
-
     @PutMapping("/{maLoai}/disable")
     public ApiResponse<String> disableType(@PathVariable("maLoai")  int maLoai) {
         ApiResponse<String> response = new ApiResponse<>();

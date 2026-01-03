@@ -175,7 +175,6 @@ public class ProductController {
         response.setMessage("Sản phẩm đã được kích hoạt!");
         return response;
     }
-
     @PutMapping("/{maSp}/disable")
     public ApiResponse<String> disableProduct(@PathVariable("maSp") int maSp) {
         ApiResponse<String> response = new ApiResponse<>();

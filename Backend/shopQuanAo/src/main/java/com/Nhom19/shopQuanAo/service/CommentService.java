@@ -11,6 +11,7 @@ import com.Nhom19.shopQuanAo.exception.ErrorCode;
 import com.Nhom19.shopQuanAo.mapper.CommentMapper;
 import com.Nhom19.shopQuanAo.mapper.UserMapper;
 import com.Nhom19.shopQuanAo.repository.*;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -152,6 +153,28 @@ public class CommentService {
                     return res;
                 })
                 .collect(Collectors.toList());
+    }
+    @PreAuthorize("hasAuthority('USER_MANAGE')")
+    @Transactional
+    public void disableComment(Integer maBl) {
+        ProductComments productComments = productCommentRepo.findById(maBl)
+                .orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        productComments.setTrangThai("HIDDEN");
+        productCommentRepo.save(productComments);
+    }
+
+    @PreAuthorize("hasAuthority('USER_MANAGE')")
+    public Boolean enableComment(Integer maBl) {
+        ProductComments productComments = productCommentRepo.findById(maBl)
+                .orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        productComments.setTrangThai("SHOW");
+        productCommentRepo.save(productComments);
+        return true;
+    }
+    public void deleteComment(Integer maBl) {
+        productCommentRepo.deleteById(maBl);
     }
 }
 
