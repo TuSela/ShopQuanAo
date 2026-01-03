@@ -89,7 +89,7 @@ public class Adminservice {
     {
         adminRepository.deleteById(id);
     }
-//    @PreAuthorize("hasAuthority('ADMIN_MANAGE')")
+    @PreAuthorize("hasAuthority('ADMIN_MANAGE')")
     @Transactional
     public void disableAdmin(Integer adminId, String authHeader) {
         var context = SecurityContextHolder.getContext();
@@ -118,7 +118,6 @@ public class Adminservice {
         }
         admin.setTrangThai(true);
         adminRepository.save(admin);
-        System.out.println("đay là trang thái sau cạp nhtaj: " + admin.getTrangThai());
         return true;
     }
 }
