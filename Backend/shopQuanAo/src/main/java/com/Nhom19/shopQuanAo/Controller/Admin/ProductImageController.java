@@ -15,7 +15,7 @@ public class ProductImageController {
     ProductImageService productImageService;
 
     @PostMapping()
-    public ApiResponse<Boolean> CreateProductImages(@RequestBody CreationProductImageRequest creationProductImageRequest) {
+    public ApiResponse<Boolean> CreateProductImages(@RequestBody com.Nhom19.shopQuanAo.Controller.Admin.CreationProductImageRequest creationProductImageRequest) {
         ApiResponse<Boolean> response = new ApiResponse<>();
         response.setResult(productImageService.createProductImageRequest(creationProductImageRequest));
         return response;

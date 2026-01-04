@@ -17,5 +17,6 @@ public class ProductResponse2 {
         private BigDecimal gia;
         private String chiTiet;
         private float danhGia;
+        private Boolean trangThai;
         private Set<ProductVariants> mabienthe;
 }

@@ -4,6 +4,7 @@ import com.Nhom19.shopQuanAo.DTO.Request.Admin.AdminRequest;
 import com.Nhom19.shopQuanAo.DTO.Request.Customer.UpdatePassRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.Admin.AdminResponse;
 import com.Nhom19.shopQuanAo.entity.Admin;
+import com.Nhom19.shopQuanAo.entity.Products;
 import com.Nhom19.shopQuanAo.entity.Role;
 import com.Nhom19.shopQuanAo.entity.Users;
 import com.Nhom19.shopQuanAo.exception.AppException;
@@ -59,7 +60,6 @@ public class Adminservice {
         return adminMapper.toDTO(admin);
     }
     public Boolean updateMyPass(Integer userID, UpdatePassRequest request) {
-
         var context = SecurityContextHolder.getContext();
         String sdt = context.getAuthentication().getName();
         Admin user = adminRepository.findByUsername(sdt).orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXISTED));
@@ -83,7 +83,7 @@ public class Adminservice {
         List<Admin> admins = adminRepository.findAll();
         return admins.stream().map(adminMapper::toDTO).collect(Collectors.toList());
     }
-        @PreAuthorize("hasAuthority('ADMIN_MANAGE')")
+    @PreAuthorize("hasAuthority('ADMIN_MANAGE')")
 //    @PostAuthorize("returnObject.username == authentication.name")
     public Admin getUserById(Integer id)
     {
@@ -101,7 +101,12 @@ public class Adminservice {
     public AdminResponse userUpdate(Integer userID, AdminRequest request)
     {
         Admin user = getUserById(userID);
-        user.setPassword(request.getPassword());
+        if(user.getMaTk() == 1){
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+
         user.setUsername(request.getUsername());
         var roles = roleRepository.findAllById(request.getRoles());
         user.setRoles(new HashSet<>(roles));
