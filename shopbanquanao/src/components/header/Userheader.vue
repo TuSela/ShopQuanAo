@@ -1,26 +1,37 @@
 <template>
+  <div class="w-full bg-[#c92127] text-white text-sm">
+    <div class="max-w-[1500px] mx-auto h-10 flex items-center justify-center font-sans font-semibold">
+      ƯU ĐÃI ĐỘC QUYỀN &nbsp; &lt;&lt; MUA NGAY &gt;&gt;
+    </div>
+  </div>
 <header class="w-full bg-[#faefda] shadow">
-<div class="max-w-7xl mx-auto flex items-center justify-between py-4 px-4">
+<div class="max-w-[1500px] mx-auto flex items-center py-2 px-6 relative">
 <!-- Logo -->
-<div class="flex items-center gap-2">
+<div class="flex items-center gap-2 shrink-0">
   <router-link to="/">
-<img src="/src/assets/icon/logo.png" alt="TOKYOLIFE" class="h-6" />
+<img src="/src/assets/icon/logo.png" alt="TOKYOLIFE" class="h-6.5" />
 </router-link>
 </div>
 
 
 <!-- Search Bar -->
-<div class="flex-1 mx-6">
-  <div class="flex items-center border-2 rounded-full overflow-hidden h-12">
+<div class="absolute left-1/2 -translate-x-[45%] w-[1000px] max-w-full">
+  <div class="flex items-center border-2 rounded-full overflow-hidden h-10 bg-white">
 
     <!-- Ô tìm kiếm -->
-    <input
-      type="text"
-      placeholder="Tìm kiếm..."
-      class="flex-1 px-4 focus:outline-none bg-white h-full"
-    />
-    <button class="px-4 bg-[#c92127] hover:bg-red-800 text-white flex items-center justify-center h-full">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+<input
+  v-model="keyword"
+  @keyup.enter="onSearch"
+  type="text"
+  placeholder="Tìm kiếm..."
+  class="flex-1 px-4 outline-none text-[18px]"
+/>
+<button
+  @click="onSearch"
+  class="px-4 bg-[#c92127] hover:bg-red-800 text-white flex items-center justify-center h-full"
+>
+
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
         <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
       </svg>
     </button>
@@ -28,12 +39,22 @@
   </div>
 </div>
 
-
+<div class="ml-auto flex items-center gap-4 shrink-0">
 <!-- Cart Icon -->
-<button class="relative ">
+<button class="relative " @click="goCart">
 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
   <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
 </svg>
+<span
+    v-if="cartCount > 0"
+    class="absolute -top-2 -right-2
+           bg-red-600 text-white text-xs
+           min-w-[18px] h-[18px]
+           flex items-center justify-center
+           rounded-full px-1"
+  >
+    {{ cartCount }}
+  </span>
 </button>
 <div 
   class="relative mx-3"
@@ -102,6 +123,7 @@
         </li>
       </ul>
     </div>
+</div>
   </div>
 </div>
 
@@ -116,24 +138,43 @@ const router = useRouter();
 let closeTimeout;
 const open = ref(false);
 
+
+const cartCount = ref(0);
+const keyword = ref("")
+const onSearch = () => {
+  if (!keyword.value.trim()) return
+
+  router.push({
+    path: "/category",
+    query: {
+      keyword: keyword.value.trim(),
+      page: 0
+    }
+  })
+}
+
 // user reactive
 const user = ref({
   hoten: "",
   avatar: ""
 });
 const loadUser = () => {
+  // load user
   const savedUser = localStorage.getItem("user");
   if (savedUser) {
     user.value = JSON.parse(savedUser);
-  } else {
-    const token = localStorage.getItem("token");
-    if (token) {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      user.value.hoten = decodeURIComponent(escape(payload.hoten));
-      user.value.avatar = payload.avatar;
-    }
+  }
+
+  // load cart count TỪ TOKEN (luôn luôn)
+  const token = localStorage.getItem("token");
+  if (token) {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    cartCount.value = payload.giohang || 0;
+
+    console.log("Cart count:", cartCount.value);
   }
 };
+
 // Khi load trang → lấy user từ localStorage
 onMounted(() => {
   loadUser(); // load lần đầu khi mount
@@ -148,6 +189,11 @@ onMounted(() => {
 const isLoggedIn = () => {
   return localStorage.getItem("token") !== null;
 };
+
+const goCart = () => {
+  router.push("/carts");
+};
+
 
 const goProfile = () => {
   if (!isLoggedIn()) {

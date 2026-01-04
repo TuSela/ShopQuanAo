@@ -183,46 +183,57 @@ const loginData = ref({
 });
 const showLoginPassword = ref(false);
 
+const decodeToken = (token) => {
+  return JSON.parse(atob(token.split(".")[1]));
+};
+
+
 const login = async () => {
   try {
-    // Kiểm tra nhập liệu
     if (!loginData.value.sdt || !loginData.value.password) {
       alert("Vui lòng nhập đầy đủ SĐT và mật khẩu!");
       return;
     }
 
-    // Gọi API
     const res = await axios.post("api/auth/login", {
-      sdt: loginData.value.sdt, // backend nhận 'sdt'
+      sdt: loginData.value.sdt,
       password: loginData.value.password
     });
 
-    // Kiểm tra kết quả
-    if (res.data.result.success) {
-      // Lưu token
-      auth.setToken(res.data.result.token);
+    // ✅ LẤY TOKEN ĐÚNG
+    const token = res.data?.result?.token;
+    if (!token) {
+      alert("Đăng nhập thất bại!");
+      return;
+    }
 
+    // ✅ LƯU TOKEN
+    auth.setToken(token);
 
-      // Lưu đăng nhập lâu hơn nếu chọn checkbox
-      if (loginData.value.remember) {
-        localStorage.setItem("remember", "true");
-      }
+    // ✅ GIẢI MÃ JWT
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    console.log("JWT payload:", payload);
 
-      alert("Đăng nhập thành công!");
-      router.push("/");
+    alert("Đăng nhập thành công!");
+
+    const scopes = (payload.scope || "").split(" ");
+
+    const isAdminOrStaff = scopes.some(
+      s => s.startsWith("ROLE_") && s !== "USER"
+    );
+
+    if (isAdminOrStaff) {
+      router.push("/admin/dashboard");
     } else {
-      alert("SĐT hoặc mật khẩu không đúng!");
+      router.push("/");
     }
 
   } catch (err) {
     console.error(err);
-    if (err.response && err.response.status === 401) {
-      alert("SĐT hoặc mật khẩu không đúng!");
-    } else {
-      alert("Có lỗi xảy ra, vui lòng thử lại!");
-    }
+    alert("SĐT hoặc mật khẩu không đúng!");
   }
 };
+
 
 
 /* --- REGISTER (giữ nguyên) --- */
@@ -237,8 +248,69 @@ const registerData = ref({
   confirmPassword: "",
 });
 
-const register = () => {
-  console.log("Register:", registerData.value);
+const register = async () => {
+  try {
+    // Validate cơ bản
+    if (
+      !registerData.value.lastName ||
+      !registerData.value.firstName ||
+      !registerData.value.phone ||
+      !registerData.value.email ||
+      !registerData.value.password ||
+      !registerData.value.confirmPassword
+    ) {
+      alert("Vui lòng nhập đầy đủ thông tin bắt buộc!");
+      return;
+    }
+
+    if (registerData.value.password !== registerData.value.confirmPassword) {
+      alert("Mật khẩu xác nhận không khớp!");
+      return;
+    }
+
+    // Chuẩn bị dữ liệu gửi BE
+    const payload = {
+      sdt: registerData.value.phone,
+      email: registerData.value.email,
+      password: registerData.value.password,
+      hoten: `${registerData.value.lastName} ${registerData.value.firstName}`,
+      gioiTinh: registerData.value.gender,
+      ngaySinh: registerData.value.birthday || null
+    };
+
+    // Gọi API
+    const res = await axios.post(
+      "http://localhost:8081/nhom19/users",
+      payload
+    );
+
+    // Xử lý kết quả
+    if (res.data.code === 1000 && res.data.result.success) {
+      alert("Đăng ký thành công! Vui lòng đăng nhập.");
+
+      // Reset form
+      registerData.value = {
+        lastName: "",
+        firstName: "",
+        phone: "",
+        gender: "Nữ",
+        email: "",
+        birthday: "",
+        password: "",
+        confirmPassword: "",
+      };
+    }
+
+  } catch (err) {
+    console.error(err);
+
+    if (err.response?.data?.code === 1002) {
+      alert("Số điện thoại hoặc email đã tồn tại!");
+    } else {
+      alert("Đăng ký thất bại, vui lòng thử lại!");
+    }
+  }
 };
+
 </script>
 

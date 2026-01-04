@@ -1,22 +1,16 @@
 <template>
   <div class="max-w-7xl mx-auto mt-10 grid grid-cols-12 gap-6">
 
-    <aside class="col-span-3 bg-white p-6 rounded-lg shadow">
+    <aside class="col-span-3 bg-white p-6 rounded-lg shadow
+         self-start top-6 h-fit">
 
   <div class="flex items-center gap-4 mb-6">
   <!-- Ảnh avatar -->
   <div class="w-10 h-10 rounded-full overflow-hidden bg-gray-200 border border-gray-300 flex items-center justify-center">
-    <img 
-      v-if="profile.avatar" 
-      :src="profile.avatar" 
-      alt="Avatar"
-      class="w-full h-full object-cover"
-    />
-    <svg 
-    v-else xmlns="http://www.w3.org/2000/svg"
-           class="w-6 h-6 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-        <path d="M10 10a4 4 0 100-8 4 4 0 000 8zm-7 8a7 7 0 1114 0H3z"/>
-      </svg>
+<img
+  :src="previewAvatar || profile.avatar || '/default-avatar.png'"
+  class="w-full h-full object-cover"
+/>
   </div>
 
   <!-- Tên người dùng -->
@@ -74,7 +68,7 @@
 
       <!-- Đơn hàng -->
       <div v-if="activeTab === 'orders'">
-
+        <div v-if="viewMode === 'list'">
         <h2 class="text-2xl font-bold mb-6">TẤT CẢ ĐƠN HÀNG</h2>
 
         <!-- Tabs trạng thái -->
@@ -106,34 +100,277 @@
             </tr>
           </thead>
 
-          <tbody>
-            <tr
-              v-for="order in orders"
-              :key="order.id"
-              class="border-b text-sm"
-            >
-              <td class="py-4">{{ order.code }}</td>
-              <td>{{ order.products }}</td>
-              <td>{{ order.date }}</td>
-              <td class="font-semibold text-red-600">{{ order.total }}</td>
+  <tbody>
+  <template v-for="order in filteredOrders" :key="order.maDonHang">
 
-              <td>
-                <span
-                  class="px-3 py-1 rounded text-xs"
-                  :class="order.statusColor"
-                >
-                  {{ order.status }}
-                </span>
-              </td>
+    <!-- DÒNG ĐƠN HÀNG -->
+    <tr class="border-b text-sm h-20 relative">
+      <td class="py-4 font-medium">
+        #{{ order.maDonHang }}
+      </td>
 
-              <td>
-                <button class="px-4 py-2 border rounded hover:bg-gray-50">
-                  Xem chi tiết
-                </button>
-              </td>
-            </tr>
-          </tbody>
+      <td>
+        {{ order.items.length }} sản phẩm
+      </td>
+
+      <td>
+        {{ formatDate(order.ngayDat) }}
+      </td>
+
+      <td class="font-semibold text-red-600">
+        {{ formatMoney(order.tongTien) }}
+      </td>
+
+      <td>
+        <span
+          class="px-3 py-1 rounded text-xs"
+          :class="statusColor(displayStatus(order.trangThai))"
+        >
+          {{ displayStatus(order.trangThai) }}
+        </span>
+      </td>
+
+<td class="h-full">
+  <div class="h-full flex items-center gap-4">
+
+    <!-- NÚT HỦY ĐƠN (chỉ khi Đang xử lý) -->
+    <button
+      v-if="order.trangThai === 'Đang xử lý'"
+      class="h-9 px-4 border border-gray-300 rounded
+             text-gray-700 hover:bg-gray-100"
+      @click="cancelOrder(order.maDonHang)"
+    >
+      Hủy đơn hàng
+    </button>
+
+    <!-- NÚT XEM CHI TIẾT (khi KHÔNG phải Đang xử lý) -->
+    <button
+      v-else
+      class="h-9 px-6 border border-gray-300 rounded
+             text-gray-700 hover:bg-gray-100"
+      @click="viewOrderDetail(order.maDonHang)"
+    >
+      Xem chi tiết
+    </button>
+
+    <!-- NÚT ĐÁNH GIÁ (GIỮ NGUYÊN LOGIC CŨ) -->
+    <button
+      v-if="order.trangThai === 'DA_GIAO' && !isOrderFullyReviewed(order)"
+      class="h-9 px-4 bg-red-500 text-white rounded hover:bg-red-600"
+      @click="openReviewOrder(order)"
+    >
+      Đánh giá
+    </button>
+
+    <span
+      v-else-if="order.trangThai === 'DA_GIAO'"
+      class="text-green-600 font-semibold"
+    >
+      Đã đánh giá xong
+    </span>
+
+  </div>
+</td>
+
+
+
+      <!-- NÚT XỔ ĐÈ LÊN ĐƯỜNG KẺ -->
+      <td
+        colspan="6"
+        class="absolute left-1/2 -bottom-6 -translate-x-1/2 -translate-y-1/2"
+      >
+        <button
+          class="pointer-events-auto w-6 h-6 rounded-full bg-white flex items-center justify-center
+                 text-gray-500 hover:bg-gray-100 shadow z-10"
+          @click="toggleOrder(order.maDonHang)"
+        >
+          <span v-if="expandedOrderId === order.maDonHang"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
+  <path fill-rule="evenodd" d="M9.47 6.47a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 1 1-1.06 1.06L10 8.06l-3.72 3.72a.75.75 0 0 1-1.06-1.06l4.25-4.25Z" clip-rule="evenodd" />
+</svg>
+</span>
+          <span v-else><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
+  <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+</svg>
+</span>
+        </button>
+      </td>
+    </tr>
+
+    <!-- PHẦN XỔ SẢN PHẨM -->
+    <tr v-if="expandedOrderId === order.maDonHang">
+      <td colspan="6" class="bg-gray-50 pt-6">
+        <div
+          v-for="(item, index) in order.items"
+          :key="index"
+          class="flex items-center gap-4 p-4 border-b last:border-b-0"
+        >
+          <img
+            :src="item.anh"
+            class="w-20 h-20 object-cover border rounded"
+          />
+
+          <div class="flex-1">
+            <p class="font-medium">
+              {{ item.tenSanPham }}
+            </p>
+            <p class="text-sm text-gray-500">
+              Màu: {{ item.mau }} | Size: {{ item.size }}
+            </p>
+          </div>
+
+          <div class="text-sm">
+            x{{ item.soLuong }}
+          </div>
+
+          <div class="font-semibold text-red-600">
+            {{ formatMoney(item.gia) }}
+          </div>
+<button
+  v-if="reviewOrderId === order.maDonHang && !item.daDanhGia"
+  class="px-3 py-1 bg-red-500 text-white rounded text-sm"
+  @click="openReview(order, item)"
+>
+  Đánh giá
+</button>
+
+<span
+  v-if="reviewOrderId === order.maDonHang && item.daDanhGia"
+  class="text-green-600 text-sm font-semibold"
+>
+  Đã đánh giá
+</span>
+
+        </div>
+      </td>
+    </tr>
+
+  </template>
+</tbody>
+
+
         </table>
+      </div>
+       <div v-else>
+<div class="mb-6">
+  <!-- Dòng 1: Quay lại -->
+  <button
+    class="text-gray-500 hover:text-black mb-2"
+    @click="viewMode = 'list'"
+  >
+    ← Quay lại
+  </button>
+
+  <!-- Dòng 2: Tiêu đề + trạng thái -->
+  <div class="flex items-center gap-3">
+    <h2 class="text-2xl font-bold">
+      CHI TIẾT ĐƠN HÀNG #{{ orderDetail.maDdh }}
+    </h2>
+
+    <span
+      class="px-3 py-1 text-sm rounded"
+      :class="statusColor(orderDetail.orderStatus)"
+    >
+      {{ orderDetail.orderStatus }}
+    </span>
+  </div>
+</div>
+
+
+
+<div class="grid grid-cols-3 gap-6 mb-10">
+  <div class="bg-gray-50 p-5 rounded min-h-[120px]">
+    <p class="font-semibold mb-2">Địa chỉ người nhận</p>
+    <p class="font-medium">{{ orderDetail.address.hoten }}</p>
+    <p class="text-sm text-gray-600">
+      {{ orderDetail.address.diaChi }},
+      {{ orderDetail.address.phuongXa }},
+      {{ orderDetail.address.quanHuyen }},
+      {{ orderDetail.address.tinhThanhPho }}
+    </p>
+    <p class="text-sm mt-1">📞 {{ orderDetail.address.sdt }}</p>
+  </div>
+
+  <div class="bg-gray-50 p-5 rounded min-h-[120px]">
+    <p class="font-semibold mb-2">Hình thức giao hàng</p>
+    <p class="flex items-center gap-2">
+      🚚 Giao hàng tại nhà
+    </p>
+  </div>
+
+  <div class="bg-gray-50 p-5 rounded min-h-[120px]">
+    <p class="font-semibold mb-2">Hình thức thanh toán</p>
+    <p>{{ orderDetail.payment.tenPt }}</p>
+  </div>
+</div>
+<h3 class="text-xl font-bold mb-4">
+  GIỎ HÀNG
+  <span class="text-sm text-red-500 font-normal">
+    ({{ orderDetail.items.length }} sản phẩm)
+  </span>
+</h3>
+
+<div class="grid grid-cols-12 text-sm font-semibold text-gray-500 border-b pb-3">
+  <div class="col-span-6">Tên hàng</div>
+  <div class="col-span-2 text-center">Giá</div>
+  <div class="col-span-2 text-center">Số lượng</div>
+  <div class="col-span-2 text-right">Tạm tính</div>
+</div>
+<div
+  v-for="item in orderDetail.items"
+  :key="item.tenSp + item.tenKc"
+  class="grid grid-cols-12 gap-4 py-5 border-b items-center"
+>
+  <div class="col-span-6 flex gap-4">
+    <img
+      :src="item.urlImage"
+      class="w-20 h-20 object-cover rounded border"
+    />
+
+    <div>
+      <p class="font-medium">{{ item.tenSp }}</p>
+      <p class="text-sm text-gray-500">
+        Kích thước: <b>{{ item.tenKc }}</b><br />
+        Màu sắc: <b>{{ item.tenMau }}</b>
+      </p>
+    </div>
+  </div>
+
+  <div class="col-span-2 text-center text-red-600 font-semibold">
+    {{ formatMoney(item.gia) }}
+  </div>
+
+  <div class="col-span-2 text-center">
+    {{ item.soLuong }}
+  </div>
+
+  <div class="col-span-2 text-right font-semibold">
+    {{ formatMoney(item.tongTien) }}
+  </div>
+</div>
+<div class="flex justify-end mt-8">
+  <div class="w-96 text-sm">
+    <div class="flex justify-between py-2">
+      <span>Tạm tính</span>
+      <span>{{ formatMoney(orderDetail.totalAmount) }}</span>
+    </div>
+
+    <div class="flex justify-between py-2">
+      <span>Phí vận chuyển</span>
+      <span>0 đ</span>
+    </div>
+
+
+    <div class="border-t mt-3 pt-3 flex justify-between text-lg font-bold">
+      <span>Tổng cộng</span>
+      <span class="text-red-600">
+        {{ formatMoney(orderDetail.totalAmount) }}
+      </span>
+    </div>
+  </div>
+</div>
+
+
+  </div>
       </div>
 
       <!-- Các tab khác -->
@@ -151,20 +388,11 @@
     <!-- Ảnh đại diện -->
     <div class="col-span-4 flex flex-col items-center">
   <div class="w-40 h-40 rounded-full overflow-hidden bg-gray-200 border border-gray-300 flex items-center justify-center">
-    <img
-      v-if="previewAvatar || profile.avatar"
-      :src="previewAvatar || profile.avatar "
-      class="w-full h-full object-cover"
-    />
-    <svg
-    v-else
-    xmlns="http://www.w3.org/2000/svg"
-    class="w-1/2 h-1/2 text-gray-600"
-    fill="currentColor"
-    viewBox="0 0 20 20"
-  >
-    <path d="M10 10a4 4 0 100-8 4 4 0 000 8zm-7 8a7 7 0 1114 0H3z"/>
-  </svg>
+<img
+  :src="previewAvatar || profile.avatar || '/default-avatar.png'"
+  class="w-full h-full object-cover"
+/>
+
   </div>
 
   <label
@@ -274,7 +502,6 @@
       <div>
         <div class="flex items-center gap-2">
           <span class="font-semibold text-black">{{ item.hoten }}</span>
-          <span class="text-sm bg-gray-200 px-2 py-1 rounded ">Mặc định</span>
         </div>
 
         <p class="text-gray-700 mt-1">
@@ -529,22 +756,133 @@
     
     </section>
       </div>
-
-      <div v-if="activeTab === 'voucher'" class="text-gray-600">
-        Mã khuyến mại...
-      </div>
-
       <div v-if="activeTab === 'reviews'" class="text-gray-600">
-        Đánh giá của tôi...
+<div class="flex gap-6 border-b mb-6">
+  <span class="text-red-500 border-b-2 border-red-500">
+    Đã đánh giá
+  </span>
+</div>
+<div>
+  <div v-if="daDanhGia.length === 0" class="text-center text-gray-400">
+    Bạn chưa có đánh giá nào
+  </div>
+  <div
+    v-for="dg in daDanhGia"
+    :key="dg.maDanhGia"
+    class="flex gap-4 border p-4 mb-4"
+  >
+    <img :src="dg.anh" class="w-20 h-20 object-cover" />
+
+    <div class="flex-1">
+      <div class="font-semibold">{{ dg.tenSanPham }}</div>
+      <div class="text-sm text-gray-500">
+        {{ dg.mau }} / {{ dg.size }}
       </div>
 
-      <div v-if="activeTab === 'seen'" class="text-gray-600">
-        Sản phẩm đã xem...
+      <div class="text-yellow-500">
+        ⭐ {{ dg.diemDanhGia }}/5
       </div>
+
+      <div class="mt-1">{{ dg.noiDung }}</div>
+
+      <div class="text-xs text-gray-400">
+        {{ new Date(dg.ngayTao).toLocaleString() }}
+      </div>
+    </div>
+  </div>
+</div>
+
+
+      </div>
+
 
     </main>
 
   </div>
+  <div
+  v-if="showReviewModal"
+  class="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+>
+   <!-- MODAL BOX -->
+  <div class="bg-white w-[480px] rounded-xl p-6 shadow-lg">
+
+    <h3 class="text-xl font-bold mb-4">Đánh giá sản phẩm</h3>
+    <!-- THÔNG TIN SẢN PHẨM -->
+<div class="flex gap-4 items-center border rounded-lg p-3 mb-4 bg-gray-50">
+  <img
+    :src="currentReviewItem?.anh"
+    class="w-20 h-20 object-cover rounded border"
+  />
+
+  <div class="flex-1">
+    <p class="font-semibold text-gray-800 line-clamp-2">
+      {{ currentReviewItem?.tenSanPham }}
+    </p>
+
+    <p class="text-sm text-gray-500 mt-1">
+      Phân loại:
+      <span class="font-medium text-gray-700">
+        {{ currentReviewItem?.mau }} / {{ currentReviewItem?.size }}
+      </span>
+    </p>
+  </div>
+</div>
+
+
+    <!-- CHỌN SAO -->
+    <div class="mb-4">
+      <p class="font-semibold mb-2">Đánh giá</p>
+      <div class="flex gap-2">
+        <svg
+          v-for="star in 5"
+          :key="star"
+          @click="reviewForm.diemDanhGia = star"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          class="w-8 h-8 cursor-pointer transition"
+          :class="star <= reviewForm.diemDanhGia
+            ? 'text-yellow-400'
+            : 'text-gray-300 hover:text-yellow-300'"
+        >
+          <path
+            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.97a1 1 0 0 0 .95.69h4.174c.969 0 1.371 1.24.588 1.81l-3.378 2.455a1 1 0 0 0-.364 1.118l1.287 3.97c.3.921-.755 1.688-1.54 1.118l-3.378-2.455a1 1 0 0 0-1.176 0l-3.378 2.455c-.784.57-1.838-.197-1.539-1.118l1.286-3.97a1 1 0 0 0-.364-1.118L2.05 9.397c-.783-.57-.38-1.81.588-1.81h4.174a1 1 0 0 0 .95-.69l1.286-3.97Z"
+          />
+        </svg>
+      </div>
+    </div>
+
+    <!-- NỘI DUNG -->
+    <div class="mb-4">
+      <p class="font-semibold mb-2">Nhận xét</p>
+      <textarea
+        v-model="reviewForm.noiDung"
+        rows="4"
+        class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-red-400 focus:outline-none"
+        placeholder="Hãy chia sẻ cảm nhận của bạn về sản phẩm..."
+      ></textarea>
+    </div>
+
+    <!-- ACTION -->
+    <div class="flex justify-end gap-3 mt-6">
+      <button
+        @click="showReviewModal = false"
+        class="px-4 py-2 border rounded hover:bg-gray-100"
+      >
+        Hủy
+      </button>
+
+      <button
+        class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded font-semibold"
+        @click="submitReview"
+      >
+        Gửi đánh giá
+      </button>
+    </div>
+
+  </div>
+</div>
+
 </template>
 <style>
     @keyframes fadeIn {
@@ -557,9 +895,71 @@
 }
   </style>
 <script setup>
-import { ref, onMounted,watch,reactive } from "vue";
+import { ref, onMounted,watch,reactive,computed } from "vue";
 import api from '@/api';
 
+
+
+const cancelOrder = async (maDonHang) => {
+  if (!confirm("Bạn có chắc chắn muốn hủy đơn hàng này không?")) return;
+
+  try {
+    const res = await api.put(
+      `/orders/cancel/${maDonHang}`
+    );
+
+    if (res.data.code === 1000) {
+      alert("Hủy đơn hàng thành công!");
+
+      // Cập nhật trạng thái ngay trên UI
+      const order = orders.value.find(o => o.maDonHang === maDonHang);
+      if (order) {
+        order.trangThai = "Đã hủy";
+      }
+    } else {
+      alert(res.data.message || "Hủy đơn hàng thất bại!");
+    }
+  } catch (err) {
+    console.error("Lỗi hủy đơn:", err);
+    alert("Không thể hủy đơn hàng!");
+  }
+};
+
+  const displayStatus = (status) => {
+  if (status === "DA_GIAO") return "Đã giao";
+  return status; // các trạng thái khác giữ nguyên
+};
+const daDanhGia = ref([]);
+const openReviewFromMyReview = (item) => {
+  reviewForm.value = {
+    maBienThe: item.maBienThe,
+    maDdh: item.maDonHang,   // đã có sẵn
+    noiDung: "",
+    diemDanhGia: 5
+  };
+  currentReviewItem.value = item;
+  showReviewModal.value = true;
+};
+
+const loadDanhGia = async () => {
+  try {
+    const res = await api.get("/myinfor/comments");
+
+    console.log("API comments:", res.data); // 👈 kiểm tra luôn
+
+    if (res.data.code === 1000 && Array.isArray(res.data.result)) {
+      daDanhGia.value = res.data.result;
+    } else {
+      daDanhGia.value = [];
+    }
+  } catch (err) {
+    console.error("Lỗi load đánh giá:", err);
+    daDanhGia.value = [];
+  }
+};
+onMounted(() => {
+  loadDanhGia();
+});
 
 const profile = ref({
   avatar: "",
@@ -942,51 +1342,163 @@ const submitChangePassword = async () => {
 
 import {
   User,
-  TicketPercent,
   Star,
-  Eye,
   Package
 } from "lucide-vue-next";
 const activeTab = ref("orders"); // mặc định tab Đơn hàng
+watch(activeTab, (val) => {
+  if (val === "reviews") {
+    loadDanhGia();
+  }
+});
 const menu = [
   { key: "orders", label: "Đơn hàng của tôi", icon: Package },
   { key: "profile", label: "Tài khoản của tôi", icon: User },
-  { key: "voucher", label: "Mã khuyến mại", icon: TicketPercent },
   { key: "reviews", label: "Đánh giá của tôi", icon: Star },
-  { key: "seen", label: "Sản phẩm đã xem", icon: Eye },
 ];
+
+
+const expandedOrderId = ref(null);
+
+const toggleOrder = (orderId) => {
+  expandedOrderId.value =
+    expandedOrderId.value === orderId ? null : orderId;
+};
+
+const filteredOrders = computed(() => {
+  if (orderStatus.value === "all") return orders.value;
+
+  const map = {
+
+    processing: "Đang xử lý",
+    shipping: "Đang giao",
+    done: "DA_GIAO",
+    cancel: "Đã hủy",
+
+  };
+
+
+
+  return orders.value.filter(
+    o => o.trangThai === map[orderStatus.value]
+  );
+});
+
 
 const orderTabs = [
   { key: "all", label: "Tất cả đơn hàng" },
-  { key: "pending", label: "Chờ thanh toán" },
-  { key: "processing", label: "Đang xử lý" },
+  { key: "processing", label: "Đang xử lý" },
   { key: "shipping", label: "Đang giao" },
-  { key: "done", label: "Đã giao" },
-  { key: "cancel", label: "Đã hủy" },
-  { key: "return", label: "Hoàn hàng" },
+  { key: "done", label: "Đã giao" },
+  { key: "cancel", label: "Đã hủy" },
 ];
 
 const orderStatus = ref("all");
 
-const orders = ref([
-  {
-    id: 1,
-    code: "SA8TPI928W",
-    products: "2 sản phẩm",
-    date: "26/11/2025",
-    total: "518.300đ",
-    status: "Lỗi Thanh toán",
-    statusColor: "bg-red-100 text-red-600",
-  },
-  {
-    id: 2,
-    code: "SA8TPI928W",
-    products: "2 sản phẩm",
-    date: "26/11/2025",
-    total: "518.300đ",
-    status: "Chờ thanh toán VNPAY",
-    statusColor: "bg-orange-100 text-orange-600",
-  },
-]);
+const orders = ref([]);
+
+/* Gọi API */
+const fetchOrders = async () => {
+  try {
+    const res = await api.get("/myinfor/orders"); // => /api/orders
+
+    if (res.data.code === 1000) {
+      orders.value = res.data.result;
+    }
+  } catch (err) {
+    console.error("Lỗi lấy đơn hàng:", err);
+  }
+};
+
+onMounted(fetchOrders);
+
+/* Helpers */
+const formatDate = (date) =>
+  new Date(date).toLocaleDateString("vi-VN");
+
+const formatMoney = (money) =>
+  money.toLocaleString("vi-VN") + "đ";
+
+const statusColor = (status) => {
+  switch (status) {
+    case "Đang xử lý":
+      return "bg-orange-100 text-orange-600";
+    case "Đang giao":
+      return "bg-blue-100 text-blue-600";
+    case "Đã giao":
+      return "bg-green-100 text-green-600";
+    case "Đã hủy":
+      return "bg-red-100 text-red-600";
+    default:
+      return "bg-gray-100 text-gray-600";
+  }
+};
+
+/* Click xem chi tiết */
+const viewMode = ref('list') // 'list' | 'detail'
+const orderDetail = ref(null)
+
+const viewOrderDetail = async (maDdh) => {
+  const res = await api.get(
+    `/orders/${maDdh}`
+  )
+  orderDetail.value = res.data
+  viewMode.value = 'detail'
+}
+
+
+
+const isOrderFullyReviewed = (order) => {
+  return order.items.every(item => item.daDanhGia);
+};
+
+const currentReviewItem = ref(null);
+const showReviewModal = ref(false);
+const openReviewOrder = (order) => {
+  expandedOrderId.value = order.maDonHang;
+  reviewOrderId.value = order.maDonHang;
+};
+
+const reviewOrderId = ref(null);
+
+const reviewForm = ref({
+  maBienThe: null,
+  maDdh: null,
+  noiDung: "",
+  diemDanhGia: 5
+});
+const openReview = (order, item) => {
+  reviewForm.value = {
+    maBienThe: item.maBienThe,
+    maDdh: order.maDonHang,
+    noiDung: "",
+    diemDanhGia: 5
+  };
+  currentReviewItem.value = item;
+  showReviewModal.value = true;
+};
+const submitReview = async () => {
+  if (!reviewForm.value.noiDung.trim()) {
+    alert("Vui lòng nhập nội dung đánh giá");
+    return;
+  }
+
+  try {
+    const res = await api.post("/comments", reviewForm.value);
+
+    if (res.data.code === 1000) {
+      if (currentReviewItem.value) {
+        currentReviewItem.value.daDanhGia = true;
+      }
+      alert("Đánh giá thành công!");
+      showReviewModal.value = false;
+    }
+  } catch (err) {
+    alert("Không thể gửi đánh giá");
+  }
+};
+
+
+
 </script>
 

@@ -1,22 +1,20 @@
 <template>
-  <div class="group w-full cursor-pointer"
-  @click="goToDetail"
-  >
-    <!-- IMAGE -->
-    <div class="relative overflow-hidden rounded-md">
+  <div class="group w-full cursor-pointer" @click="goToDetail">
+    <div class="relative overflow-hidden rounded-md aspect-3/4">
       <img
-  :src="product.urlImage"
-  :alt="product.tenSp"
-  class="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105"
-/>
+        :src="product.urlImage"
+        :alt="product.tenSp"
+        class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+      />
     </div>
-<p class="mt-3 text-sm font-medium text-gray-800">
-  {{ product.tenSp }}
-</p>
 
-<p class="text-red-600 font-semibold text-sm mt-1">
-  {{ product.gia.toLocaleString() }}đ
-</p>
+    <p class="mt-3 text-base font-sans text-black">
+      {{ product.tenSp }}
+    </p>
+
+    <p class="text-[#c92127] font-sans text-base font-semibold mt-1">
+      {{ product.gia.toLocaleString() }}đ
+    </p>
   </div>
 </template>
 
@@ -25,9 +23,9 @@
 
 const router = useRouter();
 const goToDetail = () => {
-  router.push(`/product`);
+  router.push(`/products/${props.product.maSp}`);
 };
-defineProps({
+const props = defineProps({
   product: {
     type: Object,
     required: true

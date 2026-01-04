@@ -1,7 +1,7 @@
 <template>
   <div v-if="product" class="max-w-[1200px] mx-auto mt-6 grid grid-cols-12 gap-8">
 
-    <!-- ========== CỘT ẢNH NHỎ (Gallery Left) ========== -->
+    <!-- ========== CỘT ẢNH NHỎ ========== -->
     <div class="col-span-1 space-y-3 overflow-y-auto max-h-[80vh] pr-2">
       <div
         v-for="(img, index) in galleryImages"
@@ -16,9 +16,8 @@
 
     <!-- ========== ẢNH LỚN ========== -->
     <div class="col-span-6 relative">
-      <img :src="selectedImage" class=" w-full rounded-lg shadow" />
+      <img :src="selectedImage" class="w-full rounded-lg shadow" />
 
-      <!-- chuyển ảnh -->
       <button
         class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full shadow"
         @click="prevImage"
@@ -34,13 +33,12 @@
     </div>
 
     <!-- ========== CỘT THÔNG TIN ========== -->
-    <div class="col-span-5 space-y-4 ">
+    <div class="col-span-5 space-y-4">
       <h1 class="text-2xl font-semibold leading-tight">
         {{ product.tenSp }}
       </h1>
       <p class="text-gray-500 text-sm">SKU: {{ product.maSp }}</p>
 
-      <!-- Rating -->
       <div class="flex items-center gap-1 text-yellow-500">
         ⭐⭐⭐⭐⭐
         <span class="text-gray-700 ml-2">
@@ -48,7 +46,6 @@
         </span>
       </div>
 
-      <!-- Price -->
       <div class="text-red-600 font-bold text-3xl">
         {{ formatPrice(product.gia) }}đ
       </div>
@@ -59,12 +56,12 @@
         <div class="flex gap-3">
           <button
             v-for="mau in danhSachMau"
-            :key="mau"
+            :key="mau.maMs"
             @click="chonMau(mau)"
             class="px-3 py-2 rounded-full border"
-            :class="mauDangChon === mau ? 'border-red-600' : ''"
+            :class="mauDangChon?.maMs === mau.maMs ? 'border-red-600' : ''"
           >
-            {{ mau }}
+            {{ mau.tenMs }}
           </button>
         </div>
       </div>
@@ -75,106 +72,391 @@
         <div class="flex gap-3 flex-wrap">
           <button
             v-for="size in danhSachSizeTheoMau"
-            :key="size"
+            :key="size.maKc"
             @click="sizeDangChon = size"
             class="px-4 py-2 border rounded-lg"
-            :class="sizeDangChon === size ? 'bg-black text-white' : ''"
+            :class="sizeDangChon?.maKc === size.maKc ? 'bg-black text-white' : ''"
           >
-            {{ size }}
+            {{ size.tenKc }}
           </button>
         </div>
       </div>
 
       <!-- ========== SỐ LƯỢNG ========== -->
+      <p class="font-semibold mb-2">SỐ LƯỢNG</p>
       <div class="flex items-center gap-4 mt-3">
         <button @click="soLuong > 1 ? soLuong-- : 1" class="px-3 py-2 border">-</button>
         <span class="text-lg">{{ soLuong }}</span>
         <button @click="soLuong++" class="px-3 py-2 border">+</button>
       </div>
 
-      <!-- Actions -->
+      <!-- NÚT HƯỚNG DẪN KÍCH THƯỚC -->
+      <button
+        @click="showSizeGuide = true"
+        class="mt-4 text-blue-600 underline text-sm"
+      >
+        📏 Hướng dẫn chọn size
+      </button>
+
+      <!-- POPUP BẢNG SIZE -->
+      <div
+        v-if="showSizeGuide"
+        class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+      >
+        <div class="bg-white rounded-lg p-5 max-w-[90%] max-h-[90%] overflow-auto shadow-xl">
+          <button
+            @click="showSizeGuide = false"
+            class="float-right text-xl font-bold"
+          >
+            ✖
+          </button>
+          <img
+            src="/size-guide.png"
+            alt="Bảng size"
+            class="w-full mt-4"
+          />
+        </div>
+      </div>
+
       <div class="flex gap-4 mt-5">
-        <button
-          class="flex-1 border border-red-600 text-red-600 py-3 rounded-lg font-semibold"
-        >
+        <button class="flex-1 border border-red-600 text-red-600 py-3 rounded-lg font-semibold"
+          @click="addToCart">
           🛒 Thêm giỏ hàng
         </button>
-        <button class="flex-1 bg-red-600 text-white py-3 rounded-lg font-semibold">
+        <button class="flex-1 bg-red-600 text-white py-3 rounded-lg font-semibold"
+        @click="buyNow">
           ⚡ Mua ngay
         </button>
       </div>
     </div>
+
+    <!-- ========== PHẦN MÔ TẢ (ĐÃ CHUYỂN VÀO GRID) ========== -->
+    <!-- trên desktop: bắt đầu từ cột 2 và chiếm 10 cột → căn lề giống ảnh TokyoLife -->
+    <div class="col-span-12 lg:col-start-2 lg:col-span-10">
+      <div class="mo-ta-wrapper mt-12">
+        <h2 class="title">MÔ TẢ SẢN PHẨM</h2>
+
+        <div
+          class="mo-ta-content"
+          :class="{ expanded: showMore }"
+          v-html="moTaHTML"
+        ></div>
+
+        <!-- Nút xem thêm -->
+        <button class="xem-them-btn" @click="showMore = !showMore">
+          {{ showMore ? "Thu gọn ▲" : "Xem thêm ▼" }}
+        </button>
+      </div>
+    </div>
+
+    <!-- ========== ĐÁNH GIÁ TỪ NGƯỜI MUA ========== -->
+<div class="col-span-12 lg:col-start-2 lg:col-span-10 mt-14">
+
+  <h2 class="text-xl font-bold mb-6">ĐÁNH GIÁ TỪ NGƯỜI MUA</h2>
+
+  <!-- TỔNG QUAN -->
+  <div class="grid grid-cols-12 gap-6">
+    <!-- LEFT -->
+    <div class="col-span-12 lg:col-span-8 border rounded-lg p-6 bg-white">
+      <div class="flex gap-8">
+
+        <!-- SỐ SAO -->
+        <div class="text-center w-40">
+          <p class="text-5xl font-bold">
+            {{ saoTrungBinh }}<span class="text-xl">/5</span>
+          </p>
+
+          <div class="text-yellow-500 text-xl mt-2">
+            {{ "⭐".repeat(Math.round(saoTrungBinh)) }}
+          </div>
+
+          <p class="text-sm text-gray-500 mt-2">
+            {{ tongDanhGia }} đánh giá
+          </p>
+        </div>
+
+        <!-- PHÂN BỐ SAO -->
+        <div class="flex-1 space-y-2">
+          <div
+            v-for="sao in [5,4,3,2,1]"
+            :key="sao"
+            class="flex items-center gap-3 text-sm"
+          >
+            <span class="w-10">{{ sao }} ⭐</span>
+
+            <div class="flex-1 bg-gray-200 rounded h-2 overflow-hidden">
+              <div
+                class="bg-orange-400 h-2"
+                :style="{ width: tiLeSao(sao) + '%' }"
+              ></div>
+            </div>
+
+            <span class="w-6 text-right">
+              {{ demSao(sao) }}
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="col-span-12 lg:col-span-4 border rounded-lg p-6 bg-white">
+      <p class="font-semibold mb-3">Hình ảnh từ người mua</p>
+      <p class="text-sm text-gray-400">
+        Chưa có hình ảnh đánh giá
+      </p>
+    </div>
+  </div>
+
+  <!-- FILTER -->
+  <div class="flex items-center gap-3 mt-8">
+    <p class="font-semibold mr-2">Lọc đánh giá</p>
+
+    <button
+      v-for="sao in [0,5,4,3,2,1]"
+      :key="sao"
+      @click="locSao = sao"
+      class="px-4 py-2 border rounded"
+      :class="locSao === sao
+        ? 'border-red-500 text-red-500'
+        : 'hover:border-gray-400'"
+    >
+      {{ sao === 0 ? "Tất cả" : sao + " sao" }}
+    </button>
+  </div>
+
+  <!-- DANH SÁCH ĐÁNH GIÁ -->
+  <div
+  v-for="bl in danhGiaDaLoc"
+  :key="bl.maBl"
+  class="border-t border-gray-300 mt-8 pt-6 pb-8"
+>
+  <div class="flex gap-4">
+
+    <!-- AVATAR -->
+    <img
+      :src="bl.users.avatar"
+      alt="avatar"
+      class="w-12 h-12 rounded-full object-cover"
+    />
+
+    <div class="flex-1">
+      <!-- TÊN -->
+      <p class="font-semibold">{{ bl.users.hoten }}</p>
+
+      <!-- SAO -->
+      <div class="text-yellow-500 text-sm">
+        {{ "⭐".repeat(Math.floor(bl.diemDanhGia)) }}
+      </div>
+
+      <!-- PHÂN LOẠI -->
+<p class="text-sm text-gray-500 mt-1">
+  Màu sắc: {{ bl.productVariants.tenMs }},
+  Kích thước: Size {{ bl.productVariants.tenKc }}
+</p>
+
+
+      <!-- NỘI DUNG -->
+      <p class="mt-3">{{ bl.noiDung }}</p>
+
+      <!-- NGÀY -->
+      <p class="text-xs text-gray-400 mt-3">
+        Đã đánh giá ngày:
+        {{ new Date(bl.ngayTao).toLocaleDateString("vi-VN") }}
+      </p>
+    </div>
+
+  </div>
+</div>
+
+
+</div>
+
+
   </div>
 </template>
 
+<style>
+/* --- WRAPPER CHÍNH --- */
+.mo-ta-wrapper {
+  width: 100%;
+  text-align: left;
+  margin-top: 20px;
+}
+
+/* --- TIÊU ĐỀ MÔ TẢ --- */
+.mo-ta-wrapper .title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 18px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e6e6e6;
+  text-transform: uppercase;
+  color: #111;
+}
+
+/* --- NỘI DUNG MÔ TẢ (theo layout của TokyoLife) --- */
+.mo-ta-content {
+  position: relative;
+  font-size: 15px;
+  line-height: 1.7;
+  color: #333;
+
+  max-height: 420px;
+  overflow: hidden;
+  transition: max-height 0.35s ease;
+
+  /* ensure content flows with column width */
+  width: 100%;
+  box-sizing: border-box;
+  padding-right: 8px;
+}
+
+/* Hiệu ứng mờ ở cuối để giống TokyoLife */
+.mo-ta-content::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 90px;
+  /* nếu nền trang là trắng, dùng white. Nếu nền khác, đổi rgba */
+  background: linear-gradient(to bottom, rgba(255,255,255,0), #ffffff 70%);
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+/* Khi mở rộng thì tắt hiệu ứng mờ */
+.mo-ta-content.expanded {
+  max-height: 5000px;
+}
+.mo-ta-content.expanded::after {
+  opacity: 0;
+  height: 0;
+}
+
+/* Heading con */
+.mo-ta-content h2,
+.mo-ta-content h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 18px 0 10px;
+}
+
+/* Text */
+.mo-ta-content p {
+  margin: 10px 0;
+  color: #333;
+}
+
+/* Ảnh trong mô tả – block + full width column */
+.mo-ta-content img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 18px 0;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+/* --- NÚT XEM THÊM --- */
+.xem-them-btn {
+  display: block;
+  margin: 12px auto 0;
+  background: none;
+  border: none;
+  color: #c91f1f;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+/* --- Responsive nhỏ --- */
+@media (max-width: 1024px) {
+  .mo-ta-content::after {
+    height: 60px;
+  }
+}
+</style>
+
 <script setup>
 import { ref, computed, onMounted } from "vue";
-import api from "@/api"; 
-import { useRoute } from "vue-router";
+import api from "@/api";
+import { useRoute, useRouter } from "vue-router";
+
+const route = useRoute();
+const router = useRouter();
+
+const moTaHTML = ref("");
+
+const showSizeGuide = ref(false);
+const showMore = ref(false);
 
 const product = ref(null);
 const selectedImage = ref("");
 const galleryImages = ref([]);
 
-const mauDangChon = ref("");
-const sizeDangChon = ref("");
+const mauDangChon = ref(null);
+const sizeDangChon = ref(null);
 
 const soLuong = ref(1);
 
-const route = useRoute();
-
 onMounted(async () => {
   const id = route.params.id;
-  const res = await api.get(`/products/1`);
-  product.value = res.data.result;
 
-  // Lấy ảnh đại diện
-  const daiDien = product.value.productVariants.find(v => v.daiDien);
+  try {
+    const res = await api.get(`/products/${id}`);
+    product.value = res.data.result;
 
-  selectedImage.value = daiDien?.urlImage || "/no-image.png";
+    const anhDaiDien = product.value.anhDaiDien;
 
-  // Tạo gallery ảnh (chỉ lấy những ảnh có url hợp lệ)
-  galleryImages.value = product.value.productVariants
-    .filter(v => v.urlImage && v.urlImage !== "Chưa có ảnh sp")
-    .map(v => v.urlImage);
+    // ========= GALLERY =========
+    galleryImages.value = (product.value.listAnhSP || []).filter(
+      img => img && img !== "chưa có ảnh"
+    );
 
-  if (galleryImages.value.length === 0) {
-    galleryImages.value = ["/no-image.png"];
+    if (galleryImages.value.length === 0) {
+      galleryImages.value = ["/no-image.png"];
+    }
+
+    // ✅ ÉP ẢNH HIỂN THỊ = ẢNH ĐẠI DIỆN (KHÔNG PHỤ THUỘC LIST)
+    selectedImage.value = anhDaiDien || galleryImages.value[0];
+
+    // ========= CHI TIẾT =========
+    if (product.value.chiTiet) {
+      moTaHTML.value = product.value.chiTiet;
+    }
+
+    // ========= MÀU / SIZE =========
+    mauDangChon.value = product.value.variants?.[0] || null;
+    sizeDangChon.value = mauDangChon.value?.sizes?.[0] || null;
+
+    // ❗ KHÔNG tự động đổi ảnh theo màu khi mới load
+    // chỉ đổi khi user click chọn màu
+
+  } catch (e) {
+    console.error("Lỗi lấy product:", e);
   }
-
-  mauDangChon.value = daiDien?.maMs.tenMs;
-  sizeDangChon.value = daiDien?.maKc.tenKc;
 });
 
-const danhSachMau = computed(() => {
-  const set = new Set();
-  product.value.productVariants.forEach(v => set.add(v.maMs.tenMs));
-  return [...set];
-});
+
+
+
+const danhSachMau = computed(() => product.value?.variants || []);
 
 const danhSachSizeTheoMau = computed(() => {
   if (!mauDangChon.value) return [];
-  const sizes = new Set();
-  product.value.productVariants.forEach(v => {
-    if (v.maMs.tenMs === mauDangChon.value) {
-      sizes.add(v.maKc.tenKc);
-    }
-  });
-  return [...sizes];
+  return mauDangChon.value.sizes || [];
 });
 
 function chonMau(mau) {
   mauDangChon.value = mau;
+  sizeDangChon.value = mau.sizes?.[0] || null;
 
-  // auto chọn size đầu tiên theo màu
-  sizeDangChon.value = danhSachSizeTheoMau.value[0];
-
-  // đổi ảnh theo màu nếu có
-  const bienThe = product.value.productVariants.find(
-    v => v.maMs.tenMs === mau && v.urlImage !== "Chưa có ảnh sp"
-  );
-
-  if (bienThe) selectedImage.value = bienThe.urlImage;
+  if (mau.urlImages && mau.urlImages !== "chưa có ảnh") {
+    selectedImage.value = mau.urlImages;
+  }
 }
 
 const prevImage = () => {
@@ -192,4 +474,95 @@ const nextImage = () => {
 function formatPrice(p) {
   return Number(p).toLocaleString("vi-VN");
 }
+
+
+const addToCart = async () => {
+  // 1. Kiểm tra đăng nhập
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("Vui lòng đăng nhập để thêm vào giỏ hàng");
+    return;
+  }
+
+  // 2. Validate chọn đủ
+  if (!mauDangChon.value || !sizeDangChon.value) {
+    alert("Vui lòng chọn màu và size");
+    return;
+  }
+
+  // 3. Payload
+  const payload = {
+    maSp: product.value.maSp,
+    maMs: mauDangChon.value.maMs,
+    maKc: sizeDangChon.value.maKc,
+    soLuong: soLuong.value
+  };
+
+  try {
+    // ✅ interceptor tự gắn token
+    const res = await api.post("/carts", payload);
+
+    // 4. Update token mới từ BE
+    const newToken = res.data?.result?.token;
+    if (newToken) {
+      localStorage.setItem("token", newToken);
+      window.dispatchEvent(new Event("user-updated"));
+    }
+
+    alert("Đã thêm sản phẩm vào giỏ hàng 🛒");
+    return true;
+
+  } catch (err) {
+    console.error("Add to cart error:", err);
+    alert("Không thể thêm vào giỏ hàng");
+    return false;
+  }
+};
+const buyNow = async () => {
+  const success = await addToCart();
+  if (success) {
+    router.push("/carts");
+  }
+};
+/* ===== FILTER ===== */
+const locSao = ref(0);
+
+/* ===== COMMENTS ===== */
+const danhGiaNguoiMua = computed(() => {
+  return product.value?.productComments || [];
+});
+
+/* ===== DANH SÁCH SAU LỌC ===== */
+const danhGiaDaLoc = computed(() => {
+  if (locSao.value === 0) return danhGiaNguoiMua.value;
+  return danhGiaNguoiMua.value.filter(
+    d => Math.round(d.diemDanhGia) === locSao.value
+  );
+});
+
+/* ===== SAO TRUNG BÌNH (LẤY TỪ BE) ===== */
+const saoTrungBinh = computed(() => {
+  return product.value?.danhGia || 0;
+});
+
+/* ===== TỔNG ĐÁNH GIÁ (LẤY TỪ BE) ===== */
+const tongDanhGia = computed(() => {
+  return product.value?.soLuongDanhGia || 0;
+});
+
+/* ===== ĐẾM SAO ===== */
+const demSao = (sao) => {
+  return danhGiaNguoiMua.value.filter(
+    d => Math.round(d.diemDanhGia) === sao
+  ).length;
+};
+
+/* ===== % THANH SAO ===== */
+const tiLeSao = (sao) => {
+  if (!tongDanhGia.value) return 0;
+  return (demSao(sao) / tongDanhGia.value) * 100;
+};
+
+
+
 </script>

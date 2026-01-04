@@ -1,5 +1,5 @@
 <template>
-  <div class="relative max-w-6xl mx-auto overflow-hidden">
+  <div class="relative max-w-[1400px] mx-auto overflow-hidden">
     <!-- ẢNH -->
     <div
       class="flex transition-transform duration-500"
