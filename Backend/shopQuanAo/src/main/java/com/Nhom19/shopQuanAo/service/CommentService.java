@@ -106,6 +106,7 @@ public class CommentService {
     }
     @Autowired
     private UserMapper userMapper;
+    @PreAuthorize("hasAuthority('COMMENT_MANAGE')")
     public List<ProductCommentResponse> mapToProductComment() {
 
         return productCommentRepo.findAll()
@@ -154,7 +155,7 @@ public class CommentService {
                 })
                 .collect(Collectors.toList());
     }
-    @PreAuthorize("hasAuthority('USER_MANAGE')")
+    @PreAuthorize("hasAuthority('COMMENT_MANAGE')")
     @Transactional
     public void disableComment(Integer maBl) {
         ProductComments productComments = productCommentRepo.findById(maBl)
@@ -164,7 +165,7 @@ public class CommentService {
         productCommentRepo.save(productComments);
     }
 
-    @PreAuthorize("hasAuthority('USER_MANAGE')")
+    @PreAuthorize("hasAuthority('COMMENT_MANAGE')")
     public Boolean enableComment(Integer maBl) {
         ProductComments productComments = productCommentRepo.findById(maBl)
                 .orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXISTED));
