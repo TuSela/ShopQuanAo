@@ -69,7 +69,7 @@ public class TypeController {
     }
 
     @PutMapping("/{maLoai}/enable")
-    public ApiResponse<String> enableType(@PathVariable("maLoau")  int maLoai) {
+    public ApiResponse<String> enableType(@PathVariable("maLoai")  int maLoai) {
         ApiResponse<String> response = new ApiResponse<>();
         productTypeService.enableType(maLoai);
         response.setResult("Loại sản phẩm đã được kích hoạt!");

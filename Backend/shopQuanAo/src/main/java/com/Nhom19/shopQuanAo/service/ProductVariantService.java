@@ -75,6 +75,7 @@ public Boolean UpdateVariant(UpdateVariantRequest request,Integer maBienThe) {
         productVariantRepo.save(productVariants);
         return true;
     }
+    @PreAuthorize("hasAuthority('PRODUCT_MANAGE')")
     @Transactional
     public Boolean DeleteVariant(Integer maBienThe) {
         productVariantRepo.deleteById(maBienThe);
@@ -122,7 +123,7 @@ public Boolean UpdateVariant(UpdateVariantRequest request,Integer maBienThe) {
         return productVariantResponses;
     }
 
-    //    @PreAuthorize("hasAuthority('PRODUCT_MANAGE')")
+    @PreAuthorize("hasAuthority('PRODUCT_MANAGE')")
     @Transactional
     public void enableProductVariant(int maBienThe, int maSp) {
         var variant = productVariantRepo.findById(maBienThe).orElseThrow(
@@ -136,7 +137,7 @@ public Boolean UpdateVariant(UpdateVariantRequest request,Integer maBienThe) {
         productVariantRepo.save(variant);
     }
 
-    //    @PreAuthorize("hasAuthority('PRODUCT_MANAGE')")
+    @PreAuthorize("hasAuthority('PRODUCT_MANAGE')")
     @Transactional
     public void disableProductVariant(int maBienThe, int maSp) {
         var variant = productVariantRepo.findById(maBienThe).orElseThrow(

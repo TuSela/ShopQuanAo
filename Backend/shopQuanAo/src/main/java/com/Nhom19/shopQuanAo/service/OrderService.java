@@ -347,11 +347,8 @@ public class OrderService {
                 .map(ProductImages::getUrlImage)
                 .findFirst()
                 .orElse(p.getImages().isEmpty() ? null : p.getImages().get(0).getUrlImage());
-
         res.setAnh(anh);
-
         return res;
     }
-
 }
 

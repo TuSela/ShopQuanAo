@@ -165,10 +165,7 @@ public class UserService {
     public void enableUser(Integer userId) {
         Users user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User không tồn tại"));
-
         user.setTrangThai(true);
     }
-
-
 }
 

@@ -46,7 +46,7 @@ public class Adminservice {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
         users.setUsername(request.getUsername());
-        users.setManagerCode(admin1.getMaTk());
+        users.setMaQuanly(admin1.getMaTk());
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         users.setPassword(passwordEncoder.encode(request.getPassword()));
         Set<Role> roles1 = new HashSet<>();
@@ -125,7 +125,7 @@ public class Adminservice {
         }
         Admin admin = adminRepository.findById(adminId)
                 .orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXISTED));
-        if(adminId.equals(admin.getManagerCode())&&adminId.equals(1)){
+        if(adminId.equals(admin.getMaQuanly())&&adminId.equals(1)){
             throw new AppException(ErrorCode.USER_NOT_UNDER_YOUR_MANAGEMENT);
         }
         admin.setTrangThai(false);
@@ -136,7 +136,7 @@ public class Adminservice {
     public Boolean enableAdmin(Integer adminId) {
         Admin admin = adminRepository.findById(adminId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-        if (!adminId.equals(admin.getManagerCode()) && !adminId.equals(1)) {
+        if (!adminId.equals(admin.getMaQuanly()) && !adminId.equals(1)) {
             throw new AppException(ErrorCode.USER_NOT_UNDER_YOUR_MANAGEMENT);
         }
         admin.setTrangThai(true);

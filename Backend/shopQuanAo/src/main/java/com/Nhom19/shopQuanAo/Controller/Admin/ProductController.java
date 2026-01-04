@@ -94,7 +94,7 @@ public class ProductController {
     @GetMapping("/categories")
     public ApiResponse<PageResponse<ProductBestSellerResponse>> getProducts(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "30") int size,
             @RequestParam(defaultValue = "gia") String sort,
             @RequestParam(defaultValue = "desc") String direction,
 

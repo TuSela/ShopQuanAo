@@ -162,7 +162,7 @@ public class ProductTypeService {
         var  productType = productTypeRepo.findById(maLoai).orElseThrow(()-> new AppException(ErrorCode.PRODUCT_TYPE_NOT_FOUND));
         return productTypeMapper.toProductTypeResponse(productType);
     }
-
+    @PreAuthorize("hasAuthority('CATEGORY_MANAGE')")
     public ProductTypeResponse updateProductType (int maLoai, TypeCreationRequest request){
         var productType = productTypeRepo.findById(maLoai).orElseThrow(()-> new AppException(ErrorCode.PRODUCT_TYPE_NOT_FOUND));
 
@@ -177,7 +177,7 @@ public class ProductTypeService {
 
         return productTypeMapper.toProductTypeResponse(productType);
     }
-
+    @PreAuthorize("hasAuthority('CATEGORY_MANAGE')")
     public boolean deleteProductType (int maLoai){
         if (!productTypeRepo.existsById(maLoai)){
             return false;
@@ -186,7 +186,7 @@ public class ProductTypeService {
         return true;
     }
 
-//    @PreAuthorize("hasAuthority('CATEGORY_MANAGE')")
+    @PreAuthorize("hasAuthority('CATEGORY_MANAGE')")
     @Transactional
     public void enableType (int maLoai) {
         var type  = productTypeRepo.findById(maLoai).orElseThrow(
@@ -195,7 +195,7 @@ public class ProductTypeService {
         type.setTinhTrang(true);
     }
 
-    //    @PreAuthorize("hasAuthority('CATEGORY_MANAGE')")
+    @PreAuthorize("hasAuthority('CATEGORY_MANAGE')")
     @Transactional
     public void disableType (int maLoai) {
         var type  = productTypeRepo.findById(maLoai).orElseThrow(

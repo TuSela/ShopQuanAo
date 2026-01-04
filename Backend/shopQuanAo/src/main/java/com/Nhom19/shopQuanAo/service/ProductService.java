@@ -509,7 +509,7 @@ public PageResponse<ProductBestSellerResponse> searchByKeyword(
             );
     }
 
-    //    @PreAuthorize("hasAuthority('PRODUCT_MANAGE')")
+    @PreAuthorize("hasAuthority('PRODUCT_MANAGE')")
     @Transactional
     public void enableProduct(int maSp) {
         var product = productRepository.findById(maSp).orElseThrow(
@@ -518,7 +518,7 @@ public PageResponse<ProductBestSellerResponse> searchByKeyword(
         product.setTrangThai(true);
     }
 
-//    @PreAuthorize("hasAuthority('PRODUCT_MANAGE')")
+    @PreAuthorize("hasAuthority('PRODUCT_MANAGE')")
     @Transactional
     public void disableProduct(int maSp) {
         var product = productRepository.findById(maSp).orElseThrow(

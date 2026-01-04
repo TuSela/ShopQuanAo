@@ -11,7 +11,7 @@ import java.util.Set;
 @Setter
 @Entity
 @Table(name = "admins")
-public class Admin {
+public class  Admin {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int maTk;
@@ -19,7 +19,7 @@ public class Admin {
     private String password;
 
     @Column(name = "ma_quanly")
-    private Integer managerCode = 1;
+    private Integer maQuanly;
     private Boolean trangThai = true;
     @ManyToMany
     @JoinTable(

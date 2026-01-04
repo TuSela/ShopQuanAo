@@ -16,5 +16,7 @@ public class AdminResponse {
     private Integer maTk;
     private String username;
     private String password;
+    private Boolean trangThai;
+    private Integer maQuanly;
     Set<Role> roles;
 }

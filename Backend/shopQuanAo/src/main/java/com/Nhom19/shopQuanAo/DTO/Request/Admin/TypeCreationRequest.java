@@ -10,5 +10,4 @@ public class TypeCreationRequest {
     private String tinhTrang;
     private String chiTietLoai;
     private String doiTuong;
-    private String anhLoai;
 }
