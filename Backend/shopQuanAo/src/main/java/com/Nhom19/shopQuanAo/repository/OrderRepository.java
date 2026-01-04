@@ -15,6 +15,7 @@ import java.util.List;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Orders, Integer> {
+
     @Query("""
        SELECT DISTINCT o FROM Orders o
        LEFT JOIN FETCH o.items oi
@@ -103,7 +104,7 @@ public interface OrderRepository extends JpaRepository<Orders, Integer> {
             @Param("toDate") LocalDateTime toDate
     );
 
-
+    List<Orders> findAllByOrderByMaDdhDesc();
 }
 
 

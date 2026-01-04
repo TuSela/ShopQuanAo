@@ -460,7 +460,21 @@ public PageResponse<ProductBestSellerResponse> searchByKeyword(
             int size,
             String sortBy,
             String direction
-    ) { Pageable pageable = PageRequest.of(page, size);
+    ) {
+        List<String> allowedSorts =
+                List.of("gia", "tenSp", "danhGia");
+
+        if (!allowedSorts.contains(sortBy)) {
+            sortBy = "danhGia";
+        }
+
+        Sort.Direction sortDirection =
+                direction.equalsIgnoreCase("asc")
+                        ? Sort.Direction.ASC
+                        : Sort.Direction.DESC;
+
+        Pageable pageable =
+                PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
 
     Page<Products> pageResult =
             productRepository.findBestSellerProducts3(pageable);

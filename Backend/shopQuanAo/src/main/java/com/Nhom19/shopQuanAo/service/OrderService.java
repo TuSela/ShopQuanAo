@@ -63,7 +63,7 @@ public class OrderService {
     //Lấy ra danh sách các sản phẩm
     @PreAuthorize("hasAuthority('ORDER_MANAGE')")
     public List<OrderResponse> getAllOrders() {
-        List<Orders> orders = orderRepository.findAll();
+        List<Orders> orders = orderRepository.findAllByOrderByMaDdhDesc();
        return orders.stream().map(orderMapper::toOrderResponse).collect(Collectors.toList());
     }
     //Cập nhật trạng thái đơn hàng
@@ -305,7 +305,6 @@ public class OrderService {
         return creatCartResponse;
 
     }
-
     //Lấy ra sản phẩm chưa đánh giá!
     public List<MyOrderResponse> getOrdersNotReviewed(Integer maTk) {
         List<Orders> orders = orderRepository.findCompletedOrdersNotReviewed(maTk);
@@ -326,7 +325,6 @@ public class OrderService {
 
         }).toList();
     }
-
     private MyOrderItemResponse mapItem(OrderItems item) {
 
         ProductVariants pv = item.getProductVariants();
