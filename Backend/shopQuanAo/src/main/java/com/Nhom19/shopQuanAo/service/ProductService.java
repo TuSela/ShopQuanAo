@@ -509,7 +509,7 @@ public PageResponse<ProductBestSellerResponse> searchByKeyword(
             );
     }
 
-    @PreAuthorize("hasAuthority('PRODUCT_MANAGE')")
+        @PreAuthorize("hasAuthority('PRODUCT_MANAGE')")
     @Transactional
     public void enableProduct(int maSp) {
         var product = productRepository.findById(maSp).orElseThrow(
