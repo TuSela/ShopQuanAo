@@ -20,7 +20,7 @@ public class ProductSizeService {
     private ProductSizeRepo productSizeRepo;
     @Autowired
     private ProductSizeMapper productSizeMapper;
-
+    @PreAuthorize("hasAuthority('SIZE_MANAGE')")
     public List<ProductSizeResponse>  getAllProductSize()
     {
         List<ProductSizeResponse> productSizeResponses = new ArrayList<>();
@@ -60,7 +60,7 @@ public class ProductSizeService {
         productSizeRepo.save(size);
         return productSizeMapper.toProductSizeResponse(size);
     }
-
+    @PreAuthorize("hasAuthority('SIZE_MANAGE')")
     public boolean deleteSize(int maKc) {
         if (!productSizeRepo.existsById(maKc)) {
             throw  new AppException(ErrorCode.PRODUCT_SIZE_EXISTED);
