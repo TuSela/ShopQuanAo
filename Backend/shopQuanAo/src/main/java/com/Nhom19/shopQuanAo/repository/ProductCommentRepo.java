@@ -81,9 +81,11 @@ public interface ProductCommentRepo extends JpaRepository<ProductComments, Integ
     JOIN FETCH o.items oi
     WHERE pc.products = :product
       AND oi.productVariants = pv
+      AND pc.trangThai = 'SHOW'
 """)
     List<ProductComments> findDetailComments(@Param("product") Products product);
 
+    List<ProductComments> findAllByOrderByMaBlDesc();
 }
 
 

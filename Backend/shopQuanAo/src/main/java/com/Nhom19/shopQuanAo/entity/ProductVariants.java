@@ -31,7 +31,7 @@ public class ProductVariants {
 
     private int soluong;
 
-    private boolean trangThai = true;
+    private boolean trangThai;
     @OneToMany(mappedBy = "productVariants", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItems> ordersItems;
 

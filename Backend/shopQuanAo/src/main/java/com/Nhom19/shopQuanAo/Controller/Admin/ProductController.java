@@ -78,7 +78,6 @@ public class ProductController {
         response.setResult(pageResponse);
         return response;
     }
-
     @GetMapping("/by-doi-tuong")
     public ApiResponse<List<ProductBestSellerResponse>> getByDoiTuong(
             @RequestParam("doiTuong") String doiTuong) {
@@ -167,7 +166,6 @@ public class ProductController {
 //        ApiResponse<ProductResponse2> response = new ApiResponse<>();
 //        return response;
 //    }
-
     @PutMapping("/{maSp}/enable")
     public ApiResponse<String> enableProduct(@PathVariable("maSp") int maSp) {
         ApiResponse<String> response = new ApiResponse<>();

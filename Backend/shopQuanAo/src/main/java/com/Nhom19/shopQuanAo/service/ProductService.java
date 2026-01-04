@@ -56,6 +56,7 @@ public class ProductService {
     private OrderItemRepo orderItemRepo;
     @Autowired
     private VariantMapper variantMapper;
+
     @PreAuthorize("hasAuthority('PRODUCT_MANAGE')")
     public List<ProductResponse2> getProducts() {
         return productRepository.findAllByOrderByMaSpDesc()
@@ -71,6 +72,7 @@ public class ProductService {
                 })
                 .toList();
     }
+
     public List<ProductBestSellerResponse>getTopBestSeller(){
         List<ProductBestSellerResponse> result =
                 productRepository.findBestSellerProducts(PageRequest.of(0, 10));
@@ -222,7 +224,7 @@ public class ProductService {
 
         ProductTypes productTypes = productTypeRepo.findById(request.getMaLoai()).orElseThrow(() -> new RuntimeException("Không tìm thấy màu"));
         products.setTypes(productTypes);
-        products.setTrangThai(false);
+        products.setTrangThai(true);
         productRepository.save(products);
 
         List<ColorRequest> colors = request.getColors();
@@ -248,7 +250,7 @@ public class ProductService {
                 productVariants.setColors(colorsX);
                 productVariants.setSizes(sizes);
                 productVariants.setSoluong(sizeRequest.getSoluong());
-                productVariants.setTrangThai(false);
+                productVariants.setTrangThai(true);
                 productVariantsRepo.save(productVariants);
             });
         });

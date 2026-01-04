@@ -51,12 +51,16 @@ public class CommentService {
             throw new AppException(COMMENT_ALREADY_EXISTS);
         }
         ProductComments productComments = commentMapper.ToProductComments(request);
+
         productComments.setProducts(productVariants.getProducts());
         productComments.setNgayTao(LocalDateTime.now());
         productComments.setUsers(users);
         productComments.setProductVariants(productVariants);
         productComments.setOrders(orders);
-        productComments.setTrangThai("SHOW");
+
+        // kiem tra noi dung binh luận tự động
+        boolean isApproved = isApproved(request.getNoiDung());
+        productComments.setTrangThai(isApproved ? "SHOW" : "HIDDEN");
         productCommentRepo.save(productComments);
         OrderItems orderItems = orderItemRepo.findByOrdersAndProductVariants(orders,productVariants).orElseThrow(()->new AppException(ErrorCode.ORDER_NOT_FOUND));
         orderItems.setDaDanhGia(true);
@@ -109,7 +113,7 @@ public class CommentService {
     @PreAuthorize("hasAuthority('COMMENT_MANAGE')")
     public List<ProductCommentResponse> mapToProductComment() {
 
-        return productCommentRepo.findAll()
+        return productCommentRepo.findAllByOrderByMaBlDesc()
                 .stream()
                 .map(pc -> {
 
@@ -176,6 +180,41 @@ public class CommentService {
     }
     public void deleteComment(Integer maBl) {
         productCommentRepo.deleteById(maBl);
+    }
+
+    private static final List<String> BANNED_WORDS = List.of(
+            "đồ ngu", "vô học", "lừa đảo", "rác", "chửi", "dm", "vcl",
+            "lừa đảo", "lừa gạt", "làm ăn gian dối",
+            "treo đầu dê bán thịt chó",
+            "bán hàng giả", "hàng fake",
+            "lừa tiền", "ăn chặn",
+            "lừa khách", "làm ăn bẩn","packy","namky","36","hai ngón","2 ngón"
+    );
+
+    public boolean isApproved(String content) {
+        if (content == null || content.trim().isEmpty()) {
+            return false;
+        }
+
+        // Quá ngắn hoặc quá dài
+        if (content.length() < 2 || content.length() > 500) {
+            return false;
+        }
+
+        String lower = content.toLowerCase();
+
+        // Chứa từ cấm
+        for (String word : BANNED_WORDS) {
+            if (lower.contains(word)) {
+                return false;
+            }
+        }
+
+        // Spam ký tự (!!!!!, ?????)
+        if (lower.matches(".*([!?\\.])\\1{3,}.*")) {
+            return false;
+        }
+        return true;
     }
 }
 
