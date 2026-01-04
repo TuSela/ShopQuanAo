@@ -1,5 +1,6 @@
 package com.Nhom19.shopQuanAo.service;
 
+import com.Nhom19.shopQuanAo.DTO.AddressSnapshot;
 import com.Nhom19.shopQuanAo.DTO.Request.Customer.OrderRequest.CreatOrderRequest;
 import com.Nhom19.shopQuanAo.DTO.Response.Admin.OrderResponse;
 import com.Nhom19.shopQuanAo.DTO.Response.Customer.MyCart.CreatCartResponse;
@@ -163,12 +164,9 @@ public class OrderService {
         response.setOrderStatus(order.getOrderStatus());
         response.setNgayThanhToan(order.getNgayThanhToan());
         response.setShippedAt(order.getShippedAt());
-
         // Address
-        Optional<addresses> addresses = addressRepository.findById(order.getAddresses().getMaDiaChi());
-        AddressResponse addressRes = addressMapper.ToDTO(addresses.orElse(null));
-        response.setAddress(addressRes);
-
+        AddressSnapshot addressSnapshot =order.getDiaChiGiao();
+        response.setAddress(addressSnapshot);
         // Payment
         Optional<PaymentMethods> paymentMethods= paymentMethodRepo.findById(order.getPaymentMethods().getMaPt());
         PaymentResponse paymentResponse = paymentMapper.toDTO(paymentMethods.orElse(null));
@@ -261,10 +259,11 @@ public class OrderService {
     public CreatCartResponse createOrder(CreatOrderRequest request) {
         Orders order = new Orders();
         addresses addresses = addressRepository.findById(request.getMaDiaChi()).orElseThrow(() -> new AppException(ErrorCode.ADDRESS_NOT_EXISTED));
+        AddressSnapshot addressSnapshot = addressMapper.ToAddressSnapshot(addresses);
         PaymentMethods paymentMethods = paymentMethodRepo.findById(request.getMaPt()).orElseThrow(() -> new AppException(ErrorCode.PAYMENT_METHOD_NOT_FOUND));
         Cart cart= cartRepository.findById(request.getMaGh()).orElseThrow(() -> new AppException(ErrorCode.CART_NOT_EXISTED));
 
-        order.setAddresses(addresses);
+        order.setDiaChiGiao(addressSnapshot);
         order.setPaymentMethods(paymentMethods);
         order.setOrderStatus("Đang xử lý");
         order.setPaymentStatus("Thanh toán khi nhận hàng");

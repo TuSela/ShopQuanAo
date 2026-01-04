@@ -27,13 +27,11 @@ public class Users {
     private String gioiTinh;
     private String avatar;
     private Boolean trangThai = true;
+
     @OneToMany(mappedBy = "users")
     private List<Orders> orders;
 
     @OneToMany(mappedBy = "users")
     private List<ProductComments> comments;
 
-    // feedbacks if needed
-//    @OneToMany(mappedBy = "users")
-//    private Set<Feedbacks> feedbacks = new HashSet<>();
 }

@@ -1,5 +1,6 @@
 package com.Nhom19.shopQuanAo.DTO.Response.Customer.OrderDetailRes;
 
+import com.Nhom19.shopQuanAo.DTO.AddressSnapshot;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -13,7 +14,7 @@ public class OrderDetailResponse {
     private LocalDateTime ngayThanhToan;
     private LocalDateTime shippedAt;
 
-    private AddressResponse address;
+    private AddressSnapshot address;
     private PaymentResponse payment;
 
     private List<OrderItemResponse> items;

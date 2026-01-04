@@ -30,7 +30,4 @@ public class addresses {
     private String phuongXa;
     private String quanHuyen;
     private String diaChi;
-
-    @OneToMany(mappedBy = "addresses", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Orders> orders;
 }

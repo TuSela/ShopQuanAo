@@ -1,5 +1,7 @@
 package com.Nhom19.shopQuanAo.entity;
 
+import com.Nhom19.shopQuanAo.DTO.AddressSnapshot;
+import com.Nhom19.shopQuanAo.service.AddressJsonConverter;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -38,10 +40,6 @@ import java.util.Set;
         @Column(name = "tt_don_hang")
         private String orderStatus;
 
-        @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(name = "ma_dia_chi")
-        private addresses addresses;
-
         private BigDecimal tongTien;
 
         @OneToMany(mappedBy = "orders", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -50,5 +48,8 @@ import java.util.Set;
         @OneToMany(mappedBy = "orders", cascade = CascadeType.ALL, orphanRemoval = true)
         private List<ProductComments> productComments ;
 
+        @Column(name = "dia_chi_giao")
+        @Convert(converter = AddressJsonConverter.class)
+        private AddressSnapshot diaChiGiao;
 
     }
