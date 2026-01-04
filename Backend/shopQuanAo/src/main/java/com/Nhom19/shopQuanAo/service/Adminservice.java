@@ -63,7 +63,6 @@ public class Adminservice {
         var context = SecurityContextHolder.getContext();
         String sdt = context.getAuthentication().getName();
         Admin user = adminRepository.findByUsername(sdt).orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXISTED));
-
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         if (request.getNewPass1().equals(request.getNewPass2())) {
             if (passwordEncoder.matches(request.getOldPass(),user.getPassword())) {
@@ -78,10 +77,17 @@ public class Adminservice {
         }
     }
     @PreAuthorize("hasAuthority('ADMIN_MANAGE')")
-    public List<AdminResponse> getUsers()
-    {
-        List<Admin> admins = adminRepository.findAll();
-        return admins.stream().map(adminMapper::toDTO).collect(Collectors.toList());
+    public List<AdminResponse> getUsers() {
+        var context = SecurityContextHolder.getContext();
+        String sdt = context.getAuthentication().getName();
+        Admin admin1 = adminRepository.findByUsername(sdt).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        if (admin1.getMaTk() != 1) {
+            List<Admin> admins = adminRepository.findByMaQuanly(admin1.getMaTk());
+            return admins.stream().map(adminMapper::toDTO).collect(Collectors.toList());
+        }else {
+            List<Admin> admins = adminRepository.findAll();
+            return admins.stream().map(adminMapper::toDTO).collect(Collectors.toList());
+        }
     }
     @PreAuthorize("hasAuthority('ADMIN_MANAGE')")
 //    @PostAuthorize("returnObject.username == authentication.name")
@@ -100,6 +106,7 @@ public class Adminservice {
     @PreAuthorize("hasAuthority('ADMIN_MANAGE')")
     public AdminResponse userUpdate(Integer userID, AdminRequest request)
     {
+
         Admin user = getUserById(userID);
         if(user.getMaTk() == 1){
             throw new AppException(ErrorCode.UNAUTHENTICATED);

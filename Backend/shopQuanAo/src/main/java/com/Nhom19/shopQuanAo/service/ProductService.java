@@ -101,7 +101,7 @@ public class ProductService {
     @PreAuthorize("hasAuthority('PRODUCT_MANAGE')")
     public Boolean UpdateProduct(UpdateProductRequest request, Integer maSp){
         Products products = productRepository.findById(maSp).orElseThrow(()-> new RuntimeException("không tìm thấy sản phẩm"));
-        products.setGia(products.getGia());
+        products.setGia(request.getGia());
         products.setTenSp(request.getTenSp());
         products.setTypes(productTypeRepo.findById(request.getMaLoai()).orElse(products.getTypes()));
         products.setChiTiet(request.getChiTiet());
@@ -174,16 +174,12 @@ public class ProductService {
         for (ProductVariants v : variants) {
             uniqueColorMap.putIfAbsent(v.getColors().getMaMs(), v);
         }
-
         List<ColorResponse> colors = uniqueColorMap.values().stream()
                 .map(v -> getColorDetail(product.getMaSp(), v.getColors().getMaMs()))
                 .toList();
-
         res.setVariants(colors);
-
         return res;
     }
-
 
     ///LẤY RA SẢN PHẨM BIẾN THỂ
     @Transactional()
@@ -509,7 +505,7 @@ public PageResponse<ProductBestSellerResponse> searchByKeyword(
             );
     }
 
-        @PreAuthorize("hasAuthority('PRODUCT_MANAGE')")
+    @PreAuthorize("hasAuthority('PRODUCT_MANAGE')")
     @Transactional
     public void enableProduct(int maSp) {
         var product = productRepository.findById(maSp).orElseThrow(

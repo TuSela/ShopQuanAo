@@ -30,6 +30,7 @@ public interface ProductVariantRepo extends JpaRepository<ProductVariants, Integ
     FROM ProductVariants pv
     WHERE pv.products.maSp = :maSp
       AND pv.colors.maMs = :maMs
+      AND pv.trangThai = true
 """)
     List<ProductVariants> getSizesByProductAndColor(Integer maSp, Integer maMs);
 

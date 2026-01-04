@@ -5,6 +5,7 @@ import com.Nhom19.shopQuanAo.DTO.Response.Admin.dashboard.ThongKeResponse;
 import com.Nhom19.shopQuanAo.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -21,6 +22,7 @@ public class ThongKe {
     private ProductCommentRepo productCommentRepo;
     @Autowired
     private OrderItemRepo orderItemRepo;
+    @PreAuthorize("hasAuthority('REPORT_VIEW')")
     public ThongKeResponse getDashboardThongKe(LocalDateTime fromDate,
                                                LocalDateTime toDate) {
         ThongKeResponse thongKe = new ThongKeResponse();
