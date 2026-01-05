@@ -19,7 +19,6 @@ public class AddressJsonConverter
             throw new RuntimeException("Convert address to JSON failed", e);
         }
     }
-
     @Override
     public AddressSnapshot convertToEntityAttribute(String dbData) {
         try {

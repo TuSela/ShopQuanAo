@@ -113,7 +113,7 @@ public class Adminservice {
         }
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-
+        
         user.setUsername(request.getUsername());
         var roles = roleRepository.findAllById(request.getRoles());
         user.setRoles(new HashSet<>(roles));

@@ -69,6 +69,8 @@ public class CartService {
                 productVariants.getMaBienThe()
         );
         cartItems.setId(id);
+        productVariants.setSoluong(productVariants.getSoluong() - request.getSoLuong());
+        productVariantRepo.save(productVariants);
 
         Products products = productRepo.findById(request.getMaSp())
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED));

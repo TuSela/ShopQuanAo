@@ -40,7 +40,6 @@ public class OrderService {
     @Autowired
     private OrderMapper orderMapper;
 //    @PreAuthorize("hasAuthority('ORDER_MANAGE')")
-
     public List<OrderResponseDTO> getAllOrdersWithProducts() {
         List<Orders> orders = orderRepository.findAllOrdersWithItems();
         return orders.stream().map(order -> {
@@ -67,6 +66,7 @@ public class OrderService {
         List<Orders> orders = orderRepository.findAllByOrderByMaDdhDesc();
        return orders.stream().map(orderMapper::toOrderResponse).collect(Collectors.toList());
     }
+
     //Cập nhật trạng thái đơn hàng
     @PreAuthorize("hasAuthority('ORDER_MANAGE')")
     public  Boolean DangGiaoOrder(Integer orderId) {
@@ -74,6 +74,7 @@ public class OrderService {
         orders.setOrderStatus("Đang giao");
         orders.setShippedAt(LocalDateTime.now());
         orderRepository.save(orders);
+
         return true;
     }
     @PreAuthorize("hasAuthority('ORDER_MANAGE')")

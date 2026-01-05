@@ -12,4 +12,5 @@ public class UpdateProductRequest {
     private Integer maLoai;
     private BigDecimal gia;
     private String chiTiet;
+    private Boolean trangThai;
 }
