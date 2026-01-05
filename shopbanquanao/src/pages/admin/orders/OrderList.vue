@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted,computed } from "vue";
 import api from "@/api";
 import { useRouter } from "vue-router";
 import { Package, Loader2 } from "lucide-vue-next";
@@ -7,7 +7,20 @@ import { Package, Loader2 } from "lucide-vue-next";
 const router = useRouter();
 const orders = ref([]);
 const loading = ref(false);
+const filterStatus = ref("Đang xử lý");
 
+const tabs = [
+  { label: "Tất cả đơn hàng", value: "" },
+  { label: "Đang xử lý", value: "Đang xử lý" },
+  { label: "Đang giao", value: "Đang giao" },
+  { label: "Đã giao", value: "DA_GIAO" },
+  { label: "Đã hủy", value: "Đã hủy" },
+];
+
+const filteredOrders = computed(() => {
+  if (!filterStatus.value) return orders.value;
+  return orders.value.filter(o => o.orderStatus === filterStatus.value);
+});
 const displayStatus = (status) => {
   if (status === "DA_GIAO") return "Đã giao";
   return status;
@@ -41,6 +54,29 @@ onMounted(loadOrders);
     </h1>
 
     <div class="bg-white rounded-xl shadow overflow-hidden">
+<div class="border-b mb-6">
+  <div class="flex justify-center gap-8">
+    <button
+      v-for="tab in tabs"
+      :key="tab.value"
+      @click="filterStatus = tab.value"
+      class="relative px-4 py-3 text-base font-medium transition"
+      :class="filterStatus === tab.value
+        ? 'text-red-600'
+        : 'text-gray-500 hover:text-gray-700'"
+    >
+      {{ tab.label }}
+
+      <!-- gạch chân active -->
+      <span
+        v-if="filterStatus === tab.value"
+        class="absolute left-0 right-0 -bottom-px h-0.5 bg-red-500 rounded"
+      ></span>
+    </button>
+  </div>
+</div>
+
+
       <table class="w-full text-sm">
         <thead class="bg-gray-50 text-gray-700">
           <tr>
@@ -55,12 +91,12 @@ onMounted(loadOrders);
         </thead>
 
         <!-- Orders -->
-        <tbody v-if="!loading && orders.length">
-          <tr
-            v-for="o in orders"
-            :key="o.maDdh"
-            class="border-t hover:bg-gray-50 transition"
-          >
+<tbody v-if="!loading && filteredOrders.length">
+  <tr
+    v-for="o in filteredOrders"
+    :key="o.maDdh"
+    class="border-t hover:bg-gray-50 transition"
+  >
             <td class="px-4 py-3 font-semibold">#{{ o.maDdh }}</td>
             <td class="px-4 py-3">{{ o.hoten }}</td>
             <td class="px-4 py-3 text-center">{{ o.ngayThanhToan }}</td>

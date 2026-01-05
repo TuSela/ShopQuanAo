@@ -108,7 +108,7 @@
 <script setup>
 import SidebarLink from "@/components/admin/SidebarLink.vue";
 import { ChartBar, FileText, Package, User, MessageCircle, Palette, Users,Search, Bell } from 'lucide-vue-next';
-import { ref, computed, watch } from 'vue';
+import { ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 const showMenu = ref(false);

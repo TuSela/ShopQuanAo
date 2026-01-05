@@ -57,13 +57,22 @@ onMounted(async () => {
   </div>
 
   <!-- Tiêu đề sản phẩm -->
-  <div class="mt-16">
-    <h2 class="text-center text-3xl font-bold text-[#c92127] mb-8">
-      MUA NGAY KẺO LỠ
-    </h2>
-  
+<div class="mt-16 text-center">
+  <h2 class="text-2xl font-bold text-[#c92127] mb-12">
+    MUA NGAY KẺO LỠ
+  </h2>
 
-    <hr class="border-t-2 border-[#c92127]/40 w-3/4 mx-auto">
+  <!-- đường kẻ -->
+  <div class="relative w-3/4 mx-auto">
+    <!-- line xám -->
+    <div class="h-[3px] bg-gray-200"></div>
+
+    <!-- gạch đỏ ở giữa -->
+    <div
+      class="absolute left-1/2 -translate-x-1/2 -top-px
+             w-24 h-1 bg-[#c92127]"
+    ></div>
+  </div>
 </div>
 
   <!-- Product List -->

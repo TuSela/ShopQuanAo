@@ -158,6 +158,34 @@ const user = ref({
   hoten: "",
   avatar: ""
 });
+function parseJwt(token) {
+  try {
+    const base64Payload = token.split('.')[1];
+    const payload = decodeURIComponent(
+      atob(base64Payload)
+        .split('')
+        .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    return JSON.parse(payload);
+  } catch (e) {
+    console.error("JWT decode lỗi:", e);
+    return null;
+  }
+}
+
+const loadUserFromToken = () => {
+  const token = localStorage.getItem("token");
+  if (!token) return;
+
+  const payload = parseJwt(token);
+  if (!payload) return;
+
+  user.value.hoten = payload.hoten || user.value.hoten;
+  user.value.avatar = payload.avatar || user.value.avatar;
+  cartCount.value = payload.giohang || cartCount.value;
+};
+
 const loadUser = () => {
   // load user
   const savedUser = localStorage.getItem("user");
@@ -177,7 +205,7 @@ const loadUser = () => {
 
 // Khi load trang → lấy user từ localStorage
 onMounted(() => {
-  loadUser(); // load lần đầu khi mount
+  loadUserFromToken(); 
 
   // Lắng nghe event user-updated để reload
   window.addEventListener("user-updated", () => {

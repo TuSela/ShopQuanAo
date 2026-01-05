@@ -71,14 +71,26 @@ onMounted(async () => {
   </div>
 
   <!-- Tiêu đề sản phẩm hot -->
-  <div class="mt-16 mb-8">
-    <h2 class="text-center text-2xl font-bold text-[#c92127] mb-8">
-      SẢN PHẨM ĐƯỢC YÊU THÍCH NHẤT
-    </h2>
+<div class="mt-16 text-center">
+  <h2 class="text-2xl font-bold text-[#c92127] mb-12">
+    SẢN PHẨM ĐƯỢC YÊU THÍCH NHẤT
+  </h2>
+
+  <!-- đường kẻ -->
+  <div class="relative w-3/4 mx-auto">
+    <!-- line xám -->
+    <div class="h-[3px] bg-gray-200"></div>
+
+    <!-- gạch đỏ ở giữa -->
+    <div
+      class="absolute left-1/2 -translate-x-1/2 -top-px
+             w-24 h-1 bg-[#c92127]"
+    ></div>
   </div>
 
+</div>
   <!-- Danh sách sản phẩm -->
-  <div class="max-w-[1200px] mx-auto px-4">
+  <div class="max-w-[1200px] mx-auto px-4 mt-10">
     <ProductList :products="products" />
   </div>
 

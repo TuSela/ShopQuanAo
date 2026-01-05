@@ -268,9 +268,9 @@
 
     <span
       class="px-3 py-1 text-sm rounded"
-      :class="statusColor(orderDetail.orderStatus)"
+      :class="statusColor(displayStatus(orderDetail.orderStatus))"
     >
-      {{ orderDetail.orderStatus }}
+      {{displayStatus(orderDetail.orderStatus) }}
     </span>
   </div>
 </div>
@@ -287,13 +287,13 @@
       {{ orderDetail.address.quanHuyen }},
       {{ orderDetail.address.tinhThanhPho }}
     </p>
-    <p class="text-sm mt-1">📞 {{ orderDetail.address.sdt }}</p>
+    <p class="text-sm mt-1"><Phone class="w-4 h-4 inline-block mr-2" /> {{ orderDetail.address.sdt }}</p>
   </div>
 
   <div class="bg-gray-50 p-5 rounded min-h-[120px]">
     <p class="font-semibold mb-2">Hình thức giao hàng</p>
     <p class="flex items-center gap-2">
-      🚚 Giao hàng tại nhà
+      <Truck class="w-5 h-5" /> Giao hàng tại nhà
     </p>
   </div>
 
@@ -897,6 +897,7 @@
 <script setup>
 import { ref, onMounted,watch,reactive,computed } from "vue";
 import api from '@/api';
+import { Phone, Truck } from "lucide-vue-next";
 
 
 

@@ -84,44 +84,66 @@ const routes = [
       {
         path: "customers",
         name: "AdminCustomers",
-        component: CustomerManager
+        component: CustomerManager,
+         meta: { permission: "USER_MANAGE" }
       },
       {
         path: "products",
-        component: ProductList
+        component: ProductList,
+         meta: { permission: "PRODUCT_MANAGE" }
       },
       {
         path: "products/:id",
-        component: UpdateProduct
+        component: UpdateProduct,
+         meta: { permission: "PRODUCT_MANAGE" }
       },
       {
         path: "products/create",
         component: CreateProduct,
+         meta: { permission: "PRODUCT_MANAGE" }
       },
       {
         path: "orders",
         component: OrderList,
+         meta: { permission: "ORDER_MANAGE" }
       },
       {
         path: "orders/:id",
         component: OrderDetails,
+         meta: { permission: "ORDER_MANAGE" }
       },
       {
         path: "comment",
         component: CommentsManagement,
+         meta: { permission: "COMMENT_MANAGE" }
       },
       {
         path: "colorsize",
         component: ColorSizeManager,
+         meta: { permission: "COLOR_MANAGE" }
+
       },
       {
         path: "dashboard",
         component: Dashboard,
+         meta: { permission: "REPORT_VIEW" }
       },
       {
         path: "adminmanagement",
         component: AdminManagement,
+         meta: { permission: "ADMIN_MANAGE" }
       },
+      {
+  path: "/403",
+  component: {
+    template: `
+      <div style="height:100vh;display:flex;align-items:center;justify-content:center;
+                  font-size:20px;color:#dc2626;font-weight:600">
+        🚫 Bạn không có quyền truy cập chức năng này
+      </div>
+    `
+  }
+}
     ]
   }
 ];
@@ -129,6 +151,33 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition
+    } else {
+      return { top: 0 }
+    }
+  }
+});
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem("token");
+
+  if (to.meta.permission) {
+    if (!token) return next("/403");
+
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      const scope = payload.scope || "";
+
+      if (!scope.includes(to.meta.permission)) {
+        return next("/403");
+      }
+    } catch (e) {
+      return next("/403");
+    }
+  }
+
+  next();
 });
 
 export default router;
