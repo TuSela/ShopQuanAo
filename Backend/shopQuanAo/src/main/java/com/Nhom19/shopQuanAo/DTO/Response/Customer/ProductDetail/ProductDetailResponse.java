@@ -17,6 +17,7 @@ public class ProductDetailResponse {
     private BigDecimal gia;
     private BigDecimal danhGia;
     private Integer soLuongDanhGia;
+    private Boolean trangThai;
     private List<ColorResponse> Variants;
     private List<String> listAnhSP;
     private String chiTiet;

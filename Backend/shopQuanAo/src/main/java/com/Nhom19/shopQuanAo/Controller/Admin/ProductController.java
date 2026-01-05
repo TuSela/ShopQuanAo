@@ -55,6 +55,12 @@ public class ProductController {
         response.setResult(productService.UpdateProduct(request, maSp));
         return response;
     }
+    @GetMapping("/update/{maSp}")
+    public ApiResponse<ProductDetailResponse> getProduct(@PathVariable("maSp") int maSp){
+        ApiResponse<ProductDetailResponse> apiResponse =new ApiResponse();
+        apiResponse.setResult(productService.getProductDetail1(maSp));
+        return apiResponse;
+    }
     @GetMapping("/search")
     public ApiResponse<PageResponse<ProductBestSellerResponse>> searchProducts(
             @RequestParam(defaultValue = "0") int page,

@@ -39,12 +39,10 @@ public class ProductVariantService {
         return variants.stream().map(pv -> {
 
             ProductVariantResponse res = new ProductVariantResponse();
-//            variantMapper.toDTO(pv);
-
+//          variantMapper.toDTO(pv);
             res.setMaBienThe(pv.getMaBienThe());
             res.setSoluong(pv.getSoluong());
             res.setTrangThai(pv.isTrangThai());
-
             // entity
             res.setProduct(pv.getProducts());
             res.setColors(pv.getColors());

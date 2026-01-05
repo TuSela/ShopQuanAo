@@ -72,7 +72,6 @@ public class ProductService {
                 })
                 .toList();
     }
-
     public List<ProductBestSellerResponse>getTopBestSeller(){
         List<ProductBestSellerResponse> result =
                 productRepository.findBestSellerProducts(PageRequest.of(0, 10));
@@ -111,7 +110,6 @@ public class ProductService {
         productRepository.save(products);
         return true;
     }
-
     //SHOW CHI TIẾT SẢN PHẨM
     @Transactional
     public ProductDetailResponse getProductDetail(int id) {
@@ -183,7 +181,21 @@ public class ProductService {
         res.setVariants(colors);
         return res;
     }
+    //Chi tiết bên admin
+    @Transactional
+    public ProductDetailResponse getProductDetail1(int id) {
 
+        Products product = productRepository.findProductDetail1(id)
+                .orElseThrow(() -> new AppException(
+                        ErrorCode.SP_DANG_BAO_TRI
+                ));
+
+        // ===== MAP CƠ BẢN =====
+        ProductDetailResponse res = productMapper.toDTO2(product);
+        res.setMaLoai(product.getTypes().getMaLoai());
+
+        return res;
+    }
     ///LẤY RA SẢN PHẨM BIẾN THỂ
     @Transactional()
     public ColorResponse getColorDetail(Integer maSp, Integer maMs) {

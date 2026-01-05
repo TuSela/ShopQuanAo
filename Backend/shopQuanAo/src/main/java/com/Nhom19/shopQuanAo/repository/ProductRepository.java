@@ -28,6 +28,13 @@ public interface ProductRepository extends JpaRepository<Products, Integer> {
 """)
     Optional<Products> findProductDetail(@Param("id") int id);
 
+    @Query("""
+    SELECT p
+    FROM Products p
+    JOIN FETCH p.types
+    WHERE p.maSp = :id
+""")
+    Optional<Products> findProductDetail1(@Param("id") int id);
 
     @Query(
             value = """
