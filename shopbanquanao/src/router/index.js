@@ -23,6 +23,7 @@ import CommentsManagement from "../pages/admin/CommentsManagement.vue";
 import ColorSizeManager from "../pages/admin/ColorSizeManager.vue";
 import Dashboard from "../pages/admin/Dashboard.vue";
 import AdminManagement from "../pages/admin/AdminManagement.vue";
+import ForbiddenPage from "../components/admin/ForbiddenPage.vue";
 
 const routes = [
   {
@@ -133,17 +134,10 @@ const routes = [
         component: AdminManagement,
          meta: { permission: "ADMIN_MANAGE" }
       },
-      {
+        {
   path: "/403",
-  component: {
-    template: `
-      <div style="height:100vh;display:flex;align-items:center;justify-content:center;
-                  font-size:20px;color:#dc2626;font-weight:600">
-        🚫 Bạn không có quyền truy cập chức năng này
-      </div>
-    `
-  }
-}
+  component: ForbiddenPage
+},
     ]
   }
 ];
