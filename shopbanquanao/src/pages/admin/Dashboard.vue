@@ -206,8 +206,8 @@ ChartJS.register(
 
 
 /* ===== DATE FILTER ===== */
-const fromDate = "2025-12-01T00:00:00";
-const toDate   = "2026-01-31T23:59:59";
+const fromDate = "2025-01-01T00:00:00";
+const toDate   = "2027-01-31T23:59:59";
 
 
 const formatTrangThai = (status) => {

@@ -99,9 +99,9 @@
                 <span
                   class="px-3 py-1 rounded-full text-xs font-semibold"
                   :class="p.trangThai
-                    ? 'bg-red-100 text-red-600'
-                    : 'bg-green-100 text-green-600'">
-                  {{ p.trangThai ? "Ngừng bán" : "Đang bán" }}
+                    ? 'bg-green-100 text-green-600'
+                    : 'bg-red-100 text-red-600'">
+                  {{ p.trangThai ? "Đang bán" : "Ngừng bán" }}
                 </span>
               </td>
               <td class="px-4 py-3 text-center">{{ p.soLuong }}</td>

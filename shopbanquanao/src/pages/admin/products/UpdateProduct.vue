@@ -65,6 +65,15 @@
           <input type="number" v-model="productForm.gia" />
         </div>
       </div>
+      <!-- TRẠNG THÁI -->
+<div>
+  <label>Trạng thái</label>
+  <select v-model="productForm.trangThai">
+    <option :value="true">Đang bán</option>
+    <option :value="false">Ngừng bán</option>
+  </select>
+</div>
+
     </section>
 
     <!-- ================================================= -->
@@ -542,11 +551,12 @@ const productForm = reactive({
   gia: 0,
   moTa: "",
   maLoai: null,
+  trangThai: true,
 });
 
 /* ================== LOAD PRODUCT ================== */
 async function loadProduct(id) {
-  const res = await api.get(`/products/${id}`);
+  const res = await api.get(`/products/update/${id}`);
 
   const p = res.data.result;
 
@@ -555,6 +565,7 @@ async function loadProduct(id) {
   productForm.gia = p.gia;
   productForm.maLoai = p.maLoai;
   productForm.moTa = p.chiTiet;
+  productForm.trangThai = p.trangThai;
 }
 
 /* ================== LOAD VARIANTS ================== */
@@ -701,6 +712,7 @@ const updateBasicInfo = async () => {
       maLoai: productForm.maLoai,
       gia: productForm.gia,
       chiTiet: productForm.moTa,
+      trangThai: productForm.trangThai,
     };
 
     const res = await api.put(
