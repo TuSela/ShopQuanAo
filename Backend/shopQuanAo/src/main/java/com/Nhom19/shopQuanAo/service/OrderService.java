@@ -85,12 +85,18 @@ public class OrderService {
         orderRepository.save(orders);
         return true;
     }
+    @Autowired
+    ProductVariantRepo productVariantRepo;
     //Hủy đơn hàng
     public Boolean CancelOrder(Integer orderId) {
         Orders orders = orderRepository.findById(orderId).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
         orders.setOrderStatus("Đã hủy");
         orderRepository.save(orders);
-        
+        orderItemRepo.findByOrders(orders).forEach(orderItem -> {
+          ProductVariants productVariants =  productVariantRepo.findById(orderItem.getProductVariants().getMaBienThe()).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED));
+            productVariants.setSoluong(productVariants.getSoluong() + orderItem.getSoLuong());
+            productVariantRepo.save(productVariants);
+        });
         return true;
     }
     @Autowired

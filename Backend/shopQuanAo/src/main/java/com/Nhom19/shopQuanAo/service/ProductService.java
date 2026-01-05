@@ -107,6 +107,7 @@ public class ProductService {
         products.setTenSp(request.getTenSp());
         products.setTypes(productTypeRepo.findById(request.getMaLoai()).orElse(products.getTypes()));
         products.setChiTiet(request.getChiTiet());
+        products.setTrangThai(request.getTrangThai());
         productRepository.save(products);
         return true;
     }

@@ -182,6 +182,10 @@ public class CartService {
         if (cartItems == null) {
             throw new AppException(ErrorCode.CART_ITEM_NOT_EXISTED);
         }
+        // Cập nhật lại số lượng
+        int temp = cartItems.getSoluong() - request.getSoLuong();
+        productVariants.setSoluong(productVariants.getSoluong() + temp);
+        productVariantRepo.save(productVariants);
 
         cartItems.setSoluong(request.getSoLuong());
 
@@ -214,7 +218,7 @@ public class CartService {
 
         CartItems cartItems =
                 cartItemRepo.findByCartAndProductVariants(cart, productVariants);
-
+        productVariants.setSoluong(productVariants.getSoluong() + cartItems.getSoluong());
         if (cartItems == null) {
             throw new AppException(ErrorCode.CART_ITEM_NOT_EXISTED);
         }
