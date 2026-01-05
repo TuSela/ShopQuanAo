@@ -114,7 +114,7 @@ onMounted(() => {
     <div class="bg-white rounded-xl shadow p-6">
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-lg font-semibold flex items-center gap-2">
-          <Palette class="w-5 h-5 text-purple-600" />
+          <Palette class="w-5 h-5 " />
           Màu sắc
         </h2>
 
@@ -192,7 +192,7 @@ onMounted(() => {
     <div class="bg-white rounded-xl shadow p-6">
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-lg font-semibold flex items-center gap-2">
-          <Ruler class="w-5 h-5 text-blue-600" />
+          <Ruler class="w-5 h-5" />
           Kích cỡ
         </h2>
 

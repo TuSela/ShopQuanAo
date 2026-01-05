@@ -22,13 +22,13 @@
         class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full shadow"
         @click="prevImage"
       >
-        ‹
+        <ChevronLeft class="w-5 h-5" />
       </button>
       <button
         class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full shadow"
         @click="nextImage"
       >
-        ›
+        <ChevronRight class="w-5 h-5" />
       </button>
     </div>
 
@@ -85,9 +85,9 @@
       <!-- ========== SỐ LƯỢNG ========== -->
       <p class="font-semibold mb-2">SỐ LƯỢNG</p>
       <div class="flex items-center gap-4 mt-3">
-        <button @click="soLuong > 1 ? soLuong-- : 1" class="px-3 py-2 border">-</button>
+        <button @click="soLuong > 1 ? soLuong-- : 1" class="px-3 py-2 border"><Minus class="w-4 h-4" /></button>
         <span class="text-lg">{{ soLuong }}</span>
-        <button @click="soLuong++" class="px-3 py-2 border">+</button>
+        <button @click="soLuong++" class="px-3 py-2 border"><Plus class="w-4 h-4" /></button>
       </div>
 
       <!-- NÚT HƯỚNG DẪN KÍCH THƯỚC -->
@@ -95,7 +95,7 @@
         @click="showSizeGuide = true"
         class="mt-4 text-blue-600 underline text-sm"
       >
-        📏 Hướng dẫn chọn size
+        <Ruler class="w-4 h-4 inline-block mr-2" /> Hướng dẫn chọn size
       </button>
 
       <!-- POPUP BẢNG SIZE -->
@@ -121,11 +121,11 @@
       <div class="flex gap-4 mt-5">
         <button class="flex-1 border border-red-600 text-red-600 py-3 rounded-lg font-semibold"
           @click="addToCart">
-          🛒 Thêm giỏ hàng
+          <ShoppingCart class="w-5 h-5 inline-block mr-2" /> Thêm giỏ hàng
         </button>
         <button class="flex-1 bg-red-600 text-white py-3 rounded-lg font-semibold"
         @click="buyNow">
-          ⚡ Mua ngay
+          <Zap class="w-5 h-5 inline-block mr-2" /> Mua ngay
         </button>
       </div>
     </div>
@@ -382,6 +382,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
+import { Plus, Minus, ChevronLeft, ChevronRight, ShoppingCart, Zap, Ruler } from "lucide-vue-next";
 import api from "@/api";
 import { useRoute, useRouter } from "vue-router";
 

@@ -63,7 +63,7 @@
 
           <!-- QR + APP -->
           <div class="flex gap-4 items-center">
-            <img src="/src/assets/image/1.png" class="w-20">
+            <img src="/src/assets/image/QR.png" class="w-20">
             <div class="space-y-2">
               <img src="/src/assets/icon/app_store.svg" class="w-28">
               <img src="/src/assets/icon/google_play.svg" class="w-28">
